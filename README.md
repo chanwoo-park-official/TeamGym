@@ -1,12 +1,48 @@
+<div align="center">
+
 # TeamGym
+
+### A Gym for Team Decision-Making by AI Agents with Distributed Information
+
+Chanwoo Park · Jaywoong Jeong · Zachary Wojtowicz · Yubin Kim · Taekyun Lee · Kaiqing Zhang · Asuman Ozdaglar
+
+<!-- Affiliations: add superscripts after each name and a line such as
+<sup>1</sup>University A &nbsp;&nbsp; <sup>2</sup>University B -->
+
+[![arXiv](https://img.shields.io/badge/arXiv-2610.37571-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2610.37571)
+[![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-ffd21e.svg?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/TeamGym/teamgym-datasets)
+[![Cite](https://img.shields.io/badge/Cite-CITATION.cff-4c8bf5.svg)](CITATION.cff)
+
+[![Python](https://img.shields.io/badge/python-3.11-3776AB.svg?logo=python&logoColor=white)](requirements/README.md)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![CPU smoke tests](https://github.com/chanwoo-park-official/TeamGym/actions/workflows/cpu-smoke.yml/badge.svg)](https://github.com/chanwoo-park-official/TeamGym/actions/workflows/cpu-smoke.yml)
+
+</div>
+
+<!-- Teaser figure: add e.g. assets/teamgym_overview.png here with a one-line caption.
+<p align="center"><img src="assets/teamgym_overview.png" width="85%"></p> -->
+
+## Overview
 
 This repository provides the dataset construction, evaluation, and training code
 for *TeamGym: A Gym for Team Decision-Making by AI Agents with Distributed Information*.
 
-[Paper](https://arxiv.org/abs/2610.37571) · [Dataset](https://huggingface.co/datasets/TeamGym/teamgym-datasets) · [Citation](CITATION.cff)
-
 The paper refers to the evidence units needed to solve a task as pivotal
 information units (PIUs).
+
+## Contents
+
+- [Quickstart](#quickstart)
+- [Citation](#citation) · [License](#license)
+- [Main Paths](#main-paths)
+- [Paper Domains](#paper-domains)
+- [Current Legal Pipelines](#current-legal-pipelines)
+- [Data Flow and Release Inventory](#data-flow-and-release-inventory)
+- [Installation](#installation)
+- [Paths and Local Environments](#paths-and-local-environments)
+- [Example Commands](#example-commands)
+- [Policy Training](#policy-training)
+- [Interaction Evaluation](#interaction-evaluation)
 
 ## Quickstart
 
