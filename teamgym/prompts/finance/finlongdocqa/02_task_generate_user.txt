@@ -1,0 +1,109 @@
+Create one source-grounded free-response task for annual report {{REPORT_ID}}.
+
+VALID SOURCE QAS
+{{SOURCE_QAS_JSON}}
+
+QA-TO-EVIDENCE MAPPINGS
+{{QA_EVIDENCE_MAPPINGS_JSON}}
+
+REPORT-LEVEL EVIDENCE CONSOLIDATION
+{{EVIDENCE_CONSOLIDATION_JSON}}
+
+CONSOLIDATED MAPPED BLOCK POOL
+{{EVIDENCE_CANDIDATE_BLOCKS_JSON}}
+
+FEEDBACK FROM THE PREVIOUS ATTEMPT
+{{REJECTION_FEEDBACK}}
+
+Select one or more valid source QAs and at least two complete mapped blocks. The
+selected QAs do not need to share one analytical purpose. When they are not
+naturally related, ask a concise numbered multi-part review instead of inventing
+a comparison, causal relationship, or common theme.
+
+PIU count guidance:
+- At least two evidence units are required for collaboration.
+- Select the number required by the task and source evidence. Do not add QAs
+  merely to increase PIU count.
+
+Design rules:
+1. Ask for a concise memo, calculation, explanation, or numbered set of answers.
+2. The public question must specify what to determine without revealing
+   report-specific values or expected conclusions.
+3. Use only supplied source QAs and complete mapped blocks. Each selected block
+   must belong to a QA in source_qa_ids_used, and each used QA must contribute at
+   least one selected block. It is not necessary to use every QA or every block.
+4. One normalized source block is one evidence unit. For a table containing
+   unrelated rows that independently reveal another selected PIU, optionally
+   specify source_row_numbers: ordered 1-based ORIGINAL table rows to retain.
+   Retain the header and separator (rows 1 and 2), all rows necessary for this
+   unit's claims, material units, periods, totals and scope. Python copies exact
+   original rows with provenance and repeats grounding and packet checks.
+   Do not restrict paragraphs or rewrite/summarize any row. Never duplicate one block
+   into multiple units for separate values, rows, or claims. A single evidence
+   unit may support multiple requested items and rubric claims.
+5. Do not select two blocks solely for information identified as duplicated,
+   contained, or derived-equivalent. Partially overlapping blocks may both be
+   selected only when the public task and rubric use a unique contribution from
+   each.
+6. Create objectively gradable hidden claims containing the expected value,
+   direction, scope, period, or conclusion.
+7. Claims and evidence units have a many-to-many relationship. One claim may
+   require several RIUs, and one RIU may support several claims.
+8. Every selected RIU must be indispensable to at least one report-specific
+   claim. Removing that RIU must leave at least one linked claim not fully
+   grounded, even when all other RIUs remain.
+9. Do not create artificial claims whose only purpose is to make an RIU appear
+   necessary. Formatting, citation style, and generic formulas are not hidden
+   report-specific claims.
+10. supports_claim_ids and supporting_unit_ids must agree exactly.
+11. The reference answer must satisfy every claim, show material calculations
+    when applicable, preserve material units and periods, and use no outside facts.
+12. Do not create answer choices, decision IDs, distractors, or plausible-option
+    sets.
+13. source_qa_ids_used is the subset of valid QAs materially used. It must contain
+    at least one QA but need not contain every supplied QA.
+14. If feedback is present, redesign the task instead of explaining the failure.
+
+Return:
+{
+  "schema": "finlongdocqa_free_response_task_v1",
+  "source_qa_ids_used": ["<qa_id>", "..."],
+  "public_task": {
+    "title": "<short neutral title>",
+    "report_context": "<brief role or purpose without answer leakage>",
+    "question": "<self-contained free-response question>",
+    "response_requirements": [
+      "<concise public requirement>"
+    ]
+  },
+  "evidence_units": [
+    {
+      "unit_id": "riu_01",
+      "source_block_id": "<exact selected block_id>",
+      "information_feature": "<report-specific information in this block>",
+      "source_row_numbers": null,
+      "hidden_summary": "<concise internal summary>",
+      "supports_claim_ids": ["claim_01", "..."]
+    }
+  ],
+  "rubric": {
+    "rubric_version": "finlongdocqa_claim_rubric_v1",
+    "required_claims": [
+      {
+        "claim_id": "claim_01",
+        "description": "<what the response must establish>",
+        "expected_answer_element": "<canonical value or conclusion>",
+        "supporting_unit_ids": ["riu_01", "..."],
+        "grading_rule": "<objective tolerance, scope, period, and unit rule>"
+      }
+    ],
+    "prohibited_errors": [
+      "<material error that changes the answer>"
+    ]
+  },
+  "oracle": {
+    "reference_answer": "<complete concise response satisfying every claim>"
+  }
+}
+
+Return JSON only.

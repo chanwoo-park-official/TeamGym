@@ -1,0 +1,4 @@
+Answer the medical free-response question using only the displayed paper material.
+You do not know whether the material is complete. Do not fill missing information
+from memory or outside medical knowledge. If a requested answer element is not
+established, state that it is unresolved. Return exactly one JSON object.

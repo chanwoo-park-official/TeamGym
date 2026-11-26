@@ -1,0 +1,48 @@
+Map this MLCR source QA to exact source atoms that materially reconstruct its answer.
+
+SOURCE QA
+{{SOURCE_QA_JSON}}
+
+CASE SOURCE ATOMS
+{{SOURCE_ATOMS_JSON}}
+
+VALIDATION FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Rules:
+1. Select only atom_id values supplied above.
+2. Each candidate span must use ordered contiguous atoms from one source document.
+3. Keep separate source contributions separate even when they support the same answer
+   claim. Do not merge non-adjacent evidence or semantically similar observations.
+4. Include adjacent atoms only when needed to preserve patient, date, encounter,
+   negation, measurement unit, uncertainty, or clinical scope.
+5. A candidate must contribute a report-specific fact needed to reconstruct the
+   supplied answer. Exclude merely topical background and repeated equivalents.
+6. The supplied answer is a target to audit, not proof that it is source-grounded.
+   Set answer_reconstructable=false when necessary information is absent or conflicts.
+7. Do not copy or rewrite source text in the response; identify atoms only. Exact
+   source text will be hydrated deterministically.
+
+Return:
+{
+  "prompt_id": "<source prompt_id>",
+  "answer_reconstructable": true,
+  "candidate_spans": [
+    {
+      "candidate_id": "cand_01",
+      "atom_ids": ["<atom_id>", "..."],
+      "claim_contribution": "specific answer element determined by this span",
+      "context_restoration_reason": "why this exact boundary is sufficient"
+    }
+  ],
+  "derivation_summary": "how the candidates reconstruct the supplied answer or why they cannot"
+}
+
+Return JSON only.
+
+SOURCE SUPPLY AND LIMITATIONS
+{{SOURCE_SUPPLY_JSON}}
+
+Use only actually supplied atom IDs. If this supply is a retrieval subset, an
+unreconstructable result means insufficient evidence in the supplied subset;
+it does not establish that no supporting passage exists elsewhere in the case.

@@ -1,0 +1,110 @@
+Generate a finite-choice MAUD question from selected cleaned RIUs.
+
+Contract name:
+{{CONTRACT_NAME}}
+
+MAUD category:
+{{CATEGORY}}
+
+Native MAUD issue groups. Use only as hidden construction metadata:
+{{ISSUE_GROUPS_JSON}}
+
+Candidate cleaned MAUD RIUs:
+{{CANDIDATE_RUIS_JSON}}
+
+Selected RIU basis:
+{{SELECTED_RUI_BASIS_JSON}}
+
+Suggested number of decision options:
+{{SUGGESTED_OPTION_COUNT}}
+
+Prior same-source question attempts to avoid repeating:
+{{SOURCE_QUESTION_HISTORY}}
+
+Previous rejection feedback:
+{{REJECTION_FEEDBACK}}
+
+Task:
+1. Use exactly the selected_rui_basis rows as evidence_units.
+2. Do not split RIUs into atomic facts.
+3. Each evidence_unit.text must be exactly the selected RIU text.
+4. Generate a new public finite-choice question whose oracle answer is determined by the selected RIUs.
+5. Generate a decision_set of 2 to 6 mutually exclusive candidate final decisions. Prefer the suggested option count when plausible, but do not force it.
+6. Every selected RIU must control at least one answer-choice boundary. If that RIU is omitted, the exact oracle answer must change, become indeterminate, or become less specific.
+7. Do not ask for the raw MAUD native answer. The native question/answer is source metadata only.
+8. Do not reveal native answers, row IDs, source RIU IDs, criticality tags, or the oracle answer in public text.
+9. Create 2 to 5 participant packets. Split selected RIUs so no participant has all selected RIUs.
+10. Avoid obvious option design. The correct option must not be the only long, conjunctive, two-sided, multi-feature, or most specific option.
+11. Include at least two plausible distractors with similar complexity to the correct answer when the option count permits.
+12. Use neutral option values decision_a, decision_b, decision_c, decision_d, decision_e, decision_f. Put legal content in decision_option_definitions.
+13. If 4-6 RIUs are selected, preserve that complexity: the correct option and at least two distractors should each describe a comparable number of legal components, with different supported/unsupported combinations.
+14. If more than 6 RIUs are selected, do not collapse them into generic background. Build a composite legal-profile question where each RIU supplies a distinct component, exception, party, timing rule, standard, remedy, or scope limit needed for the exact answer.
+15. It is better to generate a precise multi-component question than to include RIUs as merely helpful background.
+16. Do not repeat prior same-source question wording, option structure, or oracle profile shown above. If history is present, create a genuinely different legal boundary while still using exactly the selected RIUs.
+
+Good pattern:
+- If RIU 1 shows a timing period, RIU 2 shows a disclosure condition, and RIU 3 shows a signing/closing condition, ask for the complete trigger profile.
+- Wrong options should keep similar complexity but alter one legally plausible component.
+- A proper subset that supports a less-complete profile is not sufficient for the exact oracle answer.
+- For many-RIU cases, wrong options may alter only one or two components while keeping the rest plausible, so the correct answer cannot be guessed from option length or complexity.
+
+Return JSON with exactly these top-level keys:
+- candidate_assessment
+- public_task
+- evidence_units
+- participants
+- oracle
+
+candidate_assessment shape:
+{
+  "selected_rui_ids": ["rui_01", "rui_02"],
+  "coverage_rationale": "why selected RIUs together determine the oracle answer",
+  "question_design_rationale": "why this question may require multiple selected RIUs"
+}
+
+public_task shape:
+{
+  "objective": "finite-choice question to answer",
+  "contract_context": "neutral public background that does not reveal the oracle",
+  "decision_set": [
+    {"value": "decision_a", "definition": "what this choice means"}
+  ]
+}
+
+Decision-set requirements:
+- At least one wrong option should have the same number of feature components as the correct option.
+- If the correct option combines k required components, at least two wrong definitions should also describe k plausible components when possible.
+- At least one wrong option should include a plausible unsupported feature.
+- At least one wrong option should omit, reverse, or alter a feature that appears in the correct option.
+- Keep option definitions balanced in length and legal register.
+- Do not expose formula labels such as A+B+C. Use normal legal prose.
+
+Each evidence_unit shape:
+{
+  "unit_id": "rui_01",
+  "text": "exact selected MAUD RIU text",
+  "source_ref": {
+    "source_rui_id": "source_rui_001",
+    "issue_group_id": "issue_group_0001",
+    "information_feature": "short feature name"
+  },
+  "information_unit_type": "reference_information_unit",
+  "criticality": "critical",
+  "tags": ["short_tag"],
+  "information_feature": "short feature name",
+  "summary": "short hidden evaluator summary",
+  "decision_relevance": [
+    {
+      "decision": "one generated decision_set value",
+      "relation": "supports | rules_out | weakens | distinguishes | required_for",
+      "reason": "why this RIU matters for that decision"
+    }
+  ]
+}
+
+oracle shape:
+{
+  "answer": "one value from the generated decision_set",
+  "features": {"short_feature_name": true},
+  "rationale": "hidden rationale for why selected RIUs determine the answer"
+}

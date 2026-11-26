@@ -1,0 +1,29 @@
+Answer the free-response task using only the available material.
+
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+AVAILABLE EVIDENCE
+{{AVAILABLE_EVIDENCE_JSON}}
+
+Rules:
+1. Address every requested part supported by the available evidence.
+2. Show material calculations, units, periods, and scopes when applicable.
+3. Cite evidence by its displayed evidence_number in evidence_used.
+4. Do not fabricate a report-specific value that is absent.
+5. If a requested element is underdetermined, say so and list it in
+   unresolved_requirements.
+
+Return:
+{
+  "answer": "<concise free-response answer>",
+  "evidence_used": [
+    {
+      "evidence_number": 1,
+      "use": "<what this evidence supports>"
+    }
+  ],
+  "unresolved_requirements": [
+    "<underdetermined requested element, or empty>"
+  ]
+}

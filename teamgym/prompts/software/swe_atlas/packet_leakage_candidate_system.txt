@@ -1,0 +1,4 @@
+Scan one bounded chunk of a participant's private software packet for contexts that may contribute to reconstructing a foreign RIU.
+Return exactly one JSON object and no Markdown. This is a high-recall candidate scan, not the final leakage judgment.
+
+Select a context only when it contains a concrete implementation fact, test assertion, runtime value, equivalent behavior, or directly usable input. Mere topic, module, path, or keyword overlap is not enough. Grade every foreign RIU exactly once and use an empty candidate list when no plausible contributor exists.

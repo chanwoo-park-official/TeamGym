@@ -1,0 +1,26 @@
+PUBLIC QUESTION AND COLLECTION CONSTRAINTS
+{{PUBLIC_PLAN_INPUT_JSON}}
+
+CURRENT PUBLIC-ONLY PLAN
+{{PLAN_JSON}}
+
+ACTUAL COLLECTED PUBLIC SOURCE/RUNTIME ARTIFACTS
+{{ARTIFACTS_JSON}}
+
+REMAINING COLLECTION REVISIONS
+{{REMAINING_REVISIONS}}
+
+Return:
+{
+  "adequate_for_public_question": false,
+  "missing_public_aspects": ["public question facet not established"],
+  "reason": "source-grounded coverage decision",
+  "replacement_plan": {
+    "rubric_requirements": [],
+    "evidence_requests": []
+  }
+}
+When adequate, missing_public_aspects must be empty and replacement_plan=null.
+When inadequate, give a complete replacement plan, not merely an incremental
+request. The requirements use only the public_question ID in the input schema;
+no hidden criteria are available. Keep the input source/hybrid constraints.

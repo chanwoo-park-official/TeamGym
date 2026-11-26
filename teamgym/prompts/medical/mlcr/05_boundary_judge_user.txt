@@ -1,0 +1,49 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+HIDDEN RUBRIC
+{{RUBRIC_JSON}}
+
+CONSTRUCTION-ONLY CONDITION
+{{CONDITION_JSON}}
+
+MATERIAL ACTUALLY SHOWN TO THE SOLVER
+{{DISPLAY_MATERIALS_JSON}}
+
+HIDDEN NEUTRAL MATERIAL MAPPING
+{{MATERIAL_MAPPING_JSON}}
+
+PROPOSED ANSWER
+{{SOLVER_ANSWER_JSON}}
+
+PREVIOUS FORMAT FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Grade every required claim exactly once. content_correct asks whether the answer
+states the claim correctly. grounded_in_available_material asks whether the
+actual displayed material supports that statement at the required patient,
+date, encounter, unit, negation, uncertainty and clinical/causal scope. A correct
+guess without displayed patient-specific support is not grounded. Cite actual
+material_number values. Generic medical knowledge may connect observations but
+cannot replace missing patient-specific facts. Do not fail merely because a
+hidden or omitted candidate ID is absent: assess the actual available evidence,
+including equivalent or combined passages. satisfied equals content_correct AND
+grounded_in_available_material. content_complete equals every claim's
+content_correct; fully_correct requires every claim satisfied and no prohibited
+error. Report prohibited errors even when all requested claims are stated.
+
+Return:
+{
+  "content_complete": false,
+  "fully_correct": false,
+  "claim_results": [
+    {"claim_id": "claim_01", "content_correct": false,
+     "grounded_in_available_material": false, "satisfied": false,
+     "material_numbers": [], "reason": "specific reason"}
+  ],
+  "prohibited_errors_present": [],
+  "incomplete_claim_ids": ["claim_01"],
+  "reason": "overall judgment"
+}
+
+Return JSON only.

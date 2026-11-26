@@ -1,0 +1,25 @@
+Answer the free-response financial task using only the supplied information.
+
+Public task:
+{{PUBLIC_TASK_JSON}}
+
+Public information:
+{{PUBLIC_INFORMATION_JSON}}
+
+Available source evidence:
+{{RIU_EVIDENCE_JSON}}
+
+You are not told whether this is a complete or incomplete evidence condition.
+Assess only what can actually be established from the supplied evidence. Do not
+assume that omitted information exists.
+
+Formatting feedback:
+{{FORMAT_FEEDBACK}}
+
+Return:
+{
+  "written_answer": "complete response to every requested item with concise derivations, or a precise statement of which items are not determinable",
+  "confidence": 0.0,
+  "supporting_evidence": ["concise source quotation or description"],
+  "missing_information": ["specific unavailable input or condition"]
+}

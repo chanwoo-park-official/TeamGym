@@ -1,0 +1,55 @@
+Map one source QA to complete report blocks that make a concrete contribution to
+reconstructing its supplied answer.
+
+SOURCE QA
+{{SOURCE_QA_JSON}}
+
+BLOCKS FROM ONLY THE QA'S ANNOTATED PAGES
+{{ANNOTATED_PAGE_BLOCKS_JSON}}
+
+Mapping rules:
+1. Select a block when it contains at least one report-specific fact, operand,
+   definition, period, unit, entity scope, condition, or exception actually used
+   to reconstruct the supplied answer.
+2. Do not require a minimum block set at this stage. If multiple blocks provide
+   the same useful information, they may all be mapped; report-level
+   consolidation will compare them later.
+3. Do not select merely topical background. Every selected block needs a
+   specific contribution to the answer or its derivation.
+4. A table or normalized composite is one indivisible block. Never identify a
+   cell, row, value, sentence, or substring as a separate block.
+5. Use only block_id values shown above.
+6. Standard arithmetic and conventional formulas for a financial metric named
+   in the question are allowed reasoning tools. Select report blocks for the
+   company-specific inputs and scopes.
+7. Treat the supplied answer as the canonical target. If mapped report values
+   reproduce it under ordinary rounding, answer_reconstructable must be true.
+8. Set answer_reconstructable to false only when a required report-specific fact
+   is absent, available values contradict the answer, or materially different
+   derivations cannot be resolved.
+9. Do not invent facts or use information from unlisted pages.
+
+Allowed block roles:
+- direct_answer
+- calculation_input
+- definition_or_formula
+- entity_or_segment_scope
+- period_or_unit_scope
+- condition_or_exception
+
+Return:
+{
+  "qa_id": "<the supplied qa_id>",
+  "answer_reconstructable": true,
+  "evidence_block_ids": ["<block_id>", "..."],
+  "block_contributions": [
+    {
+      "block_id": "<one evidence block_id>",
+      "role": "<one allowed role>",
+      "contribution": "<specific fact or scope this complete block contributes>"
+    }
+  ],
+  "derivation_summary": "<brief answer derivation using mapped blocks>"
+}
+
+Every evidence_block_id must occur exactly once in block_contributions.

@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use TeamGym in your research, please cite the paper below."
+title: TeamGym
+type: software
+license: MIT
+authors:
+  - name: TeamGym contributors
+preferred-citation:
+  type: article
+  title: "TeamGym: A Gym for Team Decision-Making by AI Agents with Distributed Information"
+  authors:
+    - given-names: Chanwoo
+      family-names: Park
+    - given-names: Jaywoong
+      family-names: Jeong
+    - given-names: Zachary
+      family-names: Wojtowicz
+    - given-names: Yubin
+      family-names: Kim
+    - given-names: Taekyun
+      family-names: Lee
+    - given-names: Kaiqing
+      family-names: Zhang
+    - given-names: Asuman
+      family-names: Ozdaglar
+  journal: arXiv
+  year: 2026
+  doi: 10.48550/arXiv.2610.37571
+  url: https://arxiv.org/abs/2610.37571

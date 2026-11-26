@@ -1,0 +1,23 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+PARTICIPANT
+{{PARTICIPANT_JSON}}
+
+FOREIGN RIUS
+{{FOREIGN_RIUS_JSON}}
+
+ONE PACKET CHUNK
+{{PACKET_CONTEXT_CHUNK_JSON}}
+
+Return:
+{
+  "participant_id": "exact participant id",
+  "foreign_rui_candidates": [
+    {
+      "riu_id": "exact foreign RIU id",
+      "candidate_context_unit_ids": ["context ids from this chunk"],
+      "reason": "possible concrete contribution or no contributor"
+    }
+  ]
+}

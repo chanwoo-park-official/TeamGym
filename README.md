@@ -1,0 +1,398 @@
+# TeamGym
+
+This repository provides the dataset construction, evaluation, and training code
+for [TeamGym: A Gym for Team Decision-Making by AI Agents with Distributed Information](https://arxiv.org/abs/2610.37571).
+
+The paper refers to the evidence units needed to solve a task as pivotal
+information units (PIUs).
+
+## Quickstart
+
+From the repository root, use Python 3.11 to install the evaluation tools and
+list the available datasets:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -c requirements/lightweight-py311.txt ".[llm]"
+teamgym-generate --list
+teamgym-evaluate --help
+```
+
+With access to [`paper_tasks_163.jsonl`](#data-flow-and-release-inventory),
+follow the [one-task evaluation example](evaluation/README.md#run-one-task).
+Running the example uses model API credentials. [Installation](#installation)
+covers construction, pinned dependencies, and offline tests.
+
+## Citation
+
+If you use TeamGym in research, cite Park et al., *TeamGym: A Gym for Team
+Decision-Making by AI Agents with Distributed Information*, arXiv:2610.37571
+(2026). The [citation file](CITATION.cff) includes the full author list and DOI.
+
+## License
+
+TeamGym-original code and documentation are released under the [MIT License](LICENSE).
+The bundled [rLLM](rllm/LICENSE) and [VERL](verl/LICENSE) code retain their Apache
+2.0 licenses. Source datasets and model weights have their own terms.
+
+## Main Paths
+
+- `teamgym/`: shared core, construction pipelines for all four domains, interaction, and scoring.
+- `scripts/data_generation/` documents construction recipes, source provenance, and Slurm jobs.
+- [`evaluation/`](evaluation/README.md): portable evaluation commands, reference configurations, reporting, and model tools.
+- [`scripts/storage/`](scripts/storage/README.md): packaging and verification for frozen datasets and selected trajectories.
+- `generated/`: local construction outputs; released datasets and trajectories are distributed separately.
+- [`teamgym/rl/`](teamgym/rl/README.md): legal and finance policy training, endpoint evaluation, and offline checks.
+
+## Paper Domains
+
+TeamGym groups its 12 source corpora into four domains:
+
+| Domain | Registry key | Paper source corpora |
+| --- | --- | --- |
+| Legal | `legal` | CUAD, MAUD, eCFR Casebook, MSLR, Multi-LexSum, SARA |
+| Finance | `finance` | FinDVer, FinLongDocQA |
+| Medical | `medical` | MLCR, EvidenceBench |
+| Software Engineering | `swe` | SWE Atlas Codebase QnA, DeepSWE |
+
+The construction registry exposes all 12 source constructors under the four
+domain prefixes. The [construction guide](scripts/data_generation/README.md#finance-medical-and-software-construction)
+describes Finance, Medical, and Software Engineering source preparation.
+Finance RL preparation and training are available under `teamgym/rl/`.
+See the [registry guide](teamgym/data/README.md) for command names.
+
+The [dataset interface guide](teamgym/core/README.md)
+describes construction outputs, actor-visible information, answer formats,
+scoring, and the separate RL preparation needed when connecting these domains.
+
+```bash
+teamgym-generate --list
+teamgym-generate legal/sara --help
+teamgym-generate sara --help
+```
+
+Qualified names such as `legal/sara` and the existing short aliases invoke the
+same constructors with the same arguments. Dataset labels and saved records
+retain their existing formats.
+
+## Current Legal Pipelines
+
+The current benchmark-facing outputs use the common datapoint schema:
+
+- CUAD: measured source spans over full contracts.
+- MAUD: measured evidence units over full agreements.
+- Casebook20: authored short-answer legal reasoning tasks.
+- MSLR: source-excerpt administrative legal reasoning tasks.
+- SARA: numeric statutory tax reasoning tasks.
+- MultiLexSum: original-source distributed litigation reasoning tasks.
+
+These six Legal pipelines use the normalized common datapoint schema. Tasks may use finite
+decision labels or judged short answers, with evaluator-only oracle metadata:
+
+```json
+{
+  "decision_set": ["decision_a", "decision_b"],
+  "decision_option_definitions": {"decision_a": "...", "decision_b": "..."},
+  "oracle": {"answer": "decision_a"}
+}
+```
+
+## Data Flow and Release Inventory
+
+To build a dataset independently of the hosted TeamGym files, follow the
+[reconstruction guide](scripts/data_generation/RECONSTRUCTION.md). It shows the
+source/seed contract, runnable structural construction, and the separate RL data
+preparation step. The inventory below records existing snapshots for exact reuse.
+
+Construction produces normalized TeamGym tasks. Those records feed two paths:
+
+- Standard evaluation: frozen benchmark tasks → actor rollouts → task-specific
+  scoring and written-answer judging.
+- RL: constructed tasks → training-task preparation and split selection → frozen
+  prepared splits → policy training → checkpoint evaluation.
+
+Legal RL preparation includes authoring and reviewing written-answer tasks, in
+addition to filtering and splitting. Finance preparation builds the PIU-only view
+and the intended train/validation/transfer split. Preserve the prepared snapshots
+to train on the same examples; model-assisted reconstruction can produce different
+records. The [construction guide](scripts/data_generation/README.md) records source
+requirements and remaining historical recovery gaps.
+
+The Legal and prepared-bundle inventory was checked on **2026-11-17**. Counts refer to records;
+allocation variants can share an underlying task.
+
+| Artifact | Files and records | Availability |
+| --- | --- | --- |
+| Legal standard evaluation | [`paper_tasks_163.jsonl`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/data/paper_tasks_163.jsonl): 163 tasks | Uploaded to the private legal dataset repository. |
+| Full legal allocation bundle | [`legal_allocated_v1_all.zip`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/archives/legal_allocated_v1_all.zip), or [`all_task_allocations_1607.jsonl`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/data/all_task_allocations_1607.jsonl): 1,607 allocations across six datasets | Same private upload; the full archive also contains indexes and provenance. |
+| Historical legal allocation selection | [`paper_task_allocations_618.jsonl`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/data/paper_task_allocations_618.jsonl): 618 allocations | Same private upload; optional for standard evaluation and paper RL. |
+| Legal paper RL, full-context written tasks | `train`: 334 CUAD; `validation_cuad`: 36 CUAD; `validation_maud`: 26 MAUD | Packaged locally as `teamgym_legal_rl_v1.zip`; release download link pending. |
+| Finance paper RL, final deduplicated transfer split | `train`: 538; `validation`: 60; `test`: 40 | Packaged locally as `teamgym_finance_rl_v1.zip`; release download link pending. |
+| RL preparation metadata | Legal: `written_answer_manifest.jsonl`, `preparation_report.json`, `dataset_audit.json`. Finance: `split_manifest.jsonl`, `transfer_audit.json` | Included in the corresponding RL bundles with file checksums. |
+| Selected trajectories | Six saved GPT-5.4 full-context team examples, one per legal corpus, with matching inputs, evaluation outputs, and applicable judgments | Packaged locally as `teamgym_trajectory_examples_v1.zip`; includes both successful and unsuccessful answers. Release download link pending. |
+
+The [release export command](scripts/storage/README.md#export-the-prepared-rl-data-and-example-trajectories)
+recreates these bundles from frozen files using only the standard library. It
+preserves source bytes and records counts, selection rules, and SHA-256 checksums.
+The private [historical results snapshot](https://huggingface.co/datasets/Chanwoo97/collabgym-legal-results/tree/9e9b91ca3b4d9fda006f27589a8cf05698f1de2d)
+contains the original combined trajectory archive, campaign artifacts, and an older
+code snapshot; the selected export is a separate artifact.
+
+Each of the three canonical splits in an RL snapshot has `.jsonl`, `.parquet`,
+and `_verl.parquet` files: nine data files per domain. Legal's combined
+`validation` view has 62 records; paper recipes keep CUAD selection and MAUD
+held-out evaluation separate. Finance also has one optional six-participant
+qualitative test example, separate from its 40-example main test.
+
+The four uploaded legal data files above match the local files in size and SHA-256
+using Hugging Face's LFS metadata. The upload includes
+[`FILES.sha256`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/FILES.sha256).
+Both checked repositories remain private; these links require access. This
+inventory checks artifacts and counts, while full dataset reconstruction,
+download/restore, evaluation, and GPU training validation remain separate steps.
+The Finance, Medical, and SWE construction commands are available. Their accepted
+release downloads are pending. The [construction stage map](scripts/data_generation/RECONSTRUCTION.md#stage-map-and-evaluation-inputs)
+specifies the evaluation input produced by each constructor. The
+[archived-row receipts](scripts/data_generation/provenance/nonlegal_reconstruction_examples.json)
+record what has been recovered and checked so far:
+
+| Domain | Saved evaluation artifacts |
+| --- | --- |
+| Finance | A row was verified in each archived export, `findver_one_each_91.jsonl` and `finlongdocqa_one_each_61.jsonl`. |
+| Medical | An EvidenceBench row in `medical/full/accepted.jsonl` was verified. The accepted MLCR export is pending. |
+| Software Engineering | The archived SWE Atlas export failed the current evidence-reference check. DeepSWE uses a dedicated verifier, and its accepted `instance.json` is pending. |
+
+See the [training guide](teamgym/rl/README.md) for preparation and the
+legal/finance paper regimes, and the [evaluation guide](evaluation/README.md) for
+the frozen benchmark path.
+
+## Installation
+
+The Python package is `teamgym`, for example
+`python -m teamgym.data.cli --list`. Reinstall the repository after updating a
+checkout to refresh its console commands. Existing frozen dataset schema labels
+remain supported; newly constructed records use the TeamGym label described in
+the [dataset interface guide](teamgym/core/README.md).
+
+The code supports Python 3.10+. Pinned reference environments use Python 3.11
+on Linux x86_64. Select dependencies for the work you want to do:
+
+| Use | Installation | Local GPU needed? |
+| --- | --- | --- |
+| Read provided JSONL | Python's built-in `json` module | No |
+| Use the loader and schema | `python -m pip install .` | No |
+| Evaluate through model APIs | `python -m pip install ".[llm]"` | No |
+| Reconstruct datasets | `python -m pip install ".[data,llm,construction]"` | No |
+| Train RL or run local GPU inference | Separate [RL environment](requirements/README.md) and local VERL fork | Yes |
+
+For the pinned construction/evaluation environment, use:
+
+```bash
+uv sync --locked --extra construction --extra data --extra test
+uv run --no-sync teamgym-generate --list
+uv run --no-sync teamgym-generate finance/findver --help
+```
+
+The committed lockfile supplies package versions, and `.python-version` selects
+Python 3.11. The [environment guide](requirements/README.md#uv-setup) also includes
+the pip installation commands. After activating `.venv`, the commands are
+available directly.
+
+```bash
+source .venv/bin/activate
+teamgym-generate --help
+teamgym-generate --list
+teamgym-generate sara --help
+teamgym-evaluate --help
+teamgym-judge --help
+teamgym-validate-frozen --help
+teamgym-paper --help
+teamgym-train --help
+```
+
+`data` installs the source-table and parquet dependencies; `llm` installs the
+model API client and tokenizer. The distribution retains its existing `rllm`
+name and includes the TeamGym Python modules, prompts, configurations, and
+launchers. Datasets, model weights, and local experiment outputs are distributed
+separately. GPU training also requires the environment and local VERL install
+described in the [training guide](teamgym/rl/README.md).
+
+The [environment guide](requirements/README.md) covers fresh environments,
+CPU-only tests, the observed runtime versions, and the separate CUDA profile.
+API generation and judging require credentials and may incur provider costs.
+SARA source preparation also needs Apptainer and a SWI-Prolog image; see its
+[construction guide](scripts/data_generation/slurm/sara_target_sliced/README.md).
+
+## Paths and Local Environments
+
+Commands use the active Python environment. Shell commands also accept
+`TEAMGYM_PYTHON=/absolute/path/to/python`. Activate any required cluster tools
+before submitting construction jobs; the submissions inherit that environment.
+An explicit `TEAMGYM_ENV_FILE=/path/to/local-setup.sh` can load local setup in
+each construction job. Machine-specific presets are optional and stay local.
+
+Explicit command arguments override the following environment-backed defaults:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `TEAMGYM_DATA_ROOT` | `data` | Local dataset directory |
+| `TEAMGYM_LEGAL_DATA_ROOT` | `data/legal` | Extracted legal release |
+| `TEAMGYM_LEGAL_DATASET` | `data/legal/collections/all_task_allocations_1607.jsonl` | Default input for the legacy single-agent/participant commands |
+| `TEAMGYM_GENERATED_ROOT` | `generated` | Construction and archived experiment inputs |
+| `TEAMGYM_SECONDARY_GENERATED_ROOT` | Same as `TEAMGYM_GENERATED_ROOT` | Optional second source tree for historical archives |
+| `TEAMGYM_ARCHIVE_ROOT` | `artifacts/archives` | Archive and upload staging directories |
+
+Relative paths are interpreted from the calling directory. Construction submit
+scripts resolve configured inputs and outputs before changing the job working
+directory. `TEAMGYM_DATAGEN_ROOT` overrides the July construction output root.
+Use the provided submit scripts, or set `TEAMGYM_REPO_ROOT` and submit with
+`--chdir=/absolute/path/to/checkout` when invoking `sbatch` directly.
+
+The [storage guide](scripts/storage/README.md) covers archive commands. The
+[training guide](teamgym/rl/README.md) covers explicit prepared-data,
+model, checkpoint, and run paths.
+
+## Example Commands
+
+The installed commands work from any working directory. From the repository
+root, `python -m teamgym.data.cli` accepts the same arguments as `teamgym-generate`.
+
+```bash
+teamgym-generate legal/cuad --help
+teamgym-generate legal/maud --help
+teamgym-generate legal/casebook --help
+teamgym-generate legal/mslr --help
+teamgym-generate legal/sara --help
+teamgym-generate legal/multilexsum --help
+```
+
+Build an installable wheel without resolving runtime dependencies:
+
+```bash
+python -m pip wheel --no-deps --wheel-dir dist .
+```
+
+Submit the final July 12 generation run:
+
+```bash
+CASEBOOK_BASE_SOURCE=/absolute/path/to/prepared-casebook.txt \
+MSLR_INPUT_ROOT=/absolute/path/to/mslr-entries \
+MULTILEXSUM_INPUT_ROOT=/absolute/path/to/multilexsum-tasks.jsonl \
+bash scripts/data_generation/slurm/legal_written_construction/submit.sh
+```
+
+The pipeline has no synthetic fallback. Source rows or PIUs that cannot be
+grounded are skipped or recorded as dropped construction metadata.
+
+See [`scripts/data_generation/README.md`](scripts/data_generation/README.md)
+for the retained construction paths and shared frozen-dataset validation.
+
+## Policy Training
+
+Use `teamgym-train` for newly prepared datasets, with explicit rollout profile and
+reward choices. It supports custom split names and a CPU-only `--dry-run`; local
+`--check-data` validates prepared formats and split separation. The
+[training guide](teamgym/rl/README.md#train-a-constructed-dataset) documents
+supported role configurations and the construction-to-training handoff.
+
+The paper training entry point previews all settings without loading a model:
+
+```bash
+python -m teamgym.rl.paper --regime legal-joint \
+  --prepared-data-dir /absolute/path/to/prepared/legal/full_context \
+  --model /absolute/path/to/qwen-snapshot \
+  --run-dir outputs/teamgym/legal-joint-seed29 --seed 29 --dry-run
+```
+
+The [training guide](teamgym/rl/README.md) covers the two legal roles,
+independent joint policies, finance handoff training, data checks, and matched
+endpoint evaluation. RL uses prepared written-answer splits in addition to the
+frozen benchmark data.
+
+`teamgym/rl/` contains policy preparation, training, and checkpoint evaluation.
+It uses the repository-local `rllm/` and `verl/` runtimes.
+
+## Interaction Evaluation
+
+Run the current fully collaborative evaluator on the generated legal examples:
+
+```bash
+python evaluation/runners/run_legal_interaction_eval.py \
+  --input-root generated/legal_10_each \
+  --model gpt-5.4-mini \
+  --limit 1 \
+  --turn-budget 3 \
+  --participant-utterance-token-budget 80 \
+  --coordinator-utterance-token-budget 80 \
+  --final-rationale-token-budget 120 \
+  --participant-reasoning-token-budget 128 \
+  --coordinator-reasoning-token-budget 128 \
+  --final-reasoning-token-budget 256 \
+  --participant-context-token-budget 20000 \
+  --max-output-tokens 1200 \
+  --communication-structure coordinator_select_one__coordinator_decision
+```
+
+Run the current all-structure debug rollout with the stronger model:
+
+```bash
+python evaluation/runners/run_legal_interaction_eval.py \
+  --input-root generated/legal_10_each \
+  --output-dir generated/legal_10_each_llm_trial_all_structures_gpt55 \
+  --model gpt-5.5 \
+  --limit 1 \
+  --turn-budget 3 \
+  --participant-utterance-token-budget 80 \
+  --coordinator-utterance-token-budget 80 \
+  --final-rationale-token-budget 120 \
+  --participant-reasoning-token-budget 128 \
+  --coordinator-reasoning-token-budget 128 \
+  --final-reasoning-token-budget 256 \
+  --participant-context-token-budget 20000 \
+  --max-output-tokens 1200 \
+  --all-communication-structures
+```
+
+The interaction runtime consumes normalized `common_datapoint` rows directly. LLM
+trajectories save exact actor prompt records under `trajectories/*.prompts/`.
+Hidden PIUs and oracle fields are used only by post-episode evaluation, not by
+participant or coordinator prompts.
+
+By default, actor-visible prompts expose participant IDs but not generated role
+names. Set `--participant-role-name-mode` to `datapoint`, `participant_id`, or
+`generic` only when you explicitly want role labels in prompts. Participant
+prompts include common information under `task.initial_common_information` and
+assigned private context-unit text as one `private_source_material` string,
+truncated only by `--participant-context-token-budget` when the assigned
+material is longer than the configured context budget. Over-budget private
+source text is sampled across the assigned material in original order rather
+than front-truncated. Assigned private context preserves the original source
+text. PIU IDs, PIU summaries, oracle labels, and answer keys stay in evaluator
+metadata.
+Participant confidence is not requested by default; pass
+`--participant-confidence` only when you want optional confidence values.
+Participant prompts receive the public conversation as `chat_history`; the last
+message is the current coordinator request, and the participant is instructed to
+respond to that last message.
+Communication structures are explicit CLI choices. Pass
+`--communication-structure` one or more times, or pass
+`--all-communication-structures` for the prompt-debug sweep; omitting both is an
+error. Coordinator multi-target modes are
+`coordinator_select_multiple__coordinator_decision`, where the coordinator
+chooses a subset of participants, and
+`coordinator_ask_everybody__coordinator_decision`, where the runtime sends the
+coordinator request to every participant.
+
+The utterance/rationale token budgets control public text saved into the
+transcript. The reasoning token budgets are prompt instructions for bounded
+private deliberation before returning JSON. `--max-output-tokens` is the API
+completion cap and should cover reasoning, public output, and JSON overhead.
+
+Each run also writes `interaction_report.html`. To render or refresh a report
+for an existing run directory:
+
+```bash
+python -m teamgym.visualization.interaction_trajectory_report \
+  --input generated/teamgym_interaction_eval/<run_id>_interaction_eval
+```

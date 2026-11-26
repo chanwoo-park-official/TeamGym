@@ -1,0 +1,63 @@
+Select direct CUAD spans for a measured smallest-sufficient-set trial.
+
+Contract title:
+{{CONTRACT_TITLE}}
+
+CUAD label family:
+{{LABEL_FAMILY}}
+
+CUAD label details:
+{{LABEL_DETAILS}}
+
+Positive CUAD spans:
+{{POSITIVE_SPANS_JSON}}
+
+Contract excerpt for context:
+{{CONTRACT_TEXT_EXCERPT}}
+
+Target measured smallest sufficient span-set size:
+{{MIN_ACCEPT_SIZE}}
+
+Maximum selectable direct spans for this run:
+{{MAX_SPAN_COUNT}}
+
+Selection examples and anti-examples:
+{{SELECTION_EXAMPLES}}
+
+Task:
+1. Use only original CUAD positive spans as candidate information units.
+2. Do not split spans into atomic facts.
+3. Select at least the target measured size and at most the maximum selectable direct spans shown above when they are plausible, non-duplicate inputs for a finite-choice legal question.
+4. If fewer than the target number of useful direct spans exist, mark candidate_assessment.feasible as false and explain why. The smallest sufficient span set will still be measured later after a question exists, so do not include duplicate/context spans merely to hit the target.
+5. Exclude spans that are duplicate, context-only, fragmentary, subsumed by another selected span, or unlikely to control a decision boundary.
+6. Every selected span text must be copied exactly from one supplied positive CUAD span.
+7. Aim for the largest honest useful span set up to the maximum shown above, but never include a span just to raise the count.
+8. Default bias: prefer more useful selected spans over fewer. If there are several plausible bases, choose the basis with more distinct decision-boundary spans. Select a smaller basis only when the additional spans are duplicate, context-only, fragmentary, subsumed, too broad, or do not affect any plausible answer boundary.
+
+Return JSON with exactly these top-level keys:
+- candidate_assessment
+- source_span_classification
+- selected_span_basis
+
+candidate_assessment shape:
+{
+  "feasible": true,
+  "basis_size": 2,
+  "rationale": "why these direct spans are plausible inputs for a finite-choice question"
+}
+
+source_span_classification rows:
+{
+  "span_index": 1,
+  "role": "selected | duplicate | subsumed | context_only | too_broad | fragment | not_needed",
+  "reason": "short reason"
+}
+
+selected_span_basis rows:
+{
+  "unit_id": "span_01",
+  "source_span_index": 1,
+  "text": "exact supplied positive CUAD span text",
+  "legal_feature": "short feature name",
+  "possible_decision_boundary": "answer-choice boundary this whole span might control"
+}

@@ -1,0 +1,37 @@
+Call constructor_action exactly once per response. Never simulate the harness,
+write your own accepted/read_source_fragments response, or emit source bodies.
+Read arguments contain action, fragment_ids and/or evidence_ids. Keep proposals compact:
+functional_boundary and rationale each at most two short sentences.
+Source is supplied in stages. source_fragments is an inventory without bodies.
+Read the exact base fragments you need before selecting them in a RIU:
+{"action":"read","fragment_ids":["frag-0001","over-0002"]}
+You may read several fragments at once within the reported source-token budget.
+Previously read bodies remain available in read_source_fragments. Over-budget
+fragments are reported explicitly, never silently truncated. Use later reads
+to inspect supporting types, callers, imports, and exports. Do not infer a
+fragment's implementation from its name or from the reference patch.
+
+Large constructor-only patches, qualification feedback, and observations are
+listed in constructor_evidence_inventory. Request their exact numbered parts
+with {"action":"read","evidence_ids":["reference_patch:part-0001"]}.
+Results appear in read_constructor_evidence; part numbers preserve original
+order. Read relevant failure/patch evidence before diagnosing a revision.
+Observation inventory entries are metadata only, not actual behavior. Read all
+parts of an observation before selecting it. source_context spans are exact
+base code, not claimed atomic functions; neighboring spans can form one RIU.
+
+When ready return {"action":"propose", "rius":[...], "uncovered":[...]} using
+the RIU schema above (and diagnosis for a revision).
+When remaining.read_rounds is zero, propose immediately using evidence read so
+far and report any remaining gaps. The final 32k output tokens are reserved for
+the proposal rather than additional exploration.
+Every RIU MUST contain at least one real code_fragment_id or observation_id.
+A requirement to implement a new function/file is not itself an information
+unit. Task requirements already belong to the shared instruction. If extra
+evidence is needed but unavailable, report the gap in uncovered; do not invent
+code or observations. Only select source fragments whose bodies you have read.
+
+If constructor_feedback reports a validation_error, repair the complete plan
+and resubmit, or read additional evidence first. A rejected plan is not given
+to the solver. Do not repair it by adding new solver instructions or reproducing
+golden/hidden-test information as an observation.

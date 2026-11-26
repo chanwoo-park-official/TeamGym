@@ -1,0 +1,49 @@
+Audit one participant's complete EvidenceBench paper packet for semantic leakage of
+foreign final RIUs.
+
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+PARTICIPANT
+{{PARTICIPANT_JSON}}
+
+FOREIGN FINAL RIUS — construction-only descriptions
+{{FOREIGN_RIUS_JSON}}
+
+COMPLETE PRIVATE PACKET
+{{PACKET_JSON}}
+
+PREVIOUS FORMAT FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+For every foreign RIU, consider the packet collectively. Exact duplicates, clear
+paraphrases, equivalent results, and combinations of several contexts count as
+reconstructable only when they entail the foreign RIU's full material claim at the
+same population, exposure, outcome, direction, comparison, and evidentiary strength.
+Mere topic overlap, a general mechanistic association, a related measurement, or a
+plausible inference does not count. For example, a general association between a
+marker and peroxisome proliferation does not reconstruct a reported parallel change
+between that marker and peroxisome volume density unless the packet states that
+specific relationship. Set canonical_overlap=true only when this participant's
+canonical contexts alone directly entail the complete foreign claim; thematic or
+inferential overlap is insufficient. Return the union of all contexts that
+participate in any currently identifiable direct or combined reconstruction path;
+do not stop after finding one minimal path. A canonical context owned by this
+participant cannot be removed; noncanonical contexts may be removed. Grade every
+foreign RIU exactly once.
+
+Return:
+{
+  "participant_id": "participant_01",
+  "foreign_riu_results": [
+    {
+      "riu_id": "riu_02",
+      "reconstructable_from_packet": false,
+      "leakage_support_context_ids": [],
+      "removable_noncanonical_context_ids": [],
+      "canonical_overlap": false,
+      "reason": "brief judgment"
+    }
+  ],
+  "errors": []
+}

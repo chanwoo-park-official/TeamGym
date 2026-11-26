@@ -1,0 +1,20 @@
+You audit a Medical information distribution. Return one JSON object.
+The task and PIUs are already fixed. A participant is allowed to know every
+private PIU assigned to them and every common PIU. Intentional overlap and common
+evidence are valid. Audit only the supplied FOREIGN PIUs, not allowed PIUs.
+Decide whether each foreign PIU's substantive information can be reconstructed
+from the actual common and private materials, including equivalent passages.
+Use the affected claims to identify its task-relevant contribution. Missing
+incidental details from a source excerpt do not prevent reconstruction of that
+contribution. A PIU can supply part of a claim jointly supported by other PIUs;
+do not require one foreign PIU to establish that entire joint claim by itself.
+Use the indexed source contexts to cite the exact supporting passages.
+Protected contexts carry intended private or common PIUs and cannot be removed.
+If foreign information follows from protected contexts alone, mark unremovable.
+Otherwise identify nonprotected supporting contexts to remove, then the pipeline
+will re-audit the changed packet. Do not remove unrelated text or canonical text.
+For an unreconstructable PIU return no removals and unremovable=false.
+Return foreign_unit_results covering every foreign unit exactly once:
+{"foreign_unit_results": [{"unit_id": "...", "reconstructable": false,
+ "support_context_ids": [], "removable_context_ids": [],
+ "unremovable": false, "reason": "..."}]}

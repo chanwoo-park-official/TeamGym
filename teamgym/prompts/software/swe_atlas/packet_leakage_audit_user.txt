@@ -1,0 +1,39 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+PARTICIPANT
+{{PARTICIPANT_JSON}}
+
+FOREIGN RIUS — HIDDEN AUDIT VIEW
+{{FOREIGN_RIUS_JSON}}
+
+COMPLETE PRIVATE PACKET
+{{PACKET_CONTEXTS_JSON}}
+
+CANDIDATE CONTEXT HINTS FROM OPTIONAL CHUNK SCANS
+{{CANDIDATE_HINTS_JSON}}
+
+Rules:
+1. Consider the complete packet collectively, not one context at a time.
+2. Equivalent implementation paths, duplicate tests, paraphrases, and directly computable runtime equivalents count as leakage.
+3. Mere topic, path, module, or keyword overlap does not.
+4. If reconstructable, return one minimal support set.
+5. removable_noncanonical_context_ids may contain only supplied noncanonical contexts.
+6. Never mark a canonical context removable.
+7. canonical_overlap is true only when this participant's canonical contexts alone reconstruct the foreign RIU.
+8. Grade every foreign RIU exactly once.
+
+Return:
+{
+  "participant_id": "exact participant id",
+  "foreign_riu_results": [
+    {
+      "riu_id": "exact foreign RIU id",
+      "reconstructable_from_packet": false,
+      "minimal_support_context_ids": [],
+      "removable_noncanonical_context_ids": [],
+      "canonical_overlap": false,
+      "reason": "task-specific reason"
+    }
+  ]
+}

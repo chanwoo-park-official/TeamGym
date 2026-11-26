@@ -1,0 +1,43 @@
+Audit one participant's full-context packet for foreign-RIU leakage.
+
+PARTICIPANT PACKET
+{{PACKET_JSON}}
+
+PARTICIPANT'S OWN RIU
+{{OWN_RIU_JSON}}
+
+FOREIGN RIUS
+{{FOREIGN_RIUS_JSON}}
+
+Check whether the complete packet directly contains, duplicates, paraphrases, or permits
+reconstruction of each foreign RIU, including by combining multiple packet passages.
+The participant's own canonical RIU is not removable. Identify removable leaking source
+context IDs but do not rewrite clinical text. `canonical_overlap` is true only
+when the participant's own non-removable canonical context itself reveals the
+foreign RIU.
+
+Be concise. Give one short reason per foreign RIU and return no analysis outside JSON.
+Return every foreign_unit_id exactly once. passed must be true if and only if
+no foreign unit is recoverable. canonical_overlap implies recoverable.
+Non-recoverable units have no removable_context_ids. Every issue must correspond
+to a reported recoverable unit; otherwise explain the audit failure for retry.
+
+Return:
+{
+  "passed": true,
+  "foreign_riu_audits": [
+    {
+      "foreign_unit_id": "riu_02",
+      "recoverable": false,
+      "canonical_overlap": false,
+      "removable_context_ids": [],
+      "reason": "specific semantic comparison"
+    }
+  ],
+  "issues": []
+}
+
+Return JSON only.
+
+PREVIOUS FORMAT FEEDBACK
+{{VALIDATION_FEEDBACK}}

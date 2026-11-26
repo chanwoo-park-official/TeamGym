@@ -1,0 +1,70 @@
+Audit one participant's final private packet for foreign-RIU leakage.
+
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+PARTICIPANT
+{{PARTICIPANT_JSON}}
+
+RIUS OWNED BY OTHER PARTICIPANTS
+{{FOREIGN_RIUS_JSON}}
+
+COMPLETE PRIVATE PACKET
+{{PACKET_CONTEXTS_JSON}}
+
+For each foreign RIU, decide whether the complete packet, considered
+collectively, contains enough report-specific information to reconstruct that
+RIU's answer-relevant contribution to the public task.
+
+Rules:
+1. Consider combinations of multiple packet contexts, not only one block at a
+   time.
+2. Shared topics, keywords, background, or a different period or segment are not
+   leakage.
+3. Equivalent values, paraphrases, repeated tables, and directly computable
+   equivalents are leakage.
+4. If reconstructable_from_packet is true, identify one minimal set of packet
+   context_unit_ids that jointly supports the reconstruction.
+5. From that support set, identify a non-canonical removal set whose joint
+   removal should break this reconstruction. Also enumerate every other
+   independent reconstruction route you find anywhere in the COMPLETE packet,
+   using additional_reconstruction_routes. Each route must identify its own
+   minimal support and non-canonical removal set. Cover repeated values, table
+   copies, narrative restatements and cross-context calculations. Do not stop
+   after finding the first route. Python validates every route, removes their
+   union and repeats the complete-view audit to check remaining alternatives.
+6. A context is canonical when hidden_contains_rui_ids is nonempty. Never mark a
+   canonical context removable.
+7. Set canonical_overlap=true only when the canonical contexts, without any
+   removable non-canonical context, already suffice to reconstruct the foreign
+   RIU. Python will reject this irreducible overlap rather than deleting
+   canonical evidence. If canonical and non-canonical contexts are jointly
+   needed, set canonical_overlap=false and return the non-canonical removal set.
+8. Never identify a context outside the supplied packet.
+9. Grade every foreign rui_id exactly once. Use [] for additional routes when
+   none exist or reconstructable_from_packet=false. Never duplicate a route's
+   support set. Distinct single contexts that each directly state the foreign
+   contribution are distinct routes and should all be listed.
+
+Return:
+{
+  "participant_id": "<exact participant_id>",
+  "foreign_rui_results": [
+    {
+      "rui_id": "<exact foreign rui_id>",
+      "reconstructable_from_packet": false,
+      "minimal_support_context_ids": [],
+      "removable_noncanonical_context_ids": [],
+      "canonical_overlap": false,
+      "reason": "<concise task-specific reason>",
+      "additional_reconstruction_routes": [
+        {
+          "minimal_support_context_ids": ["<other independent support>"],
+          "removable_noncanonical_context_ids": ["<noncanonical removal>"],
+          "canonical_overlap": false,
+          "reason": "<specific independent reconstruction>"
+        }
+      ]
+    }
+  ]
+}

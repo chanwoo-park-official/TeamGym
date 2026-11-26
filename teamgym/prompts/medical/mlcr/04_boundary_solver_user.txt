@@ -1,0 +1,21 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+AVAILABLE MATERIALS
+{{DISPLAY_MATERIALS_JSON}}
+
+Return:
+{
+  "answer": "direct answer to the public task",
+  "insufficient": false,
+  "missing_answer_elements": []
+}
+
+Return JSON only.
+
+PREVIOUS FORMAT FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+The answer field must be a string, or a flat object whose values are strings.
+Do not put lists, nested objects, null or booleans inside answer. When information
+is absent, state that in plain text and set insufficient=true as appropriate.

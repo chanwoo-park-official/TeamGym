@@ -1,0 +1,81 @@
+Use these examples as audit style guidance. Do not copy their facts unless the
+generated plan and supplied CUAD spans actually say the same thing.
+
+Good valid 3-span audit:
+{
+  "plan_shape": "decision_a requires rule + condition + consequence",
+  "included_spans": {
+    "span_01": "establishes the base rule",
+    "span_02": "establishes the condition or measurement period",
+    "span_03": "establishes the consequence or remedy"
+  },
+  "minimum_sufficient_span_set_size": 3,
+  "valid": true,
+  "accept_under_threshold": true,
+  "why": "The full three-span set determines the exact oracle answer, and every two-span subset leaves at least two plausible profiles."
+}
+
+Good valid 4-span audit:
+{
+  "plan_shape": "decision_a requires base rule + scope + trigger + consequence",
+  "included_spans": {
+    "span_01": "establishes the base rule or right",
+    "span_02": "establishes the covered scope, asset, party, or activity",
+    "span_03": "establishes the trigger, timing condition, deadline, or measurement rule",
+    "span_04": "establishes the consequence, fallback, remedy, cost rule, or carveout"
+  },
+  "minimum_sufficient_span_set_size": 4,
+  "valid": true,
+  "accept_under_threshold": true,
+  "why": "The full four-span set determines the exact oracle answer, and every three-span subset leaves at least one profile component unresolved."
+}
+
+Bad audit consistency:
+{
+  "minimum_sufficient_span_set_size": 3,
+  "valid": false,
+  "accept_under_threshold": true,
+  "why_bad": "This is internally inconsistent. If the plan is copied from positive spans, the full span set is sufficient, no shortcut exists, and the minimum size is at least the threshold, valid must be true."
+}
+
+Bad profile rejection:
+{
+  "plan_answer": "decision_a",
+  "minimum_sufficient_span_set_size": 4,
+  "accept_under_threshold": true,
+  "valid": false,
+  "failed_reason": "The answer is a profile classification rather than the raw CUAD label.",
+  "why_bad": "Profile classification is the intended generated task. Audit the exact profile against the spans, not the raw CUAD label."
+}
+
+Bad answer semantics:
+{
+  "plan_answer": "decision_a says Party X bears audit costs",
+  "span_text": "Party Y bears audit costs unless a stated reimbursement exception applies",
+  "audit_result": {
+    "valid": false,
+    "accept_under_threshold": false,
+    "failed_reason": "The oracle answer contradicts or oversimplifies the cost-allocation language. The answer must preserve the conditional cost-shift rule."
+  }
+}
+
+Good answer semantics:
+{
+  "plan_answer": "decision_a says Party X has the audit right and costs follow a conditional cost-shift rule",
+  "span_texts": [
+    "one span identifies Party X as audit-right holder",
+    "one span states the default payer and reimbursement exception"
+  ],
+  "audit_result": {
+    "valid": true,
+    "accept_under_threshold": true,
+    "failed_reason": ""
+  }
+}
+
+Audit checklist:
+- Does the oracle answer exactly match the evidence, including exceptions?
+- Is the full included span set sufficient for the exact answer?
+- What is the smallest subset that determines that same exact answer?
+- Does any participant have a smallest sufficient subset alone?
+- Are valid and accept_under_threshold logically consistent?

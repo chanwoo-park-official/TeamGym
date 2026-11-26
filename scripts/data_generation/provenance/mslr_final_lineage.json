@@ -1,0 +1,117 @@
+{
+  "schema": "mslr_final_construction_lineage_v1",
+  "evidence_bundle": "legal_allocated_v1",
+  "source_provenance": "provenance/source_files.json",
+  "archive_builder": "scripts/storage/build_legal_allocated_archive.py",
+  "generation": {
+    "entrypoint": "scripts/data_generation/mslr/run.py",
+    "implementation": "teamgym/data/legal/mslr/generation.py",
+    "required_input": "Anonymized MSLR entry_*.json directory, supplied with --input-root",
+    "source_directory_relative_to_external": "MSLR-Bench/data/processed_anonymized",
+    "currently_available_source_file_count": 1389,
+    "reported_builder_eligible_count": 613,
+    "reported_builder_eligible_count_evidence": "docs/ICLR27_teamgym/appendix/problem_instance_construction_new/01_legal/05_mslr.tex; not recomputed during cleanup",
+    "retained_launcher_settings": {
+      "limit": 100,
+      "candidate_scan_limit": 1389,
+      "source_order": "numeric entry index"
+    },
+    "standalone_cli_defaults": {
+      "limit": 50,
+      "candidate_scan_limit": 1000,
+      "min_source_chars": 1200,
+      "min_rui_chars": 50
+    },
+    "seed_relative_path": "seed/mslr_source_excerpt_casebook50_seed.jsonl",
+    "identifier_note": "The seed filename, report schema, and dataset variant retain casebook50 identifiers for compatibility with the retained batch, including its 100-candidate invocation.",
+    "riu_policy": "Six exact nonoverlapping source excerpts covering event, timing, knowledge or access, trading conduct, legal basis, and final handling",
+    "answer_policy": "Canonical response and required decision steps use the selected source excerpts"
+  },
+  "retained_construction_recipe": {
+    "submission_directory": "scripts/data_generation/submissions/legal_written_construction",
+    "source_input_environment_variable": "MSLR_INPUT_ROOT",
+    "seed_output_relative_to_batch_root": "seeds/mslr100/seed/mslr_source_excerpt_casebook50_seed.jsonl",
+    "partition_entrypoint": "scripts/data_generation/common/run_pipeline.py",
+    "launcher_partition_settings": {
+      "allocation_modes": ["one_each", "paired", "overlap", "redundant_player", "common_anchor", "bottleneck"],
+      "target_context_tokens": 12000,
+      "min_participants": 3,
+      "seed": 20260712
+    },
+    "model_qualification_launchers": [
+      "scripts/data_generation/submissions/legal_written_construction/validate.sbatch",
+      "scripts/data_generation/submissions/legal_written_construction/run_semantic_qualification.sh"
+    ],
+    "launcher_qualification_model": "gpt-5.5",
+    "launcher_qualification_steps": [
+      "Participant-context leakage detection and deletion with convergence checks",
+      "All-RIU single-agent answer generation",
+      "Strict semantic judging of the conclusion and every required reasoning step"
+    ],
+    "default_qualified_pool": "all_riu_qualified/common_datapoints.jsonl",
+    "finite_choice_llm_option_exclusion_used": false,
+    "necessity_diagnostic": "Optional leave-one-RIU-out evaluation; not a default retention requirement",
+    "paper_task_and_variant_assembly": "scripts/data_generation/common/prepare_paper_allocations.py"
+  },
+  "recorded_paper_variants_source": {
+    "relative_to_generated": "legal_partition_schedule_cross_0714/inputs/partition_variants.jsonl",
+    "sha256": "b8fa7c3914cac96f0cd39ffde24b49b34b69dae534b19cd5c11b1c3e685afd61",
+    "line_count_all_datasets": 618,
+    "mslr_rows": 24,
+    "present_at_recorded_path": false
+  },
+  "frozen_instances": {
+    "path": "data/mslr/instances.jsonl",
+    "sha256": "fdcff132bc1c65990bd8d15810c085ceb5809670f927bc78f93f6ff6815799cb",
+    "index_path": "data/mslr/index.jsonl",
+    "index_sha256": "adde48b278372641385f22702ca5f3e9d54e6f45ff03c3d5ca62a6316a9b96cf",
+    "row_count": 24,
+    "canonical_task_count": 11,
+    "cached_format_flags_valid": 24,
+    "paper_standard_selection_count": 11,
+    "historical_paper_allocation_selection_count": 24,
+    "allocation_mode_counts": {
+      "bottleneck": 1,
+      "common_anchor": 3,
+      "one_each": 8,
+      "overlap": 2,
+      "paired": 4,
+      "redundant_player": 6
+    },
+    "answer_type": "short_answer_judged",
+    "compatibility_decision_set": ["free_response"],
+    "observed_riu_count": 6,
+    "observed_target_context_tokens": 12000,
+    "observed_actual_private_context_token_range": [3354, 8830],
+    "rows_with_converged_nonexcluded_leakage_metadata": 24,
+    "observed_leakage_settings": {
+      "max_rounds": 3,
+      "confidence_threshold": 0.7,
+      "dry_run": false,
+      "exclude_unconverged": true,
+      "exclude_empty_participants": false
+    },
+    "structural_option_auditor": "deterministic_rui_coverage_proxy",
+    "rows_kept_by_structural_solo_oracle_filter": 24,
+    "allocation_scope_note": "These counts cover six historical modes including paired. Current paper analyses select their reported conditions."
+  },
+  "currently_available_raw_sources_for_retained_tasks": [
+    {"filename": "entry_12.json", "sha256": "484b10fd678feb2c72fb614cb6fcd7e54ca6aed48d58e099110adc74104fceb9"},
+    {"filename": "entry_53.json", "sha256": "a9cebc52824d7c67ee3b3d63bc17a7f57252c1b9c24dab6102a8d5f21ede1009"},
+    {"filename": "entry_54.json", "sha256": "f8dd18a5a92c4e77a2d198d1b058c45192f510c5e22a12d9a268256625c97d66"},
+    {"filename": "entry_67.json", "sha256": "0c209d32f39787fee9c1fe249d0a2a10725fe9e745a137f35ef23455610cebf1"},
+    {"filename": "entry_70.json", "sha256": "f0c39fd759df470765c231c6e463956775f4a6516163f64d4c8487e8c626d26e"},
+    {"filename": "entry_95.json", "sha256": "2c745ada1cde6665def5cb49fc49c832e9ce443cb24749e82041b458a5fbb18b"},
+    {"filename": "entry_96.json", "sha256": "77b475da9c9a8a714102e84be15dbc232a59eeb7a5f2f3d5a9df63dfe47de544"},
+    {"filename": "entry_102.json", "sha256": "a3a6196103cebf3c87a09e0a208cf3897a2483ac913b845cf255853756ec6682"},
+    {"filename": "entry_125.json", "sha256": "09150085b4707243b2777d2991b96f0bcfce00567fa9985f4ac41b8f51d19290"},
+    {"filename": "entry_178.json", "sha256": "7f0a4e930e195ea82de644b75c3769b77f34b30adc2c75a9992dfc98df364a8b"},
+    {"filename": "entry_189.json", "sha256": "66ee2f84ca8b0795b2017e654c682be06fd414d53b09dfbbd6ab817210c16cff"}
+  ],
+  "reproduction_gaps": [
+    "The raw source files are currently available, but their hashes above were measured during cleanup. The normalized bundle does not establish historical hashes for the original raw inputs.",
+    "The normalized bundle does not include the complete candidate rejection logs, original seed report, or full model-qualification judgments. No construction or qualification run was performed during cleanup.",
+    "The historical paper-variant assembly input is missing at its recorded path. Its source hash and retained normalized records remain available as reference evidence.",
+    "Later participant-role augmentation is shared with other datasets and is separate from this frozen July artifact lineage."
+  ]
+}

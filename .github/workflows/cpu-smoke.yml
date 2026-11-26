@@ -1,0 +1,34 @@
+name: CPU smoke tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@1db35dd8eee11c5894872e0b383ae6c406cf738d # v10.4.0
+        with:
+          version: 0.13.8
+      - name: Install the locked CPU environment
+        run: uv sync --locked --extra construction --extra data --extra test
+      - name: Check installed commands
+        run: |
+          uv run --no-sync teamgym-generate --list
+          uv run --no-sync teamgym-evaluate --help
+          uv run --no-sync teamgym-judge --help
+      - name: Test dataset loading, evaluation, and scoring
+        run: >-
+          uv run --no-sync python -m pytest -q
+          tests/cli
+          tests/test_core_dataset.py
+          tests/test_fully_collaborative_interaction.py
+          tests/test_shared_written_answers.py

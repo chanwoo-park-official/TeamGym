@@ -1,0 +1,57 @@
+Judge a solver response to a free-response financial task.
+
+Public task:
+{{PUBLIC_TASK_JSON}}
+
+Exact public/common information also shown to the solver:
+{{PUBLIC_INFORMATION_JSON}}
+
+Construction-only oracle:
+{{ORACLE_JSON}}
+
+Construction-only condition metadata:
+{{BOUNDARY_CASE_JSON}}
+
+Exact evidence shown to the solver:
+{{AVAILABLE_EVIDENCE_JSON}}
+
+Solver response:
+{{SOLVER_RESPONSE_JSON}}
+
+Rules:
+1. Judge semantic correctness, not wording overlap.
+2. For numeric answers or composite numeric items, enforce answer_spec value,
+   unit, sign, scope, period, and tolerance. For composite tasks, grade every
+   required item; an omitted or ungrounded item prevents a pass.
+3. A response passes only if every required response item is correct, every
+   required decision step is substantively covered, and no material unsupported
+   fact is used.
+4. If the evidence boundary omits information, do not excuse a guessed correct answer; report whether the response actually supplies a valid derivation from the available boundary.
+5. Grade every oracle reasoning claim exactly once. A claim is satisfied only
+   when its expected answer element is correct and grounded in the exact
+   evidence shown to the solver.
+6. supporting_riu_ids may cite only available PIU IDs in the private condition metadata.
+   The solver sees source text without PIU IDs; ground claims in that exact text
+   and the exact public/common information above. Participant packets may also
+   support a claim through surrounding passages; do not reject valid grounding
+   merely because no designated PIU ID labels that passage.
+
+Return:
+{
+  "final_answer_correct": false,
+  "source_grounded": false,
+  "claim_results": [
+    {
+      "claim_id": "claim_01",
+      "content_correct": false,
+      "grounded_in_available_evidence": false,
+      "supporting_riu_ids": [],
+      "reason": "claim-specific judgment"
+    }
+  ],
+  "disqualifying_errors": [],
+  "reason": "concise judgment"
+}
+
+The pipeline derives claim status, coverage, and the final pass/fail value from
+these atomic judgments. Do not return those derived fields.

@@ -1,0 +1,133 @@
+Use these examples as decision-design style guidance. Do not copy the facts
+unless the supplied CUAD spans actually support them.
+
+Bad 2-span option design:
+{
+  "decision_set": [
+    {"value": "distribution_only", "definition": "A distribution right is granted."},
+    {"value": "name_use_only", "definition": "A name-use right is granted."},
+    {"value": "distribution_plus_name_use", "definition": "A distribution right and a name-use right are granted."}
+  ],
+  "why_bad": "The answer is visually obvious because it is the only combined option and the value name exposes A+B."
+}
+
+Good 2-span option design:
+{
+  "objective": "Which rights profile best matches the grant language?",
+  "decision_set": [
+    {
+      "value": "decision_a",
+      "definition": "The counterparty receives operational distribution rights and a separate permission to use the company name."
+    },
+    {
+      "value": "decision_b",
+      "definition": "The counterparty receives operational distribution rights and a separate permission to use product marks."
+    },
+    {
+      "value": "decision_c",
+      "definition": "The counterparty receives company-name permissions and a separate authority to appoint downstream sellers."
+    },
+    {
+      "value": "decision_d",
+      "definition": "The counterparty receives operational distribution rights and a separate permission to use marketing materials."
+    }
+  ],
+  "why_good": "Values are neutral. Definitions are similarly complex. Wrong options combine plausible supported and unsupported components."
+}
+
+Bad 3-span option design:
+{
+  "decision_set": [
+    {"value": "threshold_only", "definition": "A threshold applies."},
+    {"value": "threshold_and_deadline", "definition": "A threshold and deadline apply."},
+    {"value": "threshold_deadline_and_repayment", "definition": "A threshold, deadline, and repayment remedy apply."}
+  ],
+  "why_bad": "The correct option is the only three-component choice, so a participant can guess it without reading spans."
+}
+
+Good 3-span option design:
+{
+  "objective": "Which compliance profile best matches the obligation?",
+  "decision_set": [
+    {
+      "value": "decision_a",
+      "definition": "A recurring activity threshold applies, a timing condition governs measurement, and a monetary adjustment applies after a shortfall."
+    },
+    {
+      "value": "decision_b",
+      "definition": "A recurring activity threshold applies, a timing condition governs measurement, and a service-credit adjustment applies after a shortfall."
+    },
+    {
+      "value": "decision_c",
+      "definition": "A staffing threshold applies, a timing condition governs measurement, and a monetary adjustment applies after a shortfall."
+    },
+    {
+      "value": "decision_d",
+      "definition": "A recurring activity threshold applies, an annual notice condition governs measurement, and a monetary adjustment applies after a shortfall."
+    }
+  ],
+  "why_good": "Every option has three components. The wrong options alter one component at a time."
+}
+
+Good 3-span legal profiles:
+- rule + condition + consequence
+- right holder + exercise deadline + fallback consequence
+- monetary cap + damages exclusion + carveout
+- obligation threshold + measurement period + shortfall remedy
+- license grant + permitted scope + restriction or exception
+
+Bad 4-span option design:
+{
+  "decision_set": [
+    {"value": "rule_condition_consequence_carveout", "definition": "A rule, condition, consequence, and carveout apply."},
+    {"value": "rule_condition_consequence", "definition": "A rule, condition, and consequence apply."},
+    {"value": "rule_condition", "definition": "A rule and condition apply."}
+  ],
+  "why_bad": "The value names and definition lengths reveal which option has four components."
+}
+
+Good 4-span option design:
+{
+  "objective": "Which legal profile best matches the review issue?",
+  "decision_set": [
+    {
+      "value": "decision_a",
+      "definition": "The arrangement applies to a defined activity, is limited by a stated scope, turns on a specified trigger, and produces a stated fallback result."
+    },
+    {
+      "value": "decision_b",
+      "definition": "The arrangement applies to a defined activity, is limited by a stated scope, turns on a specified trigger, and produces a reimbursement result."
+    },
+    {
+      "value": "decision_c",
+      "definition": "The arrangement applies to a defined activity, is limited by a narrower scope, turns on a specified trigger, and produces a stated fallback result."
+    },
+    {
+      "value": "decision_d",
+      "definition": "The arrangement applies to a related activity, is limited by a stated scope, turns on a specified trigger, and produces a stated fallback result."
+    }
+  ],
+  "why_good": "The hidden construction has four components, but every option has a neutral value and a similarly shaped legal-profile definition."
+}
+
+Good 4-span legal profiles:
+- base obligation + scope + measurement condition + shortfall remedy
+- audit holder + record scope + timing/frequency condition + cost/reimbursement rule
+- liability cap + remedy limit + damages exclusion + exception/carveout
+- license grant + covered asset + permitted channel/territory + restriction/condition
+- election right + trigger/scope + exercise deadline + fallback consequence
+
+General k-component profile design:
+- Hidden construction may use k components, where k is the number of selected spans needed for the answer.
+- Public option values must stay neutral: decision_a, decision_b, decision_c, decision_d, decision_e, decision_f.
+- Public definitions should be natural legal-profile sentences, not component formulas.
+- Wrong profiles should change one or two components while keeping the same overall complexity.
+- Option count may vary from 2 to 6. Prefer 3, 4, 5, or 6 options when plausible; do not always return exactly four options.
+- If there are 5 or 6 options, keep all value names parallel and all definitions similarly detailed.
+
+Final check before returning JSON:
+- If option values reveal component counts, replace them with decision_a/decision_b/decision_c/decision_d.
+- If one definition is much longer or more specific than all others, rebalance definitions.
+- If a single span can determine the oracle answer, revise the question or choose a different answer profile.
+- If evidence contains a conditional or exception phrase, the answer definition must preserve that condition.
+- Avoid literal "A+B+C" wording in user-facing option values. In definitions, write complete legal-profile sentences rather than formula labels.

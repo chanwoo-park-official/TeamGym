@@ -1,0 +1,75 @@
+Create one source-grounded free-response task from one MLCR case.
+
+VALID SOURCE QAS AND ANSWERS
+{{SOURCE_QAS_JSON}}
+
+HYDRATED QA-TO-SOURCE CANDIDATES
+{{CANDIDATES_JSON}}
+
+VALIDATION FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Use {{MIN_SOURCE_QUESTIONS}} or more source QAs and at least two distinct candidate spans. There is no
+fixed maximum number of source QAs or RIUs. Use only what is genuinely necessary for
+a clear task. If selected questions form a natural clinical review, synthesize that
+review. If they do not share one analytical purpose, use a concise numbered multi-part
+question instead of inventing a causal relationship or common theme.
+
+Rules:
+1. The public question asks the participant to answer the clinical task, not identify
+   RIUs, candidate IDs, source spans, or evidence ownership.
+2. Do not reveal case-specific expected values or conclusions in the public question.
+3. Every used source QA must contribute at least one selected candidate and required
+   claim. Every selected candidate must be indispensable to at least one claim.
+4. Preserve separate evidence contributions. Multiple RIUs may jointly support one
+   claim, and one RIU may support multiple claims.
+5. Do not split one candidate into multiple RIUs to inflate count, and do not select
+   duplicated or derived-equivalent evidence solely to increase count.
+6. Claims must specify objectively gradable expected content, patient/encounter/date
+   scope, direction, uncertainty, and numerical tolerance when applicable.
+7. The reference answer must satisfy all claims using only selected source evidence.
+8. Generic medical knowledge may connect observations but cannot replace missing
+   patient-specific evidence.
+9. Keep the public question and hidden rubric aligned: do not require an incidental
+   detail in the rubric unless the public question explicitly asks for that type of
+   detail. For example, a generic request for injury mechanism should not silently
+   require every scene detail (such as airbag deployment); either ask for that detail
+   publicly without revealing its value or leave it out of the required claim.
+10. If the ALL solver misses a rubric detail that the public question did not clearly
+    request, revise the rubric/question alignment rather than merely repeating the
+    same hidden detail in the reference answer.
+
+Return:
+{
+  "schema": "mlcr_composite_task_v1",
+  "source_question_ids_used": ["q01", "..."],
+  "selected_candidate_ids": ["cand_q01_01", "..."],
+  "public_task": {
+    "title": "short neutral title",
+    "context": "minimal non-leaking role or purpose",
+    "question": "self-contained free-response question",
+    "response_requirements": ["concise public requirement"]
+  },
+  "evidence_units": [
+    {
+      "unit_id": "riu_01",
+      "candidate_id": "cand_q01_01",
+      "supports_claim_ids": ["claim_01"]
+    }
+  ],
+  "rubric": {
+    "required_claims": [
+      {
+        "claim_id": "claim_01",
+        "description": "what the response must establish",
+        "expected_answer_element": "canonical value or conclusion",
+        "supporting_candidate_ids": ["cand_q01_01"],
+        "grading_rule": "scope, acceptable expression, units, uncertainty, tolerance"
+      }
+    ],
+    "prohibited_errors": ["material scope change, unsupported inference, or causal overstatement"]
+  },
+  "oracle": {"reference_answer": "complete concise response satisfying every claim"}
+}
+
+Return JSON only.

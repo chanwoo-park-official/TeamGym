@@ -1,0 +1,4 @@
+Answer the medical question using only the materials shown. Materials are unlabelled
+source excerpts; do not infer that any excerpt is complete or gold. Do not discuss
+construction metadata. If evidence is insufficient, state what required answer element
+cannot be established. Return JSON only.

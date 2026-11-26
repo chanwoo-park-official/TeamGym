@@ -1,0 +1,113 @@
+Generate a finite-choice CUAD question from selected direct spans.
+
+Contract title:
+{{CONTRACT_TITLE}}
+
+CUAD label family:
+{{LABEL_FAMILY}}
+
+CUAD label details:
+{{LABEL_DETAILS}}
+
+All positive CUAD spans:
+{{POSITIVE_SPANS_JSON}}
+
+Selected direct spans:
+{{SELECTED_SPAN_BASIS_JSON}}
+
+Question-design examples and anti-examples:
+{{QUESTION_EXAMPLES}}
+
+Suggested number of decision options for this candidate:
+{{SUGGESTED_OPTION_COUNT}}
+
+Prior same-source question attempts to avoid repeating:
+{{SOURCE_QUESTION_HISTORY}}
+
+Previous rejection feedback:
+{{REJECTION_FEEDBACK}}
+
+Task:
+1. Use exactly the selected direct spans as evidence_units.
+2. Do not split spans into atomic facts.
+3. Each evidence_unit.text must be exactly the selected CUAD span text.
+4. Generate a public finite-choice question whose oracle answer is determined by the selected spans.
+5. Generate a decision_set of 2 to 6 mutually exclusive candidate final decisions. Prefer the suggested option count shown above when that many plausible balanced profiles exist; otherwise choose the best count in 2 to 6. Do not always use four options.
+6. Prefer a question where multiple selected spans matter, but do not invent complexity.
+7. The smallest sufficient span set will be measured later by a separate validator. Do not claim every span is required unless it really is.
+8. Create 2 to 5 participant packets. Avoid giving any participant all selected spans. Do not add a checker, supervisor, or coordinator packet that contains all selected spans.
+9. List every unselected supplied CUAD span in candidate_assessment.excluded_spans with the selection-stage reason.
+10. The public task must not reveal CUAD labels, span IDs, criticality tags, or the oracle answer.
+11. Avoid obvious option design. The correct answer must not be the only long, conjunctive, two-sided, reciprocal, mutual, or multi-feature option.
+12. Include at least two plausible distractors with similar complexity to the correct answer. Good distractors should combine some correct features with one wrong, missing, reversed, or unsupported feature.
+13. Do not use a decision set where the answer is simply "all of the above", "both", "all_three", "mutual", "reciprocal", or the only option containing "and", "with", or multiple features.
+14. Use hidden component templates for construction, but do not expose A+B, A+B+C, or A+B+C+D structure in decision_set.value names. Use neutral paper-aligned values "decision_a", "decision_b", "decision_c", "decision_d", "decision_e", "decision_f" in order; put all legal content in the definition field.
+15. In public definitions, write complete legal-profile sentences rather than formula labels like "rule + condition + consequence." The profile can contain several legal components, but it should read like a natural contract-review description.
+16. The public question should be hard to guess without private information: someone who sees no spans should not be able to infer the answer from option complexity.
+17. Do not repeat prior same-source question wording, option structure, or oracle profile shown above. If history is present, create a genuinely different legal boundary while still using exactly the selected direct spans.
+
+Return JSON with exactly these top-level keys:
+- candidate_assessment
+- public_task
+- evidence_units
+- participants
+- oracle
+
+candidate_assessment shape:
+{
+  "selected_span_indices": [1, 2],
+  "excluded_spans": [
+    {"span_index": 3, "reason": "duplicate/context/fragment/not_needed/subsumed/too_broad"}
+  ],
+  "coverage_rationale": "why the selected direct spans determine the oracle answer",
+  "question_design_rationale": "why this question may require multiple selected spans"
+}
+
+public_task.decision_set must be a list of 2 to 6 objects:
+[
+  {"value": "machine_readable_choice", "definition": "what this choice means"}
+]
+
+Decision-set design requirements:
+- At least one wrong option should have the same number of feature components as the correct option.
+- If the correct option combines two legal features or two parties' rights, at least two wrong options should also combine two features or two parties' rights.
+- At least one wrong option should include a plausible unsupported feature.
+- At least one wrong option should omit or reverse a feature that appears in the correct option.
+- Keep option definitions balanced in length; do not make the correct definition obviously more detailed.
+- For a two-span answer with components A and B, prefer this option template:
+  - correct: A + B
+  - wrong: A + plausible unsupported C
+  - wrong: B + plausible unsupported C
+  - wrong: A + B with one wrong qualifier, deadline, scope, party, or consequence
+- Do not use a decision set dominated by A-only, B-only, and no-right/no-obligation choices. Those options are too easy because the combined answer is visually obvious.
+- Do not put `plus`, `and`, `with`, `both`, `all`, `only`, `mutual`, or `reciprocal` in decision_set.value names. Put the legally meaningful content in the definition field instead.
+- Make definitions balanced: similar length, same legal register, and similar number of clauses/components. If the correct definition describes three components, at least two wrong definitions should also describe three plausible components.
+- If the correct definition describes four components, at least two wrong definitions should also describe four plausible components.
+- More generally, if the selected evidence encodes k required components, the correct definition and at least two wrong definitions should each describe k plausible components, with one component changed, unsupported, missing, reversed, or assigned to the wrong party.
+- Definitions may use normal legal prose, but avoid literal formula phrasing such as "A + B + C" or "rule plus condition plus consequence."
+
+Each evidence_unit must use this direct-span shape:
+{
+  "unit_id": "span_01",
+  "text": "exact supplied positive CUAD span text",
+  "source_ref": {"span_index": 1, "information_feature": "short feature name"},
+  "information_unit_type": "reference_information_unit",
+  "criticality": "critical",
+  "tags": ["short_tag"],
+  "information_feature": "short feature name",
+  "summary": "short hidden evaluator summary",
+  "decision_relevance": [
+    {
+      "decision": "one generated decision_set value",
+      "relation": "supports | rules_out | weakens | distinguishes | required_for",
+      "reason": "why this CUAD span matters for that candidate decision"
+    }
+  ]
+}
+
+oracle shape:
+{
+  "answer": "one value from the generated decision_set",
+  "features": {"short_feature_name": true},
+  "rationale": "hidden rationale for why the selected spans determine the answer"
+}

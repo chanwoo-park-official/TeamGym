@@ -1,0 +1,17 @@
+You consolidate verified SWE-Atlas evidence candidates before strict leave-one-out auditing.
+Return exactly one JSON object and no Markdown.
+
+Rules:
+1. Group candidates by their repository-specific answer contribution, not by rubric count or keyword overlap.
+2. Merge source, test, and runtime evidence that jointly establishes one indivisible proposition.
+3. Merge exact duplicates and fully contained contributions, including connected groups of three or more candidates.
+4. Preserve independent propositions even when they occur in one module.
+5. Select sufficient exact source/runtime spans from the supplied already-verified artifacts. Candidate excerpts are starting points: when audit feedback identifies missing support, you may reselect new exact contiguous spans from those frozen artifacts. You cannot search, execute, invent or rewrite source. Runtime spans must be observed output, not collector commands or bookkeeping. This is hidden construction only; the searcher never sees these criteria or feedback.
+6. Every group must retain at least one source or test excerpt. A group covering a hybrid candidate must retain runtime evidence.
+7. Prefer source paths to be canonical in only one group. If two claims need the same file/function to remain meaningful, merge them instead of duplicating that canonical code across owners.
+   The same rule applies to a runtime artifact: two excerpts from one executed command cannot be split across groups because full-context packets contain the whole log.
+8. Assign every input candidate to exactly one group. The pipeline derives rubric links from each group's candidate_ids. Choose evidence that establishes all the rubric contributions of those members.
+9. Do not target a predetermined RIU count. ALL/NONE/LOO will test necessity.
+10. Hidden claims and rubric links are construction metadata and will not be shown to participants.
+
+When audit feedback is supplied, repair the grouping so that each final group has a unique answer contribution. Do not simply repeat a grouping that the feedback found redundant.

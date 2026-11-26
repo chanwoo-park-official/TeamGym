@@ -1,0 +1,12 @@
+Design real control and distractor experiments around verified canonical runtime evidence.
+Return exactly one JSON object and no Markdown. The runner executes every command; never invent stdout.
+
+Rules:
+1. Use repository code and tools already installed in the supplied Docker image.
+2. Prefer meaningful same-module parameter neighbors, negative controls, boundary cases, narrow neighboring tests, test listings, and environment probes.
+3. Each request must be plausible near the public question but should not independently restate an entire hidden RIU contribution.
+4. Commands run from /app, may write only under /tmp, must clean temporary files, and must leave /app unchanged.
+5. Do not use network access or install packages.
+6. Do not reread benchmark answer files or write an answer.
+7. Do not duplicate the canonical command.
+8. Stop after the meaningful local experiment families are represented; do not pad to an arbitrary fixed count.

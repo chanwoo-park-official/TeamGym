@@ -1,0 +1,41 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+HIDDEN RUBRICS
+{{RUBRICS_JSON}}
+
+REFERENCE ANSWER
+{{REFERENCE_ANSWER}}
+
+MATERIAL ACTUALLY AVAILABLE TO THE SOLVER
+{{AVAILABLE_EVIDENCE_JSON}}
+
+SOLVER RESPONSE
+{{SOLVER_RESPONSE_JSON}}
+
+For every rubric:
+1. content_correct is true only when the response supplies the expected answer element.
+2. grounded_in_available_material is true only when the public task plus displayed material contain all repository-specific information needed for that element.
+3. A positive rubric is satisfied only when both booleans are true.
+4. For a negative rubric, satisfied means the response correctly rejects or avoids the prohibited claim and that conclusion is grounded.
+5. supporting_evidence_numbers may cite only displayed material.
+6. Grade every rubric exactly once.
+7. overall_complete_and_correct is true only when every rubric is satisfied and there is no material error.
+8. A satisfied positive rubric must cite at least one supporting displayed evidence_number. If no displayed evidence supports it, do not mark it grounded and satisfied. Negative rubrics and unmet criteria may have an empty citation list.
+
+Return:
+{
+  "rubric_results": [
+    {
+      "rubric_id": "exact rubric id",
+      "status": "satisfied|partial|missing|incorrect",
+      "content_correct": true,
+      "grounded_in_available_material": true,
+      "supporting_evidence_numbers": [1],
+      "reason": "concise reason"
+    }
+  ],
+  "has_material_error": false,
+  "overall_complete_and_correct": true,
+  "overall_reason": "concise judgment"
+}

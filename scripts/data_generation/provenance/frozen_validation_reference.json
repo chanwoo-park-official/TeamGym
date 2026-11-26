@@ -1,0 +1,310 @@
+{
+  "schema": "legal_frozen_archive_validation_v1",
+  "valid": true,
+  "integrity_valid": true,
+  "strict_visibility": false,
+  "archive_manifest_sha256": "5492c40743d5cf335dc9e0b7d5f525da8fef3712ecbc02283661a3f9b28d7e76",
+  "record_content_hashes_verified": true,
+  "checked_file_hashes": 51,
+  "allocated_records": 1607,
+  "paper_standard_records": 163,
+  "historical_paper_allocation_records": 618,
+  "datasets": [
+    {
+      "dataset": "cuad",
+      "records": 538,
+      "unique_stored_instance_ids": 538,
+      "instance_ids_reused_across_question_variants": 0,
+      "canonical_tasks": 538,
+      "source_groups": 289,
+      "allocation_modes": {
+        "one_each": 321,
+        "paired": 6,
+        "redundant_player": 117,
+        "common_anchor": 1,
+        "bottleneck": 91,
+        "overlap": 2
+      }
+    },
+    {
+      "dataset": "maud",
+      "records": 557,
+      "unique_stored_instance_ids": 318,
+      "instance_ids_reused_across_question_variants": 239,
+      "canonical_tasks": 318,
+      "source_groups": 100,
+      "allocation_modes": {
+        "one_each": 207,
+        "overlap": 93,
+        "bottleneck": 72,
+        "paired": 89,
+        "redundant_player": 64,
+        "common_anchor": 32
+      }
+    },
+    {
+      "dataset": "casebook",
+      "records": 77,
+      "unique_stored_instance_ids": 77,
+      "instance_ids_reused_across_question_variants": 0,
+      "canonical_tasks": 18,
+      "source_groups": 18,
+      "allocation_modes": {
+        "one_each": 18,
+        "paired": 16,
+        "overlap": 10,
+        "redundant_player": 18,
+        "common_anchor": 12,
+        "bottleneck": 3
+      }
+    },
+    {
+      "dataset": "mslr",
+      "records": 24,
+      "unique_stored_instance_ids": 24,
+      "instance_ids_reused_across_question_variants": 0,
+      "canonical_tasks": 11,
+      "source_groups": 11,
+      "allocation_modes": {
+        "one_each": 8,
+        "paired": 4,
+        "redundant_player": 6,
+        "common_anchor": 3,
+        "overlap": 2,
+        "bottleneck": 1
+      }
+    },
+    {
+      "dataset": "multilexsum",
+      "records": 141,
+      "unique_stored_instance_ids": 141,
+      "instance_ids_reused_across_question_variants": 0,
+      "canonical_tasks": 29,
+      "source_groups": 29,
+      "allocation_modes": {
+        "one_each": 29,
+        "paired": 28,
+        "overlap": 28,
+        "redundant_player": 28,
+        "common_anchor": 27,
+        "bottleneck": 1
+      }
+    },
+    {
+      "dataset": "sara",
+      "records": 270,
+      "unique_stored_instance_ids": 270,
+      "instance_ids_reused_across_question_variants": 0,
+      "canonical_tasks": 45,
+      "source_groups": 45,
+      "allocation_modes": {
+        "one_each": 45,
+        "paired": 45,
+        "overlap": 45,
+        "redundant_player": 45,
+        "common_anchor": 45,
+        "bottleneck": 45
+      }
+    }
+  ],
+  "visibility_consistent": false,
+  "records_with_extra_piu_visibility": 8,
+  "extra_piu_visibility": [
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_b29577bb4b7f5b4eb37b",
+      "instance_id": "maud_measured_rui_0039_contract_118_operating_and_efforts_covenant",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": true,
+      "rui_id": "rui_03",
+      "declared_owners": [
+        "participant_c"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c"
+      ],
+      "extra_viewers": [
+        "participant_a",
+        "participant_b"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_686567f73209f6c2ac91",
+      "instance_id": "maud_measured_rui_0148_contract_150_deal_protection_and_related_provisions",
+      "allocation_mode": "one_each",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_03",
+      "declared_owners": [
+        "participant_c"
+      ],
+      "visible_to": [
+        "participant_c",
+        "participant_d"
+      ],
+      "extra_viewers": [
+        "participant_d"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_686567f73209f6c2ac91",
+      "instance_id": "maud_measured_rui_0148_contract_150_deal_protection_and_related_provisions",
+      "allocation_mode": "one_each",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_04",
+      "declared_owners": [
+        "participant_d"
+      ],
+      "visible_to": [
+        "participant_c",
+        "participant_d"
+      ],
+      "extra_viewers": [
+        "participant_c"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_8b0d17c9a900de60aa8b",
+      "instance_id": "maud_measured_rui_0229_contract_49_conditions_to_closing",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_04",
+      "declared_owners": [
+        "participant_c"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c",
+        "participant_d"
+      ],
+      "extra_viewers": [
+        "participant_a",
+        "participant_b",
+        "participant_d"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_5cf65217c1fafbafe6a0",
+      "instance_id": "maud_measured_rui_0008_contract_10_deal_protection_and_related_provisions",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_03",
+      "declared_owners": [
+        "participant_d"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c",
+        "participant_d"
+      ],
+      "extra_viewers": [
+        "participant_a",
+        "participant_b",
+        "participant_c"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_9205440b93606b38d659",
+      "instance_id": "maud_measured_rui_0145_contract_15_deal_protection_and_related_provisions",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_02",
+      "declared_owners": [
+        "participant_d"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c",
+        "participant_d"
+      ],
+      "extra_viewers": [
+        "participant_a",
+        "participant_b",
+        "participant_c"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_2080444d827a3f63559e",
+      "instance_id": "maud_measured_rui_0148_contract_150_deal_protection_and_related_provisions",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_04",
+      "declared_owners": [
+        "participant_c"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c",
+        "participant_d",
+        "participant_e"
+      ],
+      "extra_viewers": [
+        "participant_a",
+        "participant_b",
+        "participant_d",
+        "participant_e"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_e8a10f60e29b84a7c767",
+      "instance_id": "maud_measured_rui_0211_contract_42_deal_protection_and_related_provisions",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_04",
+      "declared_owners": [
+        "participant_a"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c"
+      ],
+      "extra_viewers": [
+        "participant_b",
+        "participant_c"
+      ]
+    },
+    {
+      "dataset": "maud",
+      "archive_instance_id": "maud_aeafe32ef45cb58b066a",
+      "instance_id": "maud_measured_rui_0327_contract_77_conditions_to_closing",
+      "allocation_mode": "common_anchor",
+      "paper_standard": false,
+      "historical_paper_allocation": false,
+      "rui_id": "rui_02",
+      "declared_owners": [
+        "participant_a"
+      ],
+      "visible_to": [
+        "participant_a",
+        "participant_b",
+        "participant_c"
+      ],
+      "extra_viewers": [
+        "participant_b",
+        "participant_c"
+      ]
+    }
+  ],
+  "scope": "Offline integrity and reference consistency; extra visibility from shared source chunks is reported separately. Model-based quality is not re-evaluated."
+}

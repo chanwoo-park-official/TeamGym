@@ -1,0 +1,33 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+HIDDEN RUBRICS
+{{RUBRICS_JSON}}
+
+VERIFIED CANDIDATES
+{{CANDIDATES_JSON}}
+
+FROZEN VERIFIED ARTIFACTS (no repository search or execution is available)
+{{VERIFIED_ARTIFACTS_JSON}}
+
+FEEDBACK FROM A PREVIOUS ALL/NONE/LOO ATTEMPT
+{{AUDIT_FEEDBACK_JSON}}
+
+Return:
+{
+  "groups": [
+    {
+      "group_id": "group_01",
+      "hidden_claim": "one precise answer contribution",
+      "candidate_ids": ["candidate_01"],
+      "selected_evidence": [
+        {
+          "artifact_id": "exact artifact id",
+          "kind": "source or runtime",
+          "quote": "exact contiguous excerpt copied from a frozen verified artifact"
+        }
+      ],
+      "reason": "why these candidates and excerpts form one minimal contribution"
+    }
+  ]
+}

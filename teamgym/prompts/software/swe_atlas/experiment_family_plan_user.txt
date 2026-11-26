@@ -1,0 +1,35 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+REPOSITORY
+{{REPOSITORY_JSON}}
+
+AVAILABLE TOOL PATHS
+{{TOOL_PATHS_JSON}}
+
+FINAL RIUS — HIDDEN CONSTRUCTION VIEW
+{{FINAL_RIUS_JSON}}
+
+CANONICAL RUNTIME ARTIFACTS
+{{CANONICAL_RUNTIME_JSON}}
+
+FEEDBACK FROM A PREVIOUS FAILED ATTEMPT (may be empty)
+{{FEEDBACK_JSON}}
+
+If feedback is present, replace failed or invalid experiments with materially different,
+safe commands. Do not repeat a failed command merely by renaming its experiment ID.
+
+Return:
+{
+  "experiments": [
+    {
+      "experiment_id": "distractor_run_01",
+      "family": "parameter_neighbor|negative_control|boundary_case|same_module_test|adjacent_module_test|environment_probe|expected_failure",
+      "command": "read-only shell command",
+      "expected_exit_code": 0,
+      "purpose": "what this genuinely observes",
+      "related_module": "repository module",
+      "why_not_canonical": "why it is not direct final-RIU evidence"
+    }
+  ]
+}

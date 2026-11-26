@@ -1,0 +1,51 @@
+{
+  "schema": "multilexsum_final_construction_lineage_v1",
+  "reference_policy": "Frozen paper inputs are the reference for published experiments. New packet preparation is a documented reconstruction, not an exact replay of the missing historical command.",
+  "reported_historical_funnel": {
+    "source_collections": 4539,
+    "eligible_collections": 3086,
+    "grounded_candidates": 48,
+    "selected_candidates": 30,
+    "retained_tasks": 29,
+    "frozen_allocation_records": 141
+  },
+  "frozen_normalized_dataset": {
+    "evidence_bundle": "legal_allocated_v1",
+    "path": "data/multilexsum/instances.jsonl",
+    "sha256": "6267ac006348dc21e0dd22ae5e5a01bba5d9c35379e141b1c40c43e852606590",
+    "canonical_task_count": 29,
+    "row_count": 141,
+    "allocation_modes": {"one_each": 29, "paired": 28, "overlap": 28, "redundant_player": 28, "common_anchor": 27, "bottleneck": 1},
+    "context_variant": "full_original_source_packets",
+    "scope": "Six historical modes, including paired; paper analyses select their reported conditions."
+  },
+  "recovered_evaluation_input": {
+    "release": "legal_paper_release_v1.zip",
+    "nested_archive": "trajectories/model_evidence.zip",
+    "member": "source_components/multilexsum_0712/inputs/multilexsum_full_context_qualified29.jsonl",
+    "sha256": "3b5aa73b3ef168527cc4fafae45af7d81464063415c5497eef6fb313665dca16",
+    "bytes": 3014365,
+    "tasks": 29,
+    "source_context_units": 1536,
+    "verified_against_frozen_allocations": 141,
+    "matching_fields": ["task_description", "decision_set", "decision_option_definitions", "oracle", "PIU text and source references", "original source-context IDs, text, and hidden PIU IDs"]
+  },
+  "reconstructed_recipe": {
+    "entrypoint": "scripts/data_generation/multilexsum/run.py",
+    "stages": ["prepare-packets", "generate", "short-answer", "expand-packets", "audit-grounding", "select-grounded"],
+    "optional_sharding_stage": "prepare-sources",
+    "upstream_release": "v20230518",
+    "packet_schema": "multilexsum_original_source_packet_v1",
+    "packet_defaults": {"chunk_words": 250, "max_chunks_per_document": 8, "excerpts_per_document": 2},
+    "selection_policy": "Evenly spaced original chunks and excerpts; input summaries used for eligibility only",
+    "expansion_policy": "Preserve task, oracle, and PIU ownership. Attach original source windows and selected same-collection background chunks, excluding background copies of chunks used by PIU evidence.",
+    "required_post_expansion_checks": ["common schema", "source grounding", "participant leakage and convergence", "all-RIU solve", "semantic judgment of every required conclusion"],
+    "quality_policy": "No historical model results or earlier qualification flags qualify newly expanded contexts."
+  },
+  "retained_paper_code": {
+    "context_restoration": "scripts/data_generation/multilexsum/restore_qualified_context.py",
+    "allocation_projection": "scripts/data_generation/common/prepare_paper_allocations.py"
+  },
+  "remaining_historical_gaps": ["Rejected 30th candidate", "Original preparation of verified source-task inputs", "Original packet-expansion implementation"],
+  "validation_scope": "Deterministic preparation, restoration, provenance, and rejection behavior are tested locally. Model-based grounding and qualification must run on newly generated candidates before release."
+}

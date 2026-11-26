@@ -1,0 +1,64 @@
+Audit the generated EvidenceBench-derived free-response task against the exact
+selected candidate material.
+
+GENERATED TASK, RUBRIC, AND CANONICAL ANSWER
+{{TASK_RUBRIC_JSON}}
+
+ALL NORMALIZED CANDIDATES, INCLUDING EXCLUDED CANDIDATES
+{{NORMALIZED_CANDIDATES_JSON}}
+
+PREVIOUS VALIDATION FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Check that the public question is natural, contains no construction metadata, and
+does not merely expose the answer. Check that every required claim and the canonical
+answer are grounded in the selected exact text. Check preservation of population,
+exposure, comparator, outcome, direction, uncertainty, study design, and causal
+strength. Each selected candidate must make a distinct necessary contribution to at
+least one required claim, either alone or jointly with other candidates.
+Claims and candidates need not map one-to-one. Verify the declared support logic:
+- ALL_REQUIRED means every listed candidate supplies a distinct necessary part of
+  the claim's complete grounding.
+- ANY_SUFFICIENT means each listed candidate independently grounds the full claim.
+Verify every candidate_role against the exact source text. Every selected candidate
+must be relevant to the public question, directly support a mapped claim, and be
+necessary under at least one support mapping. Reject artificial question expansion
+whose only purpose is to retain irrelevant evidence. Reject rubrics that turn
+incidental background, complete dose inventories, procedural details, or confirmatory
+assays into mandatory content when the substantive question can be answered correctly
+without them.
+
+Return:
+{
+  "valid": true,
+  "question_natural": true,
+  "question_answerable_from_selected_material": true,
+  "rubric_grounded": true,
+  "canonical_answer_grounded": true,
+  "selected_candidates_relevant": true,
+  "question_not_artificially_expanded": true,
+  "no_construction_metadata_leakage": true,
+  "medical_scope_preserved": true,
+  "claim_results": [
+    {
+      "claim_id": "claim_01",
+      "grounded": true,
+      "support_logic_valid": true,
+      "supporting_candidate_ids": ["cand_01", "cand_02"],
+      "reason": "brief exact trace"
+    }
+  ],
+  "candidate_results": [
+    {
+      "candidate_id": "cand_01",
+      "included_as_selected": true,
+      "question_relevant": true,
+      "direct_support": true,
+      "necessary_under_support_logic": true,
+      "exclusion_justified": false,
+      "mapped_claim_ids": ["claim_01"],
+      "reason": "brief relevance and necessity judgment"
+    }
+  ],
+  "errors": []
+}

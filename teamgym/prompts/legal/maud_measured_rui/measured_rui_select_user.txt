@@ -1,0 +1,72 @@
+Select a MAUD RIU basis for a finite-choice fully collaborative task.
+
+Contract name:
+{{CONTRACT_NAME}}
+
+MAUD category:
+{{CATEGORY}}
+
+Native MAUD issue groups. These native questions/answers are hidden construction metadata, not the final task:
+{{ISSUE_GROUPS_JSON}}
+
+Candidate cleaned MAUD reference information units:
+{{CANDIDATE_RUIS_JSON}}
+
+Agreement excerpt for context:
+{{CONTRACT_TEXT_EXCERPT}}
+
+Minimum accepted final critical RIU count:
+{{MIN_ACCEPT_SIZE}}
+
+Target selected critical RIU count:
+{{TARGET_MIN_RUI_COUNT}}
+
+Selected RIU upper-bound guidance:
+{{MAX_RUI_COUNT_TEXT}}
+
+Task:
+1. Select as many cleaned MAUD RIU blocks as can each remain independently necessary for a later finite-choice oracle answer.
+2. Aim to select at least TARGET_MIN_RUI_COUNT RIUs whenever the supplied candidates contain that many non-redundant legal boundaries.
+3. Selecting only MIN_ACCEPT_SIZE RIUs is an exception, not the default. Use it only when no additional supplied RIU can be made independently necessary.
+4. Do not choose a smaller basis merely because it is easier to write the question. If a third RIU can control any real party, timing, scope, exception, standard, remedy, or process boundary, include it.
+5. Prefer RIUs from related but distinct native issue groups in the same legal category.
+6. Select RIUs that can each control a different answer-choice boundary in a later finite-choice question.
+7. Do not select duplicate, redundant, context-only, fragmentary, subsumed, or merely explanatory RIUs.
+8. The selected RIUs should support a newly generated composite legal-profile question, not simply the original MAUD native question.
+9. Prefer the largest RIU basis that can still be made critical. A larger basis is better only if every selected RIU can control a real answer boundary.
+10. Classify every supplied candidate RIU.
+11. Do not rewrite RIU text. selected_rui_basis.text must exactly equal the supplied candidate RIU text.
+
+Return JSON with exactly these top-level keys:
+- candidate_assessment
+- source_rui_classification
+- selected_rui_basis
+
+candidate_assessment shape:
+{
+  "feasible": true,
+  "rationale": "why this candidate can support a multi-RIU finite-choice task",
+  "intended_composite_question_type": "short description of the composite profile to ask about",
+  "minimum_rui_count": 2,
+  "selected_rui_count": 5,
+  "why_not_more": "why additional supplied RIUs were not selected"
+}
+
+source_rui_classification rows:
+{
+  "source_rui_id": "source_rui_001",
+  "role": "used_for_rui | duplicate | redundant | context_only | fragment | subsumed | not_needed | too_broad",
+  "reason": "short reason"
+}
+
+selected_rui_basis rows:
+{
+  "unit_id": "rui_01",
+  "source_rui_id": "source_rui_001",
+  "issue_group_id": "issue_group_0001",
+  "text": "exact supplied candidate RIU text",
+  "legal_feature": "short feature name controlled by this RIU",
+  "possible_decision_boundary": "what answer distinction this RIU can control",
+  "native_issue_question": "hidden source question used as construction metadata",
+  "native_answer": "hidden source answer used as construction metadata"
+}

@@ -1,0 +1,13 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+PARTICIPANT PACKET AS DISPLAYED
+{{PACKET_CONTEXTS_JSON}}
+
+Return:
+{
+  "format_leakage": false,
+  "suspicious_context_ids": [],
+  "signals": ["format, position, annotation, wrapper, or length signal if any"],
+  "reason": "concise judgment"
+}

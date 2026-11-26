@@ -1,0 +1,3 @@
+Create the rubric-to-evidence requirements and evidence requests for this task.
+
+{{INPUT_JSON}}

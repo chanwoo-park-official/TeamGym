@@ -1,0 +1,19 @@
+Review the actual initial model request that a Full-Context participant receives.
+The JSON contains the real actor system/user strings after source materialization
+and its fixed context budget. Evaluate these visible strings only. Do not infer
+hidden ownership from where evidence appears in this audit.
+
+ACTUAL MODEL INPUT
+{{ACTUAL_MODEL_INPUT_JSON}}
+
+Check whether construction-specific metadata (PIU/candidate IDs, hidden
+summaries, rubric links, reference decisions, assignment rationales) is visible;
+whether participant identities disclose answer values/conclusions; or whether
+artificial labels/order/formatting identify private pivotal evidence as important.
+Original annual-report tables, headings, numerical values, source order and
+neutral participant numbers are legitimate source presentation, not artificial
+construction cues. Raw source may contain the answer: that is its purpose.
+Do not flag a table merely because it contains task-relevant numbers.
+
+Return JSON only, covering every category:
+{"leaks_constructor_metadata":false,"reveals_answer_in_identity":false,"marks_private_piu_as_important":false,"rationale":"specific assessment of the actual visible input"}

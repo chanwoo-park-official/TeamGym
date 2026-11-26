@@ -1,0 +1,101 @@
+{
+  "schema": "teamgym_nonlegal_reconstruction_examples",
+  "scope": "Offline checks against the saved benchmark bundle. These records establish frozen artifact identity and current schema compatibility where indicated.",
+  "archive": {
+    "name": "collabgym_benchmark_datasets_20260829",
+    "checksum_file": "SHA256SUMS",
+    "checksum_file_sha256": "f0190dde7254ba39b7608a184fbf00c256c7657955c8c8df32b870df8dcc342e",
+    "validation_report": "validation_report.json",
+    "validation_report_sha256": "98d1252fbc3f9eb03e1bbfc87b5c8a8f13d2426f235a6f425aa4e51bb7538f44"
+  },
+  "datasets": {
+    "finance/findver": {
+      "instance_id": "findver_ie_all_NJR-2024-02-06_10-Q",
+      "evaluation_artifact": "finance/findver_one_each_91.jsonl",
+      "artifact_sha256": "04ffcc39ea06fb97e3961fe34c2950f20cde0b55df75fc10d6afe46ed9aba7a2",
+      "current_schema_valid": true,
+      "status": "verified_frozen_evaluation_row",
+      "verification_report": "validation_report.json",
+      "source": {
+        "source_id": "all_NJR-2024-02-06_10-Q",
+        "source_split": "testmini",
+        "report": "NJR-2024-02-06_10-Q.json"
+      },
+      "saved_construction_gates": {
+        "grounding": true,
+        "public_only": true,
+        "riu_boundary": true
+      },
+      "original_upstream_revision": null,
+      "raw_input_sha256": null
+    },
+    "finance/finlongdocqa": {
+      "instance_id": "finlongdocqa_PNW_2022",
+      "evaluation_artifact": "finance/finlongdocqa_one_each_61.jsonl",
+      "artifact_sha256": "7372cb0ce994dfb537bc270ff244c931acaa974f6ee16d630161550048093e5e",
+      "current_schema_valid": true,
+      "status": "verified_frozen_evaluation_row",
+      "verification_report": "validation_report.json",
+      "source": {
+        "report_id": "PNW_2022",
+        "report_member": "reports/PNW/2022.md",
+        "recorded_report_member_sha256": "e956426b66cc4aa386c7dcc37690c3eeaa1dd37e4da1e848582e97891bc0df51",
+        "parser_version": "finlongdocqa_markdown_blocks_v3"
+      },
+      "saved_solver_audit_accepted": true,
+      "original_upstream_revision": null,
+      "producer_bundle_recovered": false
+    },
+    "medical/evidencebench": {
+      "instance_id": "medical_free_evidencebench_test_id_1",
+      "evaluation_artifact": "medical/full/accepted.jsonl",
+      "artifact_sha256": "ea4b6129c58644b6ac003c3a14ea589c97a359fd47e1f79ada32c6c1a677ddf6",
+      "current_schema_valid": true,
+      "status": "verified_frozen_evaluation_row",
+      "verification_report": "validation_report.json",
+      "source": {
+        "source_id": "evidencebench_test_id_1",
+        "split": "test",
+        "paper_id": "pmc_1977949"
+      },
+      "original_upstream_revision": null,
+      "raw_input_sha256": null
+    },
+    "medical/mlcr": {
+      "status": "accepted_example_unavailable",
+      "checked_source_repository": "Wisedocs/mlcr-dataset",
+      "checked_source_revision": "1198206e2df96febf9fd13c110981e5b40515285",
+      "needed": [
+        "accepted common_datapoints.jsonl",
+        "run_report.json",
+        "run_manifest.json"
+      ]
+    },
+    "swe/swe-atlas": {
+      "instance_id": "swe_atlas_rubric_grounded_6905333b74f22949d97ba998",
+      "evaluation_artifact": "swe_atlas/full/accepted.jsonl",
+      "artifact_sha256": "150a02cc1e61fae5bb16105cc30f273f32d98054180158aaa3a39bc5e904f9d9",
+      "current_schema_valid": false,
+      "status": "frozen_evaluation_row_current_schema_failed",
+      "verification_report": "validation_report.json",
+      "source": {
+        "task_id": "task-6905333b74f22949d97ba998",
+        "base_commit": "be7e5cc641622d153040491fd5625c6cb83e12eb",
+        "docker_image": "ghcr.io/scaleapi/swe-atlas:swe_atlas_QnA_Automattic_wp-calypso_1.0"
+      },
+      "current_schema_failed_checks": [
+        "smallest_sufficient_refs_exist"
+      ],
+      "original_upstream_revision": null,
+      "resolved_docker_image_id": null
+    },
+    "swe/deep-swe": {
+      "status": "accepted_example_unavailable",
+      "needed": [
+        "accepted TASK_ID/export/instance.json",
+        "TASK_ID/report.json",
+        "run_identity.json with base commit and resolved image IDs"
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+You construct functional Pivotal Information Units (PIUs) for a software task.
+
+You receive constructor-only material: the instruction, reference patch, hidden-test patch and failures, public-check definitions or results, source fragments copied from the pinned base commit, and runtime observations collected from that base. The solver will never receive the reference patch, hidden tests, failure names, your rationale, or relevance labels.
+
+Create functional PIUs with boundaries justified by the task evidence; do not favor a particular number of units. Each PIU represents one coherent behavior or contract an implementer must understand. A PIU may contain several source fragments and several runtime observations. Group by behavior, not file, language construct, or proximity.
+
+Good boundaries include parsing or validation, state accumulation, lifecycle and cleanup, public API wiring, persistence, or transport adaptation. Include supporting type definitions, constructors, interfaces, exports, and callers in the same PIU when they are necessary to implement that behavior correctly. Keep independent behavior in separate PIUs so removing one PIU has a meaningful effect.
+
+Every selected fragment and observation must belong to exactly one PIU. Omit irrelevant material. Do not reproduce solution code, hidden assertions, expected values, test identifiers, or patch hunks in any solver-visible field.
+
+Return JSON only:
+{"rius":[
+  {"riu_id":"riu-01",
+   "functional_boundary":"constructor-only description of one behavior",
+   "code_fragment_ids":["frag-0001"],
+   "observation_ids":["observation-01"],
+   "rationale":"constructor-only explanation",
+   "coverage":["constructor-only requirement or failure cluster"]}
+],
+"uncovered":[{"requirement":"...","reason":"..."}]}

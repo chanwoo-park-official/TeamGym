@@ -1,0 +1,63 @@
+{
+  "scope": "Inputs verified for Legal reconstruction smoke tests. The frozen archive preserves the exact paper tasks and allocations.",
+  "cuad": {
+    "repository": "theatticusproject/cuad",
+    "revision": "a3c393f5d103fd0c516374e4fdff676c8176dcb1",
+    "sha256": {
+      "CUAD_v1/CUAD_v1.json": "ed0b77d85bdf4014d7495800e8e4a70565b48ee6f8a2e5dca9cf8655dbf10eae"
+    }
+  },
+  "maud": {
+    "repository": "theatticusproject/maud",
+    "revision": "37d5c3b95d18dcd8404cc5ce3fd5069be062392f",
+    "contract_pattern": "MAUD_v1/contracts/*.txt",
+    "sha256": {
+      "MAUD_v1/MAUD_train.csv": "bac9f2d034ad487d5398ee2ac1c876679afea509ba8e7f1092112955c6180ff9",
+      "MAUD_v1/MAUD_dev.csv": "e977f99abcfd43f785272c23bcf08f8208579a6458d9088d2d5ba64c67e4cc1f",
+      "MAUD_v1/MAUD_test.csv": "afcbc88a4f14e8c14056469446e79f610a6eaf3a1425e61729637bd69251e697"
+    }
+  },
+  "casebook": {
+    "source_url": "https://www.govinfo.gov/bulkdata/ECFR/title-12/ECFR-title12.xml",
+    "retrieved_on": "2026-11-23",
+    "source_sha256": "ace1c39559b886e081c9135d002088fe0a099b32130598434667b44122599731",
+    "prepared_source": "scripts/data_generation/casebook/sources/ecfr_title12_parts_1_and_3.txt",
+    "prepared_source_sha256": "64936c551e7e5a306ae2efee9fd315f9e0b9c747f4ae04492b9eec4792e5f43a",
+    "expected_seed_count": 20,
+    "matching_paper_tasks_after_whitespace_normalization": 18
+  },
+  "mslr": {
+    "repository": "https://github.com/yuwenhan07/MSLR-Bench.git",
+    "revision": "50592efa2fe3aa51f14b6dd48172c6d4925847b8",
+    "source_directory": "data/processed_anonymized",
+    "source_file_count": 1389,
+    "expected_seed_count": 100
+  },
+  "multilexsum": {
+    "repository": "allenai/multi_lexsum",
+    "revision": "055f5fa5300a5fdefb5b691c4d6c1e58f485b379",
+    "source_directory": "releases/v20230518",
+    "sha256": {
+      "releases/v20230518/train.json": "168c1c22fb4739e4cb0405bfc29499744357218a386d9bc234c0dfc39f0c1302",
+      "releases/v20230518/dev.json": "0ae6fe46c5557975b29ed5bbfe780e9d188623320ac6c94d75ea8412ffe64b31",
+      "releases/v20230518/test.json": "56ffcfc1add9fbd895b024d1220317acb25109508ea76f275952ca8419594e61",
+      "releases/v20230518/sources.json": "805fd58ac5f72c40c9b575fa1e1b0be1943ea3c07a1a3089827444a3e0abc858"
+    }
+  },
+  "sara": {
+    "repository": "gydou/DeonticBench",
+    "revision": "805fb0529d7ae295679c5c1730765ec07d2c20ac",
+    "source_file": "sara_numeric/whole-00000-of-00001.parquet",
+    "source_sha256": "f6601ff5c48b6bcc34724b4b493c5128f6f28a652f573bcbbdbb3e28d5fc4ac2",
+    "source_case_count": 100,
+    "swipl_version": "10.0.2",
+    "swipl_image": "docker://docker.io/library/swipl@sha256:2723fefd35116f92f68da22a487b1b01b584ac0b4b81fcd971c7ab2222f5d3e7",
+    "original_sif_sha256": "7e1d11d0a0e5d3f2105139936d4b1d53272dc498d143289030b1a804365c8d84"
+  },
+  "frozen_legal_archive": {
+    "file": "legal_allocated_v1_all.zip",
+    "sha256": "1bda44942238793646ffb56d0d705e80d38d86ce94876e7e853ccaab01dc2c5b",
+    "allocated_records": 1607,
+    "paper_standard_records": 163
+  }
+}

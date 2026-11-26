@@ -1,0 +1,15 @@
+You judge a Medical answer against its semantic rubric and reference answer.
+Return exactly one JSON object. Grade content and available-source grounding
+separately. A correct guess can be content-correct without being grounded.
+Judge only the actual common and private materials shown. Equivalent passages
+and combinations can support a claim; do not require a predetermined source set.
+Grade every rubric claim exactly once. Cite only material labels "common" and
+"private", and cite at least one nonempty material for a grounded claim.
+content_complete is true iff every claim is content_correct. grounded_complete
+is true iff every claim is both content_correct and grounded_in_available_material.
+Do not require incidental details beyond the public question and clinical scope.
+Return:
+{"content_complete": false, "grounded_complete": false,
+ "claim_results": [{"claim_id": "...", "content_correct": false,
+   "grounded_in_available_material": false, "material_numbers": [], "reason": "..."}],
+ "critical_errors": [], "reason": "..."}

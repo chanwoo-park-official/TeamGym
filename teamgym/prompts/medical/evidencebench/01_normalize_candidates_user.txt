@@ -1,0 +1,51 @@
+Preserve each original EvidenceBench optimal-evidence anchor as a separate,
+source-faithful evidence candidate and restore only indispensable local context.
+
+SOURCE RECORD
+{{SOURCE_RECORD_JSON}}
+
+ANCHORS WITH LOCAL NEIGHBORS
+{{ANCHORS_JSON}}
+
+PREVIOUS VALIDATION FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Rules:
+1. Return exactly one candidate per original anchor. Never merge two anchors into
+   one candidate, even when they jointly support one answer claim.
+2. Every candidate must have exactly one source_anchor_id in source_anchor_ids, and
+   the assigned anchor sentence must appear in that candidate's evidence atoms.
+3. An atom must be exact, verbatim, contiguous paper sentences in ascending order.
+4. Add an adjacent sentence only when it is needed to resolve a pronoun, omitted
+   subject, abbreviation, comparison, measurement, or other incomplete proposition.
+5. Do not include any other optimal anchor sentence as adjacent context. A
+   context-dependent anchor may remain a separate contribution that must later be
+   combined with another candidate to ground an answer claim.
+6. Do not judge whether an anchor is relevant, redundant, or sufficient for the
+   eventual public question. Those decisions occur after task construction.
+7. Do not rewrite or summarize atom text. The hidden contribution is metadata only.
+8. Atom IDs need only be unique within their candidate; candidate_id plus atom_id is
+   the stable compound identifier.
+
+Return:
+{
+  "valid": true,
+  "candidate_rius": [
+    {
+      "candidate_id": "cand_01",
+      "source_anchor_ids": ["anchor_01"],
+      "hidden_contribution": "what information this source anchor contributes",
+      "anchor_preserved": true,
+      "context_restoration_reason": "none, or why adjacent non-anchor context was indispensable",
+      "evidence_atoms": [
+        {
+          "atom_id": "atom_01",
+          "sentence_indices": [12, 13],
+          "text": "exact sentences joined by one space"
+        }
+      ]
+    }
+  ],
+  "normalization_notes": [],
+  "failed_reason": ""
+}

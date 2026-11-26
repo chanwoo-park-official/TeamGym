@@ -1,0 +1,154 @@
+{
+  "schema": "cuad_maud_final_construction_lineage_v1",
+  "evidence_bundle": "legal_allocated_v1",
+  "source_provenance": "provenance/source_files.json",
+  "archive_builder": "scripts/storage/build_legal_allocated_archive.py",
+  "scope": "Confirmed lineage of the frozen CUAD and MAUD inputs used by the legal paper release.",
+  "datasets": {
+    "cuad": {
+      "generation_entrypoint": "scripts/data_generation/cuad/run.py",
+      "generation_module": "teamgym.data.legal.cuad.generation",
+      "partition_module": "teamgym.data.legal.cuad.partition",
+      "retained_helpers": [
+        "sources.py",
+        "schema.py",
+        "prepartition_export.py",
+        "question_history.py",
+        "information_allocation.py",
+        "decision_permutation.py",
+        "contracts/assignment.py",
+        "contracts/chunks.py",
+        "contracts/decisions.py",
+        "contracts/partition_validation.py",
+        "contracts/records.py"
+      ],
+      "recorded_source_file": {
+        "relative_to_generated": "legal_full/cuad/cuad_full_document_partitions.jsonl",
+        "sha256": "22e3110a41c87bff26c215950058986ea998e0a39493e3542a0bbc46f53f3a4b",
+        "line_count": 539,
+        "present_at_recorded_path": false
+      },
+      "frozen_instances": {
+        "path": "data/cuad/instances.jsonl",
+        "sha256": "278b3d5e22d69cf982a174065bfb577bc8c1cd12cd197de325ca7c48224e6dd1",
+        "row_count": 538,
+        "cached_format_flags_valid": 538,
+        "rows_with_decision_permutation_metadata": 538
+      },
+      "observed_methods": {
+        "cuad_measured_direct_span_generation_with_full_document_partitioning": 538
+      },
+      "observed_generation_parameters": [
+        {
+          "parameters": {
+            "max_span_count": 20,
+            "min_accept_size": 2,
+            "reference_information_unit_policy": "direct_cuad_positive_spans_only"
+          },
+          "rows": 538
+        }
+      ],
+      "observed_partition_parameters": [
+        {
+          "parameters": {
+            "context_mode": "full",
+            "hard_max_words": 1200,
+            "min_participants": 3,
+            "min_words": 120,
+            "role_style": "feature",
+            "soft_max_words": 900,
+            "target_words": 500
+          },
+          "rows": 538
+        }
+      ],
+      "observed_partition_seeds": {
+        "11": 538
+      },
+      "observed_requested_allocation_modes": {
+        "auto": 538
+      },
+      "question_variant_counts": {
+        "none": 538
+      },
+      "paper_standard_selection_count": 30,
+      "historical_paper_allocation_selection_count": 44
+    },
+    "maud": {
+      "generation_entrypoint": "scripts/data_generation/maud/run.py",
+      "generation_module": "teamgym.data.legal.maud.generation",
+      "partition_module": "teamgym.data.legal.maud.partition",
+      "retained_helpers": [
+        "sources.py",
+        "schema.py",
+        "prepartition_export.py",
+        "question_history.py",
+        "information_allocation.py",
+        "decision_permutation.py",
+        "maud/evidence.py",
+        "contracts/assignment.py",
+        "contracts/chunks.py",
+        "contracts/decisions.py",
+        "contracts/partition_validation.py",
+        "contracts/records.py"
+      ],
+      "recorded_source_file": {
+        "relative_to_generated": "maud_q01_q02_all_partitions_20260615_182615/maud_q01_q02_all_partition_modes.jsonl",
+        "sha256": "70f138a4c1ab62ff0e4718f42903e637da289f6704682cdb4e577d7c5729b026",
+        "line_count": 557,
+        "present_at_recorded_path": false
+      },
+      "frozen_instances": {
+        "path": "data/maud/instances.jsonl",
+        "sha256": "69560aa381c833e4d7027cc8a5968a95aec7153c3ef97d8105b1c55158b53d95",
+        "row_count": 557,
+        "cached_format_flags_valid": 557,
+        "rows_with_decision_permutation_metadata": 557
+      },
+      "observed_methods": {
+        "maud_measured_rui_generation_with_full_document_partitioning": 557
+      },
+      "observed_generation_parameters": [
+        {
+          "parameters": {
+            "min_accept_size": 2,
+            "reference_information_unit_policy": "cleaned_maud_row_evidence_blocks_with_full_agreement_offsets_only"
+          },
+          "rows": 557
+        }
+      ],
+      "observed_partition_parameters": [
+        {
+          "parameters": {
+            "context_mode": "full",
+            "hard_max_words": 1200,
+            "min_participants": 3,
+            "min_words": 120,
+            "role_style": "feature",
+            "soft_max_words": 900,
+            "target_words": 500
+          },
+          "rows": 557
+        }
+      ],
+      "observed_partition_seeds": {
+        "1201": 279,
+        "1202": 278
+      },
+      "observed_requested_allocation_modes": {
+        "auto": 557
+      },
+      "question_variant_counts": {
+        "maud_q01": 279,
+        "maud_q02": 278
+      },
+      "paper_standard_selection_count": 30,
+      "historical_paper_allocation_selection_count": 62
+    }
+  },
+  "reproduction_gaps": [
+    "The full original generation commands and model configuration have not been recovered; current CLI defaults are not proof of the historical settings.",
+    "MAUD acceptance settings, question-history inputs, and the original q01/q02 assembly command require recovery before claiming an exact generation replay.",
+    "The generation, partitioning, and normalization algorithms are retained. The frozen inputs provide an independent reference for validation."
+  ]
+}

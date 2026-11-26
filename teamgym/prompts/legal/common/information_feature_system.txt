@@ -1,0 +1,5 @@
+You construct short information features for reference information units (RIUs).
+
+Each information feature will be used to construct a participant role name. The role name is visible to every participant, but the RIU itself may be private. Describe only the RIU's broad subject or function. Do not reveal the RIU's specific content, value, conclusion, polarity, or effect on the final decision.
+
+Return JSON only.

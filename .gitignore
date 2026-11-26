@@ -1,0 +1,129 @@
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+.codex-build/
+*.pyc
+.DS_Store
+build/
+dist/
+*.egg-info/
+api_key/api_key.py
+generated/
+generated_old/
+
+# Manuscript and reviewer workspaces remain local.
+/docs/
+/rebuttal/
+/figures/
+/.latexmkrc
+
+# Historical research plans and generated result summaries.
+/distributed_reasoning_dataset_plan.md
+/trajectories_merged_20260919.csv
+/decision_option_permutation_map.jsonl
+/decision_option_permutation_map.pretty.json
+/decision_option_permutation_report.json
+
+wandb_smoke/
+outputs/
+logs/
+slurm_logs/
+artifacts/
+data/legal_raw/hf/
+analysis_outputs/
+temp_data
+taekyun_2_cuad_only*_report/
+
+# Historical experiment workspaces stay outside the public release.
+/0925/
+/0928/
+/0929/
+/0930/
+/1001/
+/1002/
+/1003/
+/1004/
+/1005/
+
+# LaTeX build products
+*.aux
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+
+# Local environments, downloaded data, and machine-specific configuration.
+/.agents/
+/.aws/
+/.codex
+/.cursorignore
+/.local_data/
+/.venv*/
+/.vscode/
+/rllm/data/datasets/
+/rllm/registry/dataset_registry.json
+.env
+.env.*
+!.env.example
+!.env.sample
+
+# Model weights and optimizer states belong in artifact storage.
+*.pt
+*.pth
+*.safetensors
+
+# Presentation build products.
+*.nav
+*.snm
+*.toc
+*.vrb
+
+# Historical evaluation campaigns remain local.
+/evaluation/submissions/
+
+# Historical TeamGym RL campaigns and saved analysis outputs.
+/teamgym/rl/*_LOG.md
+/teamgym/rl/campaign_*.json
+/teamgym/rl/analysis/
+/teamgym/rl/continue_*.sh
+/teamgym/rl/freeze_teamgym_runtime.sh
+/teamgym/rl/run_*.sh
+/teamgym/rl/slurm_*.sbatch
+/teamgym/rl/submit_*.sh
+/teamgym/rl/test_finance_*.sh
+/teamgym/rl/train_finance_*.sh
+/teamgym/rl/train_written_*.sh
+
+# Retired research analyses, replay experiments, and legacy reporters.
+/teamgym/rl/analyze_*.py
+/teamgym/rl/compare_*.py
+/teamgym/rl/plot_*.py
+/teamgym/rl/run_*.py
+/teamgym/rl/build_participant_control_replay_bank.py
+/teamgym/rl/build_participant_replay_bank.py
+/teamgym/rl/compact_maud_written_counterfactual.py
+/teamgym/rl/export_wandb_history.py
+/teamgym/rl/materialize_maud_counterfactual_rollouts.py
+/teamgym/rl/summarize_participant_control_runs.py
+/evaluation/reporting/*taekyun*.py
+
+# Cluster-only storage submission and migration scripts remain private.
+/scripts/storage/*.sbatch
+/scripts/storage/migrate_pool_artifacts_to_scratch_0714.sh
+
+# Paper-specific reporting and its retired tests remain private.
+/evaluation/reporting/analyze_*.py
+/evaluation/reporting/render_cuad31_model_sweep_tables.py
+/evaluation/reporting/render_legal_*.py
+/evaluation/reporting/run_westfall_young_maxT_rui_partition.py
+/evaluation/reporting/legal_problem_instance_piu_distribution_statistics.json
+/tests/test_legal_communication_process.py
+
+# External source data for construction.
+/.external_datasets/
+teamgym/data/medical/mlcr/raw/
+teamgym/data/medical/mlcr/inspectable/

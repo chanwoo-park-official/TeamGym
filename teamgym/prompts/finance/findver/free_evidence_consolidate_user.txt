@@ -1,0 +1,63 @@
+Consolidate the mapped evidence candidates for one filing without inventing or
+rewriting source evidence.
+
+REPORT
+{{REPORT_ID}}
+
+MAPPED CANDIDATE BLOCKS
+{{MAPPED_CANDIDATE_BLOCKS_JSON}}
+
+Goal:
+Normalize parser fragments and record information overlap before a new task is
+constructed. This is report-level consolidation, not RIU selection.
+
+Rules:
+1. Keep each native paragraph or table block intact by default.
+2. Put blocks in one merge_group only when their consecutive context IDs are
+   parser fragments of one semantic source unit and each fragment is incomplete
+   on its own. Do not merge merely related paragraphs or separate table rows.
+3. Exclude a block only when its complete useful information is an exact
+   duplicate of, or fully contained in, another retained block and it has no
+   unique contribution. A block cannot cover or exclude itself.
+4. Do not exclude partially overlapping blocks. Record their overlap in
+   information_relations so the task generator can decide whether unique
+   contributions from both are useful.
+5. Record exact duplicates and full containment in information_relations too.
+6. Use only supplied context IDs. Do not summarize source text into new evidence.
+7. If uncertain, retain the blocks separately and record partial_overlap.
+8. Repetition inside one native block is not a reason to exclude that block;
+   native blocks are indivisible at this stage.
+
+Return:
+{
+  "valid": true,
+  "merge_groups": [
+    {
+      "source_context_ids": [120, 121],
+      "reason": "consecutive parser fragments of one table row"
+    }
+  ],
+  "excluded_contexts": [
+    {
+      "context_id": 155,
+      "covered_by_context_ids": [160],
+      "relation_type": "fully_contained",
+      "reason": "all useful information appears in context 160"
+    }
+  ],
+  "information_relations": [
+    {
+      "relation_type": "partial_overlap",
+      "duplicated_information": "Total sales = 59,427",
+      "provider_context_ids": [130, 160],
+      "preferred_context_ids": [160],
+      "unique_contributions": {
+        "130": "direct total",
+        "160": "segment sales plus total"
+      },
+      "reason": "both state the total, while context 160 has additional detail"
+    }
+  ],
+  "issues": [],
+  "failed_reason": ""
+}

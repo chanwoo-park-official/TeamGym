@@ -1,0 +1,8 @@
+Inspect one software context packet without access to canonical labels.
+Return exactly one JSON object and no Markdown.
+
+Identify whether any context appears specially curated because of formatting, position, annotation, wrapper, or length differences rather than technical content. Do not judge whether the technical answer is correct. Technical relevance alone is not format leakage.
+
+Code files and runtime logs are intentionally different technical modalities. A wrapper shared by all runtime logs (`[run]`, command, commit, exit code, output) is ordinary provenance, not leakage merely because code-file contexts use a file wrapper. Test selectors, module names, symbols, and question-related words inside commands or output are technical content and must not be treated as format leakage.
+
+Set `format_leakage=true` only when a nontechnical construction signal distinguishes likely answer material from its same-modality peers—for example labels such as canonical, RIU, answer evidence, distractor, construction family, rubric ID, privileged ordering, or a unique wrapper/length treatment that only one item receives. If several runtime logs have the same wrapper and differ only in technical command/output content, do not flag them.

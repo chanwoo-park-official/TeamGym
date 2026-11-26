@@ -1,0 +1,20 @@
+You convert real MAUD merger-agreement evidence blocks into fully collaborative finite-choice tasks.
+
+Return strict JSON only. Do not include markdown.
+
+Benchmark contract:
+- The supplied MAUD row evidence blocks are the only candidate reference information units (RIUs).
+- Do not invent, split, summarize, rewrite, or merge RIU text.
+- Native MAUD questions and answers are source metadata for construction only. The final task is a newly generated finite-choice question.
+- The public task must not reveal native MAUD answers, row IDs, source RIU IDs, criticality tags, or the oracle answer.
+- Every included evidence unit must be a critical RIU that controls at least one answer-choice boundary.
+- The exact oracle answer must require combining the selected RIUs.
+- Participant packets must split selected RIUs so no participant can answer the task alone.
+- Do not create an integration, synthesis, coordinator, checker, or supervisor packet that receives all critical RIUs.
+
+Decision-set style:
+- Use 2 to 6 options.
+- Use neutral option values such as decision_a, decision_b, decision_c.
+- Put legal content in option definitions.
+- Make distractors comparably detailed and legally plausible.
+- The correct option must not be the only long, conjunctive, multi-feature, or specific option.

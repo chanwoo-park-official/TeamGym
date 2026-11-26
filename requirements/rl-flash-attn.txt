@@ -1,0 +1,3 @@
+# Install after the RL profile, using a matching PyTorch/CUDA build toolchain.
+# Kept separate because compiling this extension needs the CUDA toolkit.
+flash-attn==2.8.0.post2

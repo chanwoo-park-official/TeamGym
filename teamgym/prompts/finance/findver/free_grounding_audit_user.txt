@@ -1,0 +1,47 @@
+Independently audit the generated free-response task against the exact selected filing contexts.
+
+Generated task and oracle:
+{{PLAN_JSON}}
+
+Exact selected native contexts:
+{{SELECTED_CONTEXTS_JSON}}
+
+Validator feedback from a prior audit of this unchanged task:
+{{AUDIT_FEEDBACK}}
+
+Check:
+1. The full RIU set determines every required response item in the stated short
+   answer and canonical response.
+2. Every calculation, comparison, classification, entity, period, unit, sign, and scope is correct.
+   Also reject a mathematically possible operation when the source disclosures
+   do not give the resulting calculation or conclusion a defensible meaning.
+3. Every reasoning step is grounded in exactly its declared RIUs.
+4. Every selected RIU is genuinely necessary for at least one required response
+   item or grounded claim, not merely useful background. Removing it must make a
+   complete response impossible.
+5. Every atomic or composite answer_spec item is machine-checkable and agrees
+   with the canonical response.
+6. The public question does not disclose source values or construction metadata.
+
+Return:
+{
+  "valid": true,
+  "question_answerable_from_full_riu_set": true,
+  "short_answer_correct": true,
+  "canonical_response_grounded": true,
+  "all_selected_rius_necessary": true,
+  "answer_spec_correct": true,
+  "step_results": [
+    {
+      "claim_id": "claim_01",
+      "step": 1,
+      "grounded": true,
+      "uses_match": true,
+      "supporting_context_ids": [120],
+      "notes": "concise source trace"
+    }
+  ],
+  "unsupported_claims": [],
+  "failed_reason": "",
+  "notes": "strict grounding summary"
+}

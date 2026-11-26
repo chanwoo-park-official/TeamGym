@@ -1,0 +1,63 @@
+Audit one participant packet for unassigned-RIU visibility.
+
+Public task:
+{{PUBLIC_TASK_JSON}}
+
+Actual public/common information available to this participant:
+{{PUBLIC_INFORMATION_JSON}}
+
+Construction-only RIU specifications. Each RIU is one selected native filing
+context block:
+{{RIU_SPECS_JSON}}
+
+Participant packet. Its contexts are native paragraph or table blocks:
+{{PACKET_JSON}}
+
+RIUs assigned or intentionally shared with this participant:
+{{ASSIGNED_OR_SHARED_RIU_IDS_JSON}}
+
+RIUs not assigned to this participant. Audit exactly these RIUs:
+{{UNASSIGNED_RIU_IDS_JSON}}
+
+BM25 lexical hints. They are only candidate pointers; inspect the complete
+packet and make the semantic decision yourself:
+{{BM25_HINTS_JSON}}
+
+Formatting feedback from a prior attempt on this unchanged packet:
+{{AUDIT_FEEDBACK}}
+
+For each unassigned PIU, decide whether the complete packet together with
+common information supports reconstruction of its answer-determining meaning.
+Inspect both single blocks and combinations of passages/tables, including
+multi-step arithmetic, matching entity/period/unit/scope, definitions and
+exceptions. BM25 is only a pointer; inspect the entire packet.
+
+1. Mark direct repetition, equivalent tables/paraphrases, and collective or
+   arithmetic reconstruction visible=true. A PIU's original wording need not
+   be reproduced. Mere topic/entity/period overlap is insufficient.
+2. Cite every native source context ID used in a reconstruction, including
+   individually insufficient blocks. Explain the derivation and common facts.
+3. Repetition of an assigned or shared PIU is allowed. Audit only unassigned PIUs.
+4. If common information alone exposes an unassigned PIU, set
+   evidence_in_common=true, common_information_exposes_unassigned=true and
+   cite no nonexistent packet context IDs.
+5. This reconstruction audit is distinct from the separate full participant
+   answerability test. Do not assume PIU-only LOO proves packet insufficiency.
+6. Return exactly one row per unassigned PIU and none for assigned/shared PIUs.
+
+Return:
+{
+  "participant_id": "participant_a",
+  "unassigned_riu_results": [
+    {
+      "riu_id": "riu_context_120",
+      "visible": true,
+      "visibility_type": "direct | table_value | clear_paraphrase | collective | arithmetic | common | none",
+      "evidence_in_common": false,
+      "evidence_context_ids": [155],
+      "reason": "context 155 directly states the unassigned RIU value"
+    }
+  ],
+  "common_information_exposes_unassigned": false,
+  "notes": "concise packet-level unassigned-PIU summary"
+}

@@ -1,0 +1,32 @@
+Audit every proposed information_feature.
+
+A safe feature:
+- is an English noun phrase containing two to six words;
+- identifies only the RIU's broad subject or function;
+- does not reveal an amount, date, threshold, named entity, legal citation, answer, conclusion, polarity, or whether a condition is satisfied; and
+- does not allow a participant without the RIU to reconstruct its private content.
+
+If unsafe, provide a safer two-to-six-word suggested_information_feature. If safe, use an empty string for suggested_information_feature.
+
+When several unsafe features concern the same broad subject, preserve differences in their broad functions when those differences can be stated safely. For example, use distinct phrases for scope, terms, implementation, timing, or rationale rather than assigning the same phrase to all of them. Reuse the same suggested feature only when the RIUs genuinely have the same broad subject and function.
+
+Public problem description:
+{{public_problem_description}}
+
+Hidden reference decision used only for this audit:
+{{reference_decision}}
+
+RIUs and proposed features:
+{{rius_and_features}}
+
+Return exactly:
+{
+  "audits": [
+    {
+      "rui_id": "supplied RIU identifier",
+      "safe": true,
+      "reason": "brief audit reason",
+      "suggested_information_feature": ""
+    }
+  ]
+}

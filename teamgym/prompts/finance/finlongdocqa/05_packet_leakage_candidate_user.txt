@@ -1,0 +1,42 @@
+Scan one bounded chunk of a participant's private packet for contexts that may
+contribute to reconstructing a foreign RIU.
+
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+PARTICIPANT
+{{PARTICIPANT_JSON}}
+
+RIUS OWNED BY OTHER PARTICIPANTS
+{{FOREIGN_RIUS_JSON}}
+
+ONE PACKET CONTEXT CHUNK
+{{PACKET_CONTEXT_CHUNK_JSON}}
+
+This is a high-recall candidate scan, not the final leakage judgment.
+
+For each foreign RIU:
+1. Select a context only when it contains a direct value, label, scope, period,
+   paraphrase, duplicate disclosure, or directly computable input that could
+   contribute to reconstructing that RIU for the public task.
+2. Do not select merely topical background or keyword overlap.
+3. Consider canonical and non-canonical contexts. The final auditor will decide
+   what may be removed.
+4. Return at most 12 strongest context IDs per foreign RIU in this chunk.
+5. Use only context_unit_id values shown in this chunk.
+6. Grade every foreign rui_id exactly once, using an empty list when this chunk
+   has no plausible contributor.
+
+Return:
+{
+  "participant_id": "<exact participant_id>",
+  "foreign_rui_candidates": [
+    {
+      "rui_id": "<exact foreign rui_id>",
+      "candidate_context_unit_ids": ["<context_unit_id>", "..."],
+      "reason": "<brief description of the potentially contributed information>"
+    }
+  ]
+}
+
+Return JSON only.

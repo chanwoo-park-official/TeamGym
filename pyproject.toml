@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rllm"
+version = "0.2.1"
+description = "TeamGym construction, evaluation, and repository-local RLLM runtime"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+data = ["huggingface-hub", "pandas", "pyarrow"]
+llm = ["openai", "tiktoken"]
+construction = ["openai", "tiktoken", "tqdm", "tomli; python_version < '3.11'"]
+test = ["pytest", "pip>=22.3", "setuptools>=68", "wheel"]
+
+[project.scripts]
+teamgym-generate = "teamgym.data.cli:main"
+teamgym-evaluate = "teamgym.interaction.run_evaluation:main"
+teamgym-judge = "teamgym.data.long_context_reasoning.judge:main"
+teamgym-validate-frozen = "teamgym.data.legal.archive_validation:main"
+teamgym-paper = "teamgym.rl.paper:main"
+teamgym-train = "teamgym.rl.launch:main"
+
+[tool.setuptools]
+include-package-data = false
+
+[tool.setuptools.package-data]
+rllm = ["LICENSE", "**/*.yaml", "**/*.json", "**/*.jinja", "**/*.jinja2"]
+teamgym = ["prompts/**/*.txt", "data/software/deep_swe/runtime_repairs/*.Dockerfile"]
+"teamgym.rl" = [
+    "train_legal_roles.sh",
+    "train_legal.sh",
+    "train_backend.sh",
+    "merge_full_checkpoint_hf.sh",
+    "merge_joint_checkpoint_hf.sh",
+    "require_four_gpu_allocation.sh",
+    "fixtures/*.jsonl",
+]
+
+[tool.setuptools.exclude-package-data]
+"*" = ["*.parquet", "*.pt", "*.pth", "*.safetensors", "*.log", "*.ipynb"]
+rllm = ["data/datasets/*", "data/datasets/**/*", "registry/dataset_registry.json"]
+
+[tool.pytest.ini_options]
+# The default suite uses the lightweight installation. RL checks are explicit.
+testpaths = ["tests"]
+pythonpath = ["."]

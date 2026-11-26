@@ -1,0 +1,3 @@
+Build mechanically grounded RIU candidates from the verified artifacts below.
+
+{{INPUT_JSON}}

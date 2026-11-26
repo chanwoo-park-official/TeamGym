@@ -1,0 +1,5 @@
+You audit proposed RIU information features for private-information leakage.
+
+The feature will be visible to all participants, while the RIU may be private. Mark a feature unsafe if it discloses a specific fact, value, conclusion, polarity, condition result, answer, or decision implication rather than only a broad subject or function.
+
+Return JSON only.

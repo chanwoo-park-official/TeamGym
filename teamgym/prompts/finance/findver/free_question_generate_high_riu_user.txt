@@ -1,0 +1,224 @@
+Create one coherent free-response filing-review task and select its PIUs from
+the normalized source blocks in the same response. Ground the question in
+related findings, calculations, comparisons, or conclusions supported by those
+blocks.
+
+SOURCE QAS AND CONSTRUCTION-ONLY METADATA
+{{SOURCE_SEED_JSON}}
+
+NORMALIZED CANDIDATE BLOCKS
+{{CANDIDATE_CONTEXTS_JSON}}
+
+RECORDED INFORMATION OVERLAP OR CONTAINMENT
+{{CANDIDATE_RELATIONS_JSON}}
+
+Available PIU-count range: {{MIN_UNITS}} to {{MAX_UNITS}}. Select the blocks
+needed to determine the answer to the question. Each selected block must make
+a distinct contribution.
+
+Structured feedback from a rejected attempt:
+{{REJECTION_FEEDBACK}}
+
+Selection rules:
+1. Select complete candidate blocks by candidate_block_id. Never select an
+   individual value or cell from inside a block.
+2. One normalized candidate block becomes one candidate PIU. A merged block
+   already represents consecutive parser fragments of one source unit.
+3. Identify a coherent set of related source QAs and candidate blocks whose
+   facts share the same company, period, transaction, segment, liquidity topic,
+   accounting policy, operating trend, or filing-review objective.
+4. Select blocks within the stated range that combine through related calculations,
+   comparisons, reconciliations, classifications, or filing-specific
+   conclusions.
+   Mathematical combinability alone is insufficient: the relationship and
+   resulting conclusion must have a defensible meaning under the source labels,
+   scopes, periods, units, and disclosure.
+5. Do not select two blocks solely for information they duplicate.
+6. Partially overlapping blocks may both be selected only when the task
+   explicitly uses a unique contribution from each.
+7. Every selected PIU must be answer-determining. If it is unavailable, at
+   least one required response item or grounded claim must not be recoverable,
+   so a complete response is impossible.
+8. A selected block may support multiple rubric claims, and one claim may use
+   multiple selected blocks.
+9. Do not copy the source QA statement as the new task.
+
+Task rules:
+1. Ask one coherent question. When the question has multiple required response
+   items, state each item explicitly and relate them to the same company,
+   transaction, period, accounting topic, or filing-review objective.
+2. Do not expose PIUs, candidate IDs, context IDs, annotations, participants,
+   source labels, or construction metadata.
+3. Do not give away a requested item, including counts stated in words. For
+   example, do not say "the four quarterly periods" while asking how many
+   reported periods there are. Reporting years/dates may define scope; they
+   must not supply a requested answer value or conclusion.
+   State any operation convention needed for an unambiguous answer, but do not
+   disclose source values in the public question.
+4. Preserve exact entity, segment, period, unit, sign, scope, and precision.
+   Do not reinterpret, double-count, or combine source facts in a way that their
+   labels, scopes, periods, units, or disclosure do not justify.
+5. Every reasoning step must have a stable claim_id. Its uses must be both
+   complete and minimal: include every PIU needed for that claim and no PIU that
+   supports only another claim or background framing.
+6. Across all reasoning steps, every selected PIU must be used. Every requested
+   response item must map to one or more reasoning claim IDs.
+7. Use a composite answer_spec for multiple required response items. Each item
+   must have an item_id, claim_ids, and its own numeric, text, or classification
+   grading specification.
+8. For numeric items, provide value, unit, and a narrow defensible absolute
+   tolerance. For text/classification items, provide accepted_conclusions.
+9. The canonical response must answer every required item and show the complete
+   source-grounded derivation.
+10. The public task must not be answerable from general financial knowledge or
+   wording alone.
+11. Use feedback to revise the previous selection and task. Do not merely repeat
+    a known failed design.
+
+Return:
+{
+  "selection": {
+    "valid": true,
+    "joint_question_theme": "integrated reasoning target",
+    "target_operation": "calculation, comparison, reconciliation, classification, or conclusion",
+    "selected_contexts": [
+      {
+        "candidate_block_id": "ctx_000120",
+        "unit_id": "riu_context_120",
+        "information_feature": "first answer-determining contribution",
+        "entity_scope": "exact entity or reporting scope",
+        "period_scope": "exact date or reporting period",
+        "why_critical": "why a required response item cannot be answered without it"
+      },
+      {
+        "candidate_block_id": "ctx_000160",
+        "unit_id": "riu_context_160",
+        "information_feature": "second answer-determining contribution",
+        "entity_scope": "related entity or reporting scope",
+        "period_scope": "related date or reporting period",
+        "why_critical": "why a required response item cannot be answered without it"
+      },
+      {
+        "candidate_block_id": "ctx_000200",
+        "unit_id": "riu_context_200",
+        "information_feature": "third answer-determining contribution",
+        "entity_scope": "related entity or reporting scope",
+        "period_scope": "related date or reporting period",
+        "why_critical": "why a required response item cannot be answered without it"
+      }
+    ],
+    "failed_reason": ""
+  },
+  "public_task": {
+    "title": "short filing-review title",
+    "question": "coherent question explicitly requesting each related response item",
+    "response_format_note": "Answer every requested item and give concise source-grounded derivations.",
+    "answer_format": {"type": "free_response"}
+  },
+  "oracle": {
+    "answer": "free_response",
+    "short_answer": "compact list of all required results",
+    "canonical_response": "numbered response covering every required item",
+    "answer_spec": {
+      "type": "composite",
+      "items": [
+        {
+          "item_id": "item_01",
+          "claim_ids": ["claim_01"],
+          "type": "numeric",
+          "value": 9.0,
+          "unit": "percent",
+          "absolute_tolerance": 0.1
+        },
+        {
+          "item_id": "item_02",
+          "claim_ids": ["claim_02"],
+          "type": "text",
+          "accepted_conclusions": ["concise canonical conclusion"]
+        },
+        {
+          "item_id": "item_03",
+          "claim_ids": ["claim_03"],
+          "type": "classification",
+          "accepted_conclusions": ["canonical classification"]
+        }
+      ]
+    },
+    "reasoning_steps": [
+      {
+        "claim_id": "claim_01",
+        "step": 1,
+        "uses": ["riu_context_120"],
+        "claim": "first required grounded result",
+        "expected_answer_element": "canonical value or conclusion",
+        "grading_rule": "objective value, tolerance, unit, scope, and period rule",
+        "judge_focus": "machine-checkable or semantic condition for credit"
+      },
+      {
+        "claim_id": "claim_02",
+        "step": 2,
+        "uses": ["riu_context_160"],
+        "claim": "second required grounded result",
+        "expected_answer_element": "canonical value or conclusion",
+        "grading_rule": "objective grading rule",
+        "judge_focus": "machine-checkable or semantic condition for credit"
+      },
+      {
+        "claim_id": "claim_03",
+        "step": 3,
+        "uses": ["riu_context_200"],
+        "claim": "third required grounded result",
+        "expected_answer_element": "canonical value or conclusion",
+        "grading_rule": "objective grading rule",
+        "judge_focus": "machine-checkable or semantic condition for credit"
+      }
+    ],
+    "required_decision_steps": [
+      {
+        "claim_id": "claim_01",
+        "step": 1,
+        "uses": ["riu_context_120"],
+        "claim": "required grounded claim",
+        "expected_answer_element": "canonical value or conclusion",
+        "grading_rule": "objective grading rule",
+        "judge_focus": "required condition"
+      },
+      {
+        "claim_id": "claim_02",
+        "step": 2,
+        "uses": ["riu_context_160"],
+        "claim": "required grounded claim",
+        "expected_answer_element": "canonical value or conclusion",
+        "grading_rule": "objective grading rule",
+        "judge_focus": "required condition"
+      },
+      {
+        "claim_id": "claim_03",
+        "step": 3,
+        "uses": ["riu_context_200"],
+        "claim": "required grounded claim",
+        "expected_answer_element": "canonical value or conclusion",
+        "grading_rule": "objective grading rule",
+        "judge_focus": "required condition"
+      }
+    ],
+    "judge_rubric": {
+      "passing_score": 0.8,
+      "criteria": [
+        {"name": "final_answer", "weight": 0.5, "description": "States every required result correctly."},
+        {"name": "required_steps", "weight": 0.3, "description": "Covers every required derivation step."},
+        {"name": "source_grounding", "weight": 0.15, "description": "Uses only supplied facts."},
+        {"name": "clarity", "weight": 0.05, "description": "Is concise and clear."}
+      ]
+    },
+    "disqualifying_errors": [
+      "The final result is materially incorrect.",
+      "A required reasoning step is missing.",
+      "The response uses a material fact not supplied in the task evidence.",
+      "The response uses the wrong entity, period, unit, sign, or reporting scope."
+    ]
+  }
+}
+
+When the task has one required response item, an atomic numeric, text, or
+classification answer_spec is valid.

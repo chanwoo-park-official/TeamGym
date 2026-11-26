@@ -1,0 +1,56 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+HIDDEN CLAIM RUBRIC
+{{RUBRIC_JSON}}
+
+CANONICAL ANSWER
+{{CANONICAL_ANSWER_JSON}}
+
+MATERIAL ACTUALLY SHOWN TO THE SOLVER
+{{AVAILABLE_MATERIAL_JSON}}
+
+SOLVER RESPONSE
+{{SOLVER_RESPONSE_JSON}}
+
+PREVIOUS FORMAT FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Rules:
+1. Grade every required claim exactly once.
+2. content_correct asks only whether the answer states the claim correctly.
+3. grounded_in_available_material asks whether the displayed material actually
+   supports the claim at the stated scope and causal strength.
+4. Judge the displayed text independently. Equivalent passages, combinations of
+   passages, and alternative valid derivations can support a claim. Do not require
+   a preassigned source set or infer which experimental condition is being tested.
+5. A claim is grounded only if the cited displayed text actually supports it at
+   the required clinical scope. Judge support semantically, not by source IDs.
+6. satisfied is true only when both content_correct and grounded are true.
+7. content_complete is true when every required claim is correctly stated, even if
+   the solver guessed some claims without evidence.
+8. grounded_complete is true only when every required claim is satisfied.
+9. Never fail an answer merely because an omitted or hidden RIU ID was not selected.
+10. Cite only displayed evidence_number values.
+11. Apply criteria semantically. Do not fail a substantively complete answer for
+   omitting incidental source details that are neither essential to the claim nor
+   explicitly requested by the public question.
+
+Return:
+{
+  "content_complete": false,
+  "grounded_complete": false,
+  "claim_results": [
+    {
+      "claim_id": "claim_01",
+      "content_correct": false,
+      "grounded_in_available_material": false,
+      "satisfied": false,
+      "evidence_numbers": [],
+      "reason": "claim-specific judgment"
+    }
+  ],
+  "unsupported_claims": [],
+  "critical_errors": [],
+  "reason": "concise overall judgment"
+}

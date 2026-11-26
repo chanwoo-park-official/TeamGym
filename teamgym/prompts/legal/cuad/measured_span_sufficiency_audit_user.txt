@@ -1,0 +1,66 @@
+Measure the smallest sufficient direct-span set for this CUAD question.
+
+CUAD label family:
+{{LABEL_FAMILY}}
+
+CUAD label details:
+{{LABEL_DETAILS}}
+
+Positive CUAD spans supplied to the generator:
+{{POSITIVE_SPANS_JSON}}
+
+Generated instance plan:
+{{PLAN_JSON}}
+
+Acceptance threshold for measured smallest sufficient span set size:
+{{MIN_ACCEPT_SIZE}}
+
+Audit examples and anti-examples:
+{{AUDIT_EXAMPLES}}
+
+Validation rule:
+- Treat each included evidence unit as one original CUAD positive span.
+- Do not split spans into atomic facts.
+- Valid only if every included evidence_unit.text is copied exactly from one supplied positive CUAD span.
+- First check whether the full included span set is sufficient to determine the exact oracle.answer.
+- Then find the smallest subset(s) of included spans that can determine the same exact oracle.answer.
+- A subset that determines a different, less-complete decision option is not sufficient for the oracle answer.
+- Do not count "this subset proves the broad CUAD label exists" as sufficient. The target is the exact generated oracle.answer.
+- The generated oracle answer is allowed to be a neutral decision identifier such as decision_a/decision_b/decision_c/decision_d/decision_e/decision_f. Do not reject an instance merely because it uses neutral decision identifiers. Finite-choice decision tasks are the intended conversion target, as long as the exact decision is grounded in the supplied CUAD spans.
+- Do not audit against the raw CUAD label-existence answer. The raw CUAD label is only source metadata; the target is the generated finite-choice decision.
+- Verify every component, condition, exception, party, timing rule, cost rule, and remedy in the oracle answer against the exact span text. If the answer contradicts or oversimplifies the span text, mark valid=false even if multiple spans are needed.
+- The instance is acceptable only if the minimum sufficient span set size is at least MIN_ACCEPT_SIZE.
+- The instance is not acceptable if one participant has a smallest sufficient span set.
+- Keep valid and accept_under_threshold consistent: if all validation rules pass and the minimum sufficient span set size is at least MIN_ACCEPT_SIZE, set both valid=true and accept_under_threshold=true. Do not return valid=false with accept_under_threshold=true.
+
+Return JSON with exactly these keys:
+{
+  "valid": true,
+  "necessity_mode": "measured_direct_span_smallest_sufficient_set",
+  "copied_from_positive_spans": true,
+  "full_span_set_sufficient": true,
+  "minimum_sufficient_span_set_size": 2,
+  "smallest_sufficient_span_sets": [
+    {
+      "unit_ids": ["span_01", "span_02"],
+      "answer": "the exact oracle.answer from the generated plan",
+      "why_sufficient": "why these spans together determine the exact oracle answer",
+      "why_minimal": "why every smaller subset fails to determine that same answer"
+    }
+  ],
+  "single_unit_shortcut": false,
+  "single_participant_shortcut": false,
+  "leave_one_out_results": [
+    {
+      "omitted_unit_id": "span_01",
+      "remaining_unit_ids": ["span_02"],
+      "can_determine_oracle_without_omitted": false,
+      "plausible_decisions_without_omitted": ["another generated decision_set value"],
+      "why_or_why_not": "whether the omitted span is needed for the exact oracle answer"
+    }
+  ],
+  "non_required_unit_ids": [],
+  "accept_under_threshold": true,
+  "failed_reason": "",
+  "notes": "short audit rationale"
+}

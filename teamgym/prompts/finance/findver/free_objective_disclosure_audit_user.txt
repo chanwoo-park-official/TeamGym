@@ -1,0 +1,46 @@
+Independently audit whether the public filing-review objective gives away any
+source-specific value, answer conclusion, or requested answer cardinality.
+
+Exact public task shown to solvers:
+{{PUBLIC_TASK_JSON}}
+
+Hidden answer specification and oracle (audit only):
+{{ORACLE_JSON}}
+
+Selected source evidence (audit only):
+{{SELECTED_CONTEXTS_JSON}}
+
+Prior audit/format feedback:
+{{AUDIT_FEEDBACK}}
+
+Check the objective separately from whether the answer is correct or whether
+other answer items remain difficult. Reject if a requested answer item, even
+one component of a composite task, is supplied in the question or format note.
+Examples: saying "the four quarterly payment periods" while asking how many
+reported periods there were; asking a change "from $10 to $12" when those source
+values should come from the filing; giving the classification to be found.
+Do not ban all numbers: company/report names, reporting years, dates defining
+the requested scope, item enumeration, and explicitly stated operation
+conventions may be legitimate. Distinguish these from the answer values or
+conclusions the solver must obtain from the source. Audit word-form numbers,
+paraphrases and semantic implications, not only digit matches.
+
+Return JSON:
+{
+  "valid": true,
+  "discloses_answer_information": false,
+  "findings": [
+    {
+      "public_quote": "exact public text that discloses an answer",
+      "answer_item_ids": ["item_04"],
+      "reason": "specific answer contribution supplied by this quote"
+    }
+  ],
+  "legitimate_scope_numbers": [
+    {"public_quote": "2023", "reason": "reporting-year scope, not a requested answer"}
+  ],
+  "notes": "concise independent objective-disclosure decision"
+}
+When nothing is disclosed, findings must be empty and valid=true. A disclosure
+requires valid=false and discloses_answer_information=true. Cite exact public
+quotes; do not invent source text or excuse a leak because other items need PIUs.

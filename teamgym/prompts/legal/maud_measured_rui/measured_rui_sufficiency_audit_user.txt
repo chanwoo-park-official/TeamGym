@@ -1,0 +1,63 @@
+Measure the smallest sufficient RIU set for this generated MAUD finite-choice question.
+
+MAUD category:
+{{CATEGORY}}
+
+Native MAUD issue groups. These are source metadata only:
+{{ISSUE_GROUPS_JSON}}
+
+Candidate cleaned MAUD RIUs:
+{{CANDIDATE_RUIS_JSON}}
+
+Generated instance plan:
+{{PLAN_JSON}}
+
+Acceptance threshold for measured smallest sufficient RIU set size:
+{{MIN_ACCEPT_SIZE}}
+
+Validation rule:
+- Treat each included evidence unit as one cleaned MAUD row-evidence block.
+- Do not split RIUs into atomic facts.
+- Valid only if every included evidence_unit.text is copied exactly from one selected MAUD RIU block.
+- First check whether the full included RIU set is sufficient to determine the exact oracle.answer.
+- Then find the smallest subset(s) of included RIUs that can determine the same exact oracle.answer.
+- A subset that determines a different, less-complete decision option is not sufficient for the oracle answer.
+- If an included RIU is useful background but can be removed while preserving the exact oracle answer, mark it as non-required.
+- If several RIUs express the same answer boundary, mark redundant members as non-required unless removing any one of them makes the oracle answer indeterminate.
+- Do not audit against the raw MAUD native answer. The native answer is only source metadata.
+- Verify every component, condition, exception, party, timing rule, cost rule, and remedy in the oracle answer against the exact RIU text.
+- The instance is acceptable only if the minimum sufficient RIU set size is at least MIN_ACCEPT_SIZE.
+- The instance is not acceptable if one participant has a smallest sufficient RIU set.
+- Keep valid and accept_under_threshold consistent: if all validation rules pass and the minimum sufficient RIU set size is at least MIN_ACCEPT_SIZE, set both valid=true and accept_under_threshold=true.
+
+Return JSON with exactly these keys:
+{
+  "valid": true,
+  "necessity_mode": "maud_measured_rui_smallest_sufficient_set",
+  "copied_from_maud_rui_blocks": true,
+  "full_rui_set_sufficient": true,
+  "minimum_sufficient_rui_set_size": 2,
+  "smallest_sufficient_rui_sets": [
+    {
+      "unit_ids": ["rui_01", "rui_02"],
+      "answer": "the exact oracle.answer from the generated plan",
+      "why_sufficient": "why these RIUs together determine the exact oracle answer",
+      "why_minimal": "why every smaller subset fails to determine that same answer"
+    }
+  ],
+  "single_unit_shortcut": false,
+  "single_participant_shortcut": false,
+  "leave_one_out_results": [
+    {
+      "omitted_unit_id": "rui_01",
+      "remaining_unit_ids": ["rui_02"],
+      "can_determine_oracle_without_omitted": false,
+      "plausible_decisions_without_omitted": ["another generated decision_set value"],
+      "why_or_why_not": "whether the omitted RIU is needed for the exact oracle answer"
+    }
+  ],
+  "non_required_unit_ids": [],
+  "accept_under_threshold": true,
+  "failed_reason": "",
+  "notes": "short audit rationale"
+}

@@ -1,0 +1,3 @@
+Judge a proposed answer against a hidden claim-level rubric. Do not reward recovery of
+construction IDs. Evaluate only whether the answer to the public medical question
+satisfies each required claim with correct scope and source grounding. Return JSON only.

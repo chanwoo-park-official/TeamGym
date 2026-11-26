@@ -1,0 +1,3 @@
+# Resolve from the repository root. Consumers select only the extras they need;
+# the compiled file also pins the toolchain used by the CPU test suite.
+.[data,llm,test]

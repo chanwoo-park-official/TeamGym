@@ -1,0 +1,21 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+AVAILABLE MATERIAL
+{{AVAILABLE_EVIDENCE_JSON}}
+
+Rules:
+1. Address every requested part supported by the material.
+2. Distinguish static code implications from observed runtime behavior.
+3. Cite only displayed evidence_number values.
+4. Do not fabricate a repository-specific value, test result, or code path.
+5. Preserve exact decisive source lines and exact decisive runtime lines in `answer` whenever they are needed to satisfy a requested demonstration. Introduce them with their evidence number so the judge can verify grounding.
+
+Return:
+{
+  "answer": "concise complete answer or the supported subset",
+  "evidence_used": [
+    {"evidence_number": 1, "use": "what this material establishes"}
+  ],
+  "unresolved_requirements": ["requested element not established by available material"]
+}

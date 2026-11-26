@@ -1,0 +1,39 @@
+Assign one short information_feature to every supplied RIU.
+
+Requirements:
+- Use an English noun phrase containing two to six words.
+- Describe the broad subject or function of the RIU, not what the RIU concludes.
+- Do not include the word "reviewer"; it will be added later.
+- Do not include exact amounts, percentages, dates, thresholds, personal names, organization names, locations, answer labels, quoted language, or legal rule, statute, regulation, or section citations.
+- Do not state whether a condition is satisfied.
+- Do not state that an action is allowed, prohibited, approved, denied, successful, unsuccessful, correct, or incorrect.
+- Do not encode positive or negative polarity.
+- Do not name a concrete communication method, technology, remedy, or other implementation detail that appears only in the private RIU; generalize it to its broad subject.
+- A participant who cannot see the RIU should not be able to reconstruct its private content from the information_feature.
+- Use distinct phrases for different subjects when the RIUs support distinct parts of the problem.
+- Preserve only established abbreviations that are needed to identify the broad subject.
+
+Examples:
+- RIU: "The taxpayer had $75,845 of income." Good: "income amount". Bad: "$75,845 income".
+- RIU: "The party knew the information before trading." Good: "party knowledge". Bad: "confirmed party knowledge".
+- RIU: "The purchase exceeds the applicable limit." Good: "purchase threshold". Bad: "limit-exceeding purchase".
+- RIU: "Alice has single filing status." Good: "filing status". Bad: "single-filer status".
+- RIU: "The court ordered technology access." Good: "ordered-relief scope". Bad: "technology-access order".
+- RIU: "A motion invokes Rule 12(h)(3)." Good: "jurisdictional motion filing". Bad: "Rule 12(h)(3) filing".
+- RIU: "The order requires telephone access." Good: "legal access terms". Bad: "telephone access terms".
+
+Public problem description:
+{{public_problem_description}}
+
+RIUs:
+{{rius}}
+
+Return exactly:
+{
+  "information_features": [
+    {
+      "rui_id": "supplied RIU identifier",
+      "information_feature": "two-to-six-word broad subject or function"
+    }
+  ]
+}

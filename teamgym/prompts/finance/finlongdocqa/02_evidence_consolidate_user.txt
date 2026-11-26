@@ -1,0 +1,61 @@
+Consolidate the report-level evidence candidate pool before task generation.
+
+REPORT ID
+{{REPORT_ID}}
+
+VALID SOURCE QAS
+{{SOURCE_QAS_JSON}}
+
+QA-TO-EVIDENCE MAPPINGS
+{{QA_EVIDENCE_MAPPINGS_JSON}}
+
+ALL UNIQUE MAPPED BLOCKS
+{{EVIDENCE_CANDIDATE_BLOCKS_JSON}}
+
+FEEDBACK FROM A PREVIOUS CONSOLIDATION ATTEMPT
+{{CONSOLIDATION_FEEDBACK}}
+
+The source blocks are immutable. Do not rewrite, concatenate, split, or invent
+report text. Adjacent label/value fragments have already been normalized by the
+parser.
+
+Identify overlap among the answer-relevant information contributed by these
+blocks:
+
+- exact_duplicate: the mapped contribution is repeated
+- information_contained: one block contains the entire mapped contribution of
+  another block and may also contain additional useful information
+- derived_equivalent: one contribution can be directly computed from another
+- partial_overlap: blocks share some information but each has a unique mapped
+  contribution
+
+Exclusion rules:
+1. Exclude a block only when its entire mapped contribution is fully subsumed by
+   a retained preferred block.
+2. Never exclude a partially overlapping block that has a unique contribution
+   which could support a new task.
+3. Keep at least two blocks.
+4. Every candidate block must appear exactly once in retained_block_ids or
+   excluded_block_ids.
+5. Every excluded block must appear in fully_subsumed_block_ids of an overlap
+   group whose preferred block is retained.
+6. If uncertain, retain the block and describe partial_overlap.
+
+Return:
+{
+  "report_id": "<exact report id>",
+  "overlap_groups": [
+    {
+      "information": "<duplicated, contained, derived, or partially shared information>",
+      "relation": "<exact_duplicate|information_contained|derived_equivalent|partial_overlap>",
+      "provider_block_ids": ["<block_id>", "..."],
+      "preferred_block_id": "<retained provider block_id>",
+      "fully_subsumed_block_ids": ["<safe-to-exclude block_id>", "..."],
+      "reason": "<concise comparison including unique information>"
+    }
+  ],
+  "retained_block_ids": ["<block_id>", "..."],
+  "excluded_block_ids": ["<fully subsumed block_id>", "..."]
+}
+
+Return JSON only.

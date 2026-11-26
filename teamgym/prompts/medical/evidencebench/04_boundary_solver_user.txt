@@ -1,0 +1,25 @@
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+AVAILABLE PAPER MATERIAL
+{{AVAILABLE_MATERIAL_JSON}}
+
+PREVIOUS FORMAT FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+The evidence_number values are neutral display labels. They do not identify gold
+evidence or RIUs.
+
+Answer every component explicitly requested by the public question. Keep the prose
+compact, but before returning verify that no requested population, exposure,
+comparator, outcome, direction, or limitation has been omitted.
+
+Return:
+{
+  "answer": "compact answer or a precise statement of what remains unresolved",
+  "evidence_used": [
+    {"evidence_number": "evidence_01", "use": "what this material supports"}
+  ],
+  "unresolved_requirements": [],
+  "confidence": 0.0
+}

@@ -1,0 +1,6 @@
+Answer one software-repository QA task using only the material supplied in this condition.
+Return exactly one JSON object and no Markdown.
+
+Do not assume a repository-specific behavior that is absent from the material. A runtime claim requires supplied execution output plus code or test material that identifies what was exercised. If a requested element is not established, state that it is unresolved. You do not know whether any material was intentionally omitted.
+
+The answer is also a coverage artifact. When the public question or a supported requirement asks to show, demonstrate, trace, or verify something, include the shortest decisive code or execution-output excerpt verbatim in the answer. Do not replace required code or `=== RUN` / `--- PASS` output with a prose-only summary.

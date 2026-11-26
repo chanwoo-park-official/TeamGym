@@ -1,0 +1,54 @@
+Use these examples as selection style guidance. Do not copy their facts unless
+the supplied CUAD spans actually say the same thing.
+
+Good 2-span selection:
+- span A states who has a legal right or obligation.
+- span B states a separate scope, cost, remedy, deadline, or exception.
+- A final question could ask which legal arrangement is created.
+- Each span controls a different answer boundary.
+
+Good 3-span selection:
+- span A states the base rule.
+- span B states a condition, threshold, deadline, or triggering event.
+- span C states a consequence, remedy, exception, carveout, or cost allocation.
+- A final question could ask which complete legal profile applies.
+- Removing any one span would leave at least two plausible answer profiles.
+
+Good 3-span examples by legal shape:
+- Audit rights: audit holder + audit frequency/window + cost/reimbursement rule.
+- Minimum commitment: activity threshold + staffing/volume threshold + shortfall remedy.
+- Liability cap: monetary cap + excluded damages + carveout or exclusive remedy.
+- ROFR/ROFO/ROFN: election right + exercise deadline + fallback if not exercised.
+- License grant: granted activity + territory/channel/scope + restriction or exception.
+
+Good 4-span selection:
+- span A states the base rule, grant, right, cap, or obligation.
+- span B states scope, party, product, territory, or covered activity.
+- span C states condition, trigger, deadline, measurement period, or exception.
+- span D states consequence, fallback, remedy, cost rule, or carveout.
+- A final question could ask which complete legal profile applies.
+- Every three-span subset should leave at least one important profile feature unresolved.
+
+Good 4-span examples by legal shape:
+- Minimum commitment: monthly floor + annual unit schedule + exclusivity condition + shortfall consequence.
+- Audit rights: audit holder + audited records/scope + timing/frequency limit + cost/reimbursement rule.
+- Liability cap: base liability cap + damages exclusion + exclusive remedy + carveout/exception.
+- License grant: permitted activity + protected asset/name/IP + territory/channel + restriction/condition.
+- ROFR/ROFO/ROFN: triggering event + election right + exercise procedure/deadline + fallback if not exercised.
+
+General k-span selection:
+- For k selected spans, each span should control one separable feature of the final profile.
+- Useful feature types include party, covered asset, legal right, scope, territory, threshold, timing, condition, exception, remedy, fallback, cost allocation, and carveout.
+- The target k cannot exceed the number of supplied positive spans, and it also cannot exceed the number of non-duplicate useful decision-boundary spans.
+- If the source has fewer than k useful spans, select the smaller honest basis and let the audit reject under a high threshold.
+- When multiple honest bases are possible, prefer the larger basis. For example, prefer "right + scope + timing + fallback" over "right + fallback" if the scope and timing spans are distinct and would change answer options.
+
+Bad selection:
+- Selecting a third span only because it repeats or restates span A.
+- Selecting context such as definitions if the final decision can be made without it.
+- Selecting a broad paragraph whose only role is to prove the raw CUAD label exists.
+- Selecting a fragment that cannot independently control an answer boundary.
+
+When the target measured size is 3 or higher, prefer a basis with that many
+spans only if it matches one of the good shapes above. Otherwise select the
+smaller honest basis.

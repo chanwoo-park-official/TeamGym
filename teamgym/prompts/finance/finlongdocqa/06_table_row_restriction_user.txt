@@ -1,0 +1,25 @@
+A whole-packet audit found that canonical source material reconstructs another
+participant's PIU. Try the paper's narrow table-row exception. Keep one table as
+one PIU; never split it into separate value/row PIUs or rewrite text.
+
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+HIDDEN RUBRIC
+{{RUBRIC_JSON}}
+CURRENT PIUS
+{{EVIDENCE_UNITS_JSON}}
+ORIGINAL TABLE BLOCKS (rows are 1-based original text.splitlines())
+{{OVERLAPPING_TABLES_JSON}}
+PARTICIPANT / FOREIGN PIU OVERLAPS
+{{CANONICAL_OVERLAPS_JSON}}
+
+For each table you can safely restrict, retain header and separator rows 1 and 2
+and every data/unit/period/scope/total row needed for its own linked claims.
+Remove only unrelated rows that independently reveal foreign answer components.
+Use exact original row numbers. Do not add rows removed by earlier restrictions.
+If safe restriction is impossible return an empty list; the task will be rejected.
+The full evidence solver, every LOO condition, whole-packet reconstruction and
+participant-only answer checks will be repeated after changes.
+
+Return JSON only:
+{"restrictions":[{"source_block_id":"exact ID","source_row_numbers":[1,2,3],"reason":"which own claims are preserved and which foreign rows are removed"}]}

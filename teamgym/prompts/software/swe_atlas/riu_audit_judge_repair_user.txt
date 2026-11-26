@@ -1,0 +1,26 @@
+HIDDEN RUBRICS WITH EXACT IDS
+{{RUBRICS_JSON}}
+
+PUBLIC TASK
+{{PUBLIC_TASK_JSON}}
+
+REFERENCE ANSWER
+{{REFERENCE_ANSWER}}
+
+MATERIAL ACTUALLY AVAILABLE TO THE SOLVER
+{{AVAILABLE_EVIDENCE_JSON}}
+
+SOLVER RESPONSE
+{{SOLVER_RESPONSE_JSON}}
+
+NUMBER OF AVAILABLE EVIDENCE ITEMS
+{{EVIDENCE_COUNT}}
+
+PREVIOUS JUDGE JSON
+{{PREVIOUS_JUDGE_JSON}}
+
+MECHANICAL VALIDATION ERRORS
+{{VALIDATION_ERRORS_JSON}}
+
+Return the corrected complete judge JSON. Preserve substantive grading decisions while fixing every listed mechanical error.
+For a satisfied positive rubric, cite at least one actual supporting evidence_number. Never invent a citation to satisfy validation. If the displayed evidence does not support the claim, correct its grounding and status instead. Negative rubrics and unmet criteria may have an empty citation list.

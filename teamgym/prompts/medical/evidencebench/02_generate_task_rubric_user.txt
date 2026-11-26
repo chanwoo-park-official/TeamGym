@@ -1,0 +1,79 @@
+Create one natural medical free-response question and a hidden claim-based grading
+rubric from the normalized evidence candidates.
+
+ORIGINAL HYPOTHESIS — use as context, not as mandatory question wording
+{{ORIGINAL_HYPOTHESIS_JSON}}
+
+NORMALIZED RIU CANDIDATES
+{{CANDIDATES_JSON}}
+
+PREVIOUS VALIDATION OR AUDIT FEEDBACK
+{{VALIDATION_FEEDBACK}}
+
+Rules:
+1. Evidence candidates and answer claims are different objects. Never merge source
+   candidates merely because two or more jointly support one answer claim.
+2. Reconstruct the question from the evidence. Do not simply ask whether the
+   original hypothesis is true when a more precise descriptive question is possible.
+3. Include every candidate that materially supports a natural requested answer
+   claim. Do not minimize the candidate count. Exclude a candidate only when it is
+   irrelevant to the natural question or genuinely redundant, and record why.
+4. The question may explicitly require study scope, exposure conditions, comparator,
+   multiple outcomes, direction, uncertainty, or evidence limitations when those are
+   genuine contributions of the selected evidence.
+5. Do not mention candidate IDs, RIUs, gold evidence, aspects, sentence indices,
+   dataset names, or participant structure in the public task.
+6. A required claim may be supported by one or many candidates, and one candidate
+   may support one or many claims. For every claim specify:
+   - ALL_REQUIRED when every listed candidate contributes a necessary part of the
+     claim's complete grounding;
+   - ANY_SUFFICIENT when any one listed candidate independently grounds the claim.
+7. Explain each supporting candidate's distinct evidentiary role in candidate_roles.
+   Every selected candidate must be necessary to at least one required claim. A
+   candidate appearing only in a multi-candidate ANY_SUFFICIENT mapping is redundant
+   and must not be selected unless it is necessary to another claim.
+8. Keep only answer-essential content. A compact substantively correct answer must
+   not fail for omitting incidental background, every tested dose, procedural detail,
+   assay confirmation, or provenance unless the public question explicitly makes
+   that detail essential to interpreting the result.
+9. Write each criterion for semantic equivalence, not verbatim exhaustive recall.
+10. The canonical answer and every rubric claim must use only selected exact evidence.
+11. Record scope restrictions and forbidden causal or medical overclaims explicitly.
+
+Return:
+{
+  "selected_candidate_ids": ["cand_01", "cand_02"],
+  "candidate_dispositions": [
+    {
+      "candidate_id": "cand_01",
+      "included": true,
+      "mapped_claim_ids": ["claim_01"],
+      "reason": "material contribution to the natural question"
+    }
+  ],
+  "public_task": {
+    "title": "short neutral title",
+    "question": "natural descriptive free-response question",
+    "response_format_note": "Provide a compact evidence-grounded synthesis."
+  },
+  "rubric": {
+    "required_claims": [
+      {
+        "claim_id": "claim_01",
+        "criterion": "content that must appear",
+        "support_logic": "ALL_REQUIRED",
+        "supporting_candidate_ids": ["cand_01", "cand_02"],
+        "candidate_roles": {
+          "cand_01": "provides the exposure condition",
+          "cand_02": "provides the observed outcome under that condition"
+        },
+        "importance": "required"
+      }
+    ],
+    "scope_constraints": [],
+    "forbidden_overclaims": [],
+    "disqualifying_errors": []
+  },
+  "canonical_answer": "compact source-grounded answer",
+  "construction_rationale": "why this is a natural multi-evidence task"
+}

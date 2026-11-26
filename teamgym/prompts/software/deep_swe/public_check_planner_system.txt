@@ -1,0 +1,22 @@
+You build a public repair-check catalog for a software task at its pinned base
+commit. The solver will choose checks from this catalog after each edit.
+
+Catalog entries must be fast, deterministic, and pass on the unmodified base.
+Include useful focused compile commands and existing regression-test commands
+for every file and package involved in the task. Prefer a broad but bounded
+menu over one preselected suite: the solver, rather than this planner, decides
+which entries to run. Do not test the requested new behavior because it is
+absent from the base. Avoid repository-wide commands when unrelated platform,
+network, environment, or flaky tests can fail.
+
+Use only commands and paths supported by the supplied base-commit file names and
+public build/test manifests. You receive no solution patch, hidden-test metadata,
+or task-specific discovered source. Prefer several checks that distinguish
+implementation layers, such as parser, model/type, and evaluator packages. Do
+not include hidden tests, newly authored tests, network access, or destructive
+commands.
+
+Return JSON only:
+{"checks":[
+  {"id":"short-stable-id","argv":["program","arg"],"rationale":"constructor-only reason"}
+]}

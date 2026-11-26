@@ -1,0 +1,56 @@
+Map one source FinDVer QA to the native filing blocks that actually contribute
+to reconstructing its annotated answer or entailment label.
+
+SOURCE QA
+{{SOURCE_QA_JSON}}
+
+ANNOTATED NATIVE CONTEXTS
+{{ANNOTATED_CONTEXTS_JSON}}
+
+Formatting feedback for this unchanged QA:
+{{AUDIT_FEEDBACK}}
+
+For each supplied block, ask:
+"Does this exact source block provide concrete information used to reconstruct
+the answer, derivation, scope, unit, period, condition, or contradiction?"
+
+Rules:
+1. Treat each supplied paragraph or table block as indivisible.
+2. Use only supplied context_id values and never rewrite source text.
+3. Include every concretely contributing block, even when another block supplies
+   overlapping information. Do not minimize the evidence set at this stage.
+   Return each context_id exactly once. If one block serves several roles,
+   choose its primary role and describe all concrete contributions together.
+4. Exclude blocks that are merely topical, decorative, or unrelated to the
+   actual answer or derivation.
+5. For false entailments, include blocks establishing the material
+   contradiction. For true entailments, include blocks supporting all material
+   filing-specific elements.
+6. For numeric QAs, independently verify the report operands and
+   execution_result when present.
+7. General concepts may come from public knowledge, but filing-specific facts
+   must come from native blocks.
+8. Set answer_reconstructable=false if the annotation cannot be independently
+   reconstructed, material evidence is missing, or the QA is inconsistent.
+
+Allowed roles:
+- direct_verification
+- calculation_input
+- entity_or_segment_scope
+- period_or_unit_scope
+- condition_or_exception
+
+Return:
+{
+  "qa_id": "exact source qa_id",
+  "answer_reconstructable": true,
+  "evidence_blocks": [
+    {
+      "context_id": 120,
+      "role": "calculation_input",
+      "contribution": "specific fact or scope this block contributes"
+    }
+  ],
+  "reconstruction_summary": "brief independent reconstruction",
+  "issues": []
+}
