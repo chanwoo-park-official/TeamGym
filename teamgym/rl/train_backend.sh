@@ -258,4 +258,4 @@ fi
   +teamgym.disable_validation="${DISABLE_VALIDATION}" \
   +teamgym.trace_prompts=True \
   +teamgym.run_dir="${RUN_DIR}" \
-  "$@" 2>&1 | tee "${TRAIN_LOG_TEE_ARGS[@]}" "${RUN_DIR}/train.log"
+  "$@" 2>&1 | tee ${TRAIN_LOG_TEE_ARGS[@]+"${TRAIN_LOG_TEE_ARGS[@]}"} "${RUN_DIR}/train.log"

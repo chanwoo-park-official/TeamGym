@@ -36,10 +36,10 @@ cp "$audit_source/metadata/audited_cases.json" "$output/metadata/audited_cases.j
 cp "$audit_source/metadata/selection_report.json" "$output/metadata/selection_report.json"
 
 exports=ALL,SARA_SUBPROOF_OUTPUT="$output",SARA_SUBPROOF_POLICY=target_sliced,SARA_SUBPROOF_LIMIT="$case_count",SARA_SUBPROOF_TARGET_COUNT="$case_count",SARA_SUBPROOF_QUAL_WORKERS="$qual_workers"
-generate_job=$(sbatch --parsable "${partition_args[@]}" --time="$generation_time" \
+generate_job=$(sbatch --parsable ${partition_args[@]+"${partition_args[@]}"} --time="$generation_time" \
   --array="0-$((case_count - 1))%$generation_concurrency" --cpus-per-task=1 --mem=4G \
   --export="$exports" "$submission/generate.sbatch")
-postprocess_job=$(sbatch --parsable "${partition_args[@]}" --time="$postprocess_time" \
+postprocess_job=$(sbatch --parsable ${partition_args[@]+"${partition_args[@]}"} --time="$postprocess_time" \
   --cpus-per-task="$qual_workers" --mem=48G --dependency="afterany:$generate_job" \
   --export="$exports" "$submission/postprocess_target_sliced.sbatch")
 

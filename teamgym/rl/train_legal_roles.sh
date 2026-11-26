@@ -96,7 +96,7 @@ if [[ "${TRAINING_MODE}" == "participant_only" ]]; then
       --seed "${FROZEN_COORDINATOR_SEED}" \
       --enable-prefix-caching \
       --disable-log-requests \
-      "${FROZEN_COORDINATOR_SERVER_ARGS[@]}" \
+      ${FROZEN_COORDINATOR_SERVER_ARGS[@]+"${FROZEN_COORDINATOR_SERVER_ARGS[@]}"} \
       >"${RUN_DIR}/frozen_coordinator_server.log" 2>&1 &
     FROZEN_COORDINATOR_PROCESS=$!
     for _ in $(seq 1 120); do
@@ -146,7 +146,7 @@ if [[ "${TRAINING_MODE}" == "coordinator_only" && "${PARTICIPANT_BACKEND}" == "e
       --seed "${FROZEN_PARTICIPANT_SEED}" \
       --enable-prefix-caching \
       --disable-log-requests \
-      "${FROZEN_PARTICIPANT_SERVER_ARGS[@]}" \
+      ${FROZEN_PARTICIPANT_SERVER_ARGS[@]+"${FROZEN_PARTICIPANT_SERVER_ARGS[@]}"} \
       >"${RUN_DIR}/frozen_participant_server.log" 2>&1 &
     FROZEN_COORDINATOR_PROCESS=$!
     for _ in $(seq 1 120); do
