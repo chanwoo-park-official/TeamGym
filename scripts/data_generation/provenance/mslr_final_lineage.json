@@ -31,7 +31,7 @@
     "submission_directory": "scripts/data_generation/submissions/legal_written_construction",
     "source_input_environment_variable": "MSLR_INPUT_ROOT",
     "seed_output_relative_to_batch_root": "seeds/mslr100/seed/mslr_source_excerpt_casebook50_seed.jsonl",
-    "partition_entrypoint": "scripts/data_generation/common/run_pipeline.py",
+    "partition_entrypoint": "python -m teamgym.data.long_context_reasoning.pipeline",
     "launcher_partition_settings": {
       "allocation_modes": ["one_each", "paired", "overlap", "redundant_player", "common_anchor", "bottleneck"],
       "target_context_tokens": 12000,

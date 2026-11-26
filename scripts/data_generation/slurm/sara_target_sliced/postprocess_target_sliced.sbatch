@@ -16,14 +16,14 @@ source "${repo}/scripts/data_generation/slurm/_environment.sh"
 repo="${TEAMGYM_REPO_ROOT}"
 cd "$repo"
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/slurm/sara_target_sliced/refresh_target_sliced.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.legal.sara.refresh \
   --output-root "$SARA_SUBPROOF_OUTPUT"
-"${TEAMGYM_PYTHON}" scripts/data_generation/slurm/sara_target_sliced/merge.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.legal.sara.merge \
   --output-root "$SARA_SUBPROOF_OUTPUT" --limit "$SARA_SUBPROOF_LIMIT"
 
 pids=()
 for ((worker=0; worker<SARA_SUBPROOF_QUAL_WORKERS; worker++)); do
-  "${TEAMGYM_PYTHON}" scripts/data_generation/slurm/sara_target_sliced/qualify.py \
+  "${TEAMGYM_PYTHON}" -m teamgym.data.legal.sara.qualification \
     --output-root "$SARA_SUBPROOF_OUTPUT" --worker "$worker" \
     --worker-count "$SARA_SUBPROOF_QUAL_WORKERS" --model gpt-5.4 &
   pids+=("$!")
@@ -32,6 +32,6 @@ for pid in "${pids[@]}"; do
   wait "$pid" || true
 done
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/slurm/sara_target_sliced/finalize.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.legal.sara.finalize \
   --output-root "$SARA_SUBPROOF_OUTPUT" --minimum-passes 4 \
   --target-count "${SARA_SUBPROOF_TARGET_COUNT:-$SARA_SUBPROOF_LIMIT}"

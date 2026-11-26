@@ -8,16 +8,6 @@ import sys
 import pytest
 
 from teamgym.core import io
-from teamgym.data.legal import io as legacy_io
-
-
-def test_legacy_io_reexports_shared_helpers() -> None:
-    for name in (
-        "read_jsonl", "write_json", "write_jsonl", "prompt_text",
-        "render_template", "estimate_tokens", "compact_text",
-        "json", "os", "Path", "Any", "Iterable",
-    ):
-        assert getattr(legacy_io, name) is getattr(io, name)
 
 
 def test_core_io_imports_without_domain_or_optional_dependencies() -> None:
@@ -52,7 +42,7 @@ def test_json_output_and_reading_preserve_utf8_and_physical_lines(tmp_path) -> N
     assert (output / "records.jsonl").read_text(encoding="utf-8") == expected
     assert io.read_jsonl(output / "records.jsonl") == rows
     (output / "with-blanks.jsonl").write_text("\n \t\n" + expected + "\n", encoding="utf-8")
-    assert legacy_io.read_jsonl(output / "with-blanks.jsonl") == rows
+    assert io.read_jsonl(output / "with-blanks.jsonl") == rows
 
 
 def test_json_reader_preserves_file_and_parse_errors(tmp_path) -> None:

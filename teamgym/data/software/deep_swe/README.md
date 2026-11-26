@@ -10,7 +10,7 @@ the upstream source and build the unmodified official verifier.
 
 ```bash
 uv sync --locked --python 3.11 --extra construction --extra data --extra test
-uv run --no-sync python scripts/data_generation/software/deep_swe/prepare.py \
+uv run --no-sync python -m teamgym.data.software.deep_swe.prepare \
   --source-dir .external_datasets/deep-swe-source \
   --task-id TASK_ID --platform linux/amd64 \
   --receipt artifacts/deepswe-preparation.json

@@ -34,11 +34,23 @@ from teamgym.llm.openai_client import (
     DEFAULT_LLM_MODEL,
     DEFAULT_LLM_PROVIDER,
 )
+from teamgym.interaction.rui_context import rui_only_datapoint
 from teamgym.visualization.interaction_trajectory_report import build_report
 
 
 def main() -> None:
     args = _parse_args()
+    if args.context_variant == "piu_only":
+        run_interaction_evaluation(
+            args,
+            datapoint_transform=rui_only_datapoint,
+            run_label="rui_context_interaction_eval",
+            manifest_extra={
+                "context_variant": "rui_only",
+                "context_variant_description": "Participant private context units contain only owned RIU text.",
+            },
+        )
+        return
     run_interaction_evaluation(args)
 
 
@@ -178,6 +190,7 @@ def run_interaction_evaluation(
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-root", required=True)
+    parser.add_argument("--context-variant", choices=("full_context", "piu_only"), default="full_context")
     parser.add_argument("--output-dir", default="generated/teamgym_interaction_eval")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--num-shards", type=int, default=1)

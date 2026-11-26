@@ -7,6 +7,7 @@ import json
 import hashlib
 from pathlib import Path
 from typing import Any
+from .evaluation import write_evaluation_jsonl
 from .execution import assert_frozen_dependencies, export_artifacts
 from teamgym.data.medical.certification import certify_export, positive_token_budget, construction_artifacts
 
@@ -345,6 +346,7 @@ def run_pipeline(
     }
     summary["export_certification"] = certify_export(summary, export_artifacts(output))
     write_json(output / "summary.json", summary)
+    write_evaluation_jsonl([output], output / "common_datapoints.jsonl")
     return summary
 
 

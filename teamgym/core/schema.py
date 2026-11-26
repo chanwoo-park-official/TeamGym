@@ -5,11 +5,72 @@ from __future__ import annotations
 from typing import Any
 
 COMMON_DATAPOINT_SCHEMA_VERSION = "teamgym_common_datapoint_v2"
-LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION = "collabgym_fully_collaborative_common_datapoint_v2"
-SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS = (
-    COMMON_DATAPOINT_SCHEMA_VERSION,
-    LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION,
-)
+RELEASE_DATAPOINT_SCHEMA_VERSION = "teamgym_release_datapoint_v1"
+
+_RELEASE_PIU_FIELDS = {
+    "pivotal_information_units": "reference_information_units",
+    "pivotal_information_unit_count": "reference_information_unit_count",
+    "common_pius": "common_reference_units",
+    "common_piu_count": "common_reference_unit_count",
+    "private_piu_count": "private_reference_unit_count",
+    "piu_id": "rui_id",
+    "piu_ids": "rui_ids",
+    "piu_type": "rui_type",
+    "piu_count": "rui_count",
+    "source_piu_id": "source_rui_id",
+    "owned_piu_ids": "owned_rui_ids",
+    "owned_piu_count": "owned_rui_count",
+    "owned_piu_feature_terms": "owned_rui_feature_terms",
+    "owned_piu_section_keys": "owned_rui_section_keys",
+    "owns_related_piu": "owns_related_rui",
+    "hidden_contains_piu_ids": "hidden_contains_rui_ids",
+    "related_piu_ids": "related_rui_ids",
+    "is_piu_related_context": "is_riu_related_context",
+    "required_piu_ids": "required_rui_ids",
+    "required_piu_count": "required_rui_count",
+    "ordered_piu_ids": "ordered_rui_ids",
+    "common_piu_ids": "common_rui_ids",
+    "participant_piu_sets": "participant_rui_sets",
+    "rubric_to_piu_ids": "rubric_to_rui_ids",
+    "dropped_pius": "dropped_rui_units",
+    "manual_piu_count": "manual_riu_count",
+    "final_piu_count": "final_riu_count",
+    "foreign_piu_results": "foreign_riu_results",
+    "smallest_sufficient_piu_sets": "smallest_sufficient_rui_sets",
+    "minimum_sufficient_piu_set_size": "minimum_sufficient_rui_set_size",
+    "pre_drop_minimum_sufficient_piu_set_size": "pre_drop_minimum_sufficient_rui_set_size",
+}
+_PUBLIC_PIU_FIELDS = {internal: public for public, internal in _RELEASE_PIU_FIELDS.items()}
+
+
+def normalize_release_datapoint(datapoint: dict[str, Any]) -> dict[str, Any]:
+    """Translate public PIU field names for the existing evaluation runtime."""
+    if datapoint.get("schema_version") != RELEASE_DATAPOINT_SCHEMA_VERSION:
+        return datapoint
+    normalized = _rename_piu_fields(datapoint, _RELEASE_PIU_FIELDS)
+    normalized["schema_version"] = COMMON_DATAPOINT_SCHEMA_VERSION
+    return normalized
+
+
+def to_release_datapoint(datapoint: dict[str, Any]) -> dict[str, Any]:
+    """Copy a common datapoint into the published TeamGym JSONL schema."""
+    public = _rename_piu_fields(datapoint, _PUBLIC_PIU_FIELDS)
+    public["schema_version"] = RELEASE_DATAPOINT_SCHEMA_VERSION
+    return public
+
+
+def _rename_piu_fields(value: Any, fields: dict[str, str]) -> Any:
+    if isinstance(value, list):
+        return [_rename_piu_fields(item, fields) for item in value]
+    if isinstance(value, dict):
+        normalized = {}
+        for name, item in value.items():
+            key = fields.get(name, name)
+            if key in normalized:
+                raise ValueError(f"Duplicate evidence field after normalization: {key}")
+            normalized[key] = _rename_piu_fields(item, fields)
+        return normalized
+    return value
 
 
 def build_common_datapoint(
@@ -53,6 +114,7 @@ def build_common_datapoint(
 
 
 def validate_common_datapoint(datapoint: dict[str, Any]) -> dict[str, Any]:
+    datapoint = normalize_release_datapoint(datapoint)
     checks: list[dict[str, Any]] = []
     participants = datapoint.get("participants") or []
     participant_directory = datapoint.get("participant_directory") or []
@@ -102,7 +164,7 @@ def validate_common_datapoint(datapoint: dict[str, Any]) -> dict[str, Any]:
         if isinstance(row, dict) and row.get("rui_id")
     }
 
-    _check(checks, "schema_version", datapoint.get("schema_version") in SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS)
+    _check(checks, "schema_version", datapoint.get("schema_version") == COMMON_DATAPOINT_SCHEMA_VERSION)
     _check(checks, "dataset_present", bool(datapoint.get("dataset")))
     _check(checks, "instance_id_present", bool(datapoint.get("instance_id")))
     _check(checks, "task_description_present", bool(datapoint.get("task_description")))

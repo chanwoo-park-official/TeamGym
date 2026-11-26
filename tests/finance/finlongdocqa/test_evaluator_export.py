@@ -22,7 +22,7 @@ REPORT_TEXT = "# Page 1\n\nRevenue was 120 million.\n\n# Page 2\n\nIncome was 30
 
 
 def fixture():
-    from teamgym.data.finance.finlongdocqa.partition import build_one_each_datapoint
+    from teamgym.data.finance.finlongdocqa.partition import build_partitioned_datapoint
     from teamgym.data.finance.finlongdocqa.source import index_report
     from teamgym.data.finance.finlongdocqa.validation import hydrate_task
     indexed = index_report("X_2024", REPORT_TEXT)
@@ -34,7 +34,7 @@ def fixture():
             "prohibited_errors": ["Do not reverse the two values."]},
         "oracle": {"reference_answer": "Revenue 120 million; income 30 million."}}
     task = hydrate_task(task, indexed["blocks"])
-    return build_one_each_datapoint(report_id="X_2024", company="X", year="2024", report_source={}, report_index=indexed,
+    return build_partitioned_datapoint(preserve_rui_order=True, report_id="X_2024", company="X", year="2024", report_source={}, report_index=indexed,
         task=task, qa_mappings=[], solver_audit={})
 
 
@@ -136,7 +136,11 @@ def test_completed_run_can_be_bundled_and_exported_offline(tmp_path):
     output = tmp_path / "evaluation"
     released = write_release(bundle, output)
     assert released["model_observations_byte_equal"]
-    assert released["outputs"]["common_datapoints.jsonl"] == file_digest(output / "common_datapoints.jsonl")
+    accepted_path = output / "common_datapoints.jsonl"
+    assert released["outputs"]["common_datapoints.jsonl"] == file_digest(accepted_path)
+    saved = json.loads(accepted_path.read_text())
+    assert saved["schema_version"] == "teamgym_release_datapoint_v1"
+    assert saved["oracle"]["judge_rubric"]["require_all_steps_for_pass"]
 
     qa.write_text(qa.read_text() + "\n")
     invalid = tmp_path / "invalid"

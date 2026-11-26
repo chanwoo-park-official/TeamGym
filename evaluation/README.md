@@ -1,9 +1,8 @@
 # Standard Evaluation
 
-Use the released frozen standard-evaluation JSONL to rerun the benchmark. The
-legal reference set has 163 tasks across six datasets; the allocation bundle
-contains additional variants of those tasks. Select the intended input file
-explicitly.
+Pass a JSONL path with `--input-root` to select a corpus and evidence view.
+Use a file from the [public TeamGym dataset](https://huggingface.co/datasets/TeamGym/teamgym-datasets)
+or an accepted output from dataset construction.
 
 The [release inventory](../README.md#data-flow-and-release-inventory) identifies
 the frozen input files and their current download status. Prepared RL splits
@@ -28,13 +27,13 @@ bash evaluation/run.sh --help
 bash evaluation/run.sh multi_full --help
 ```
 
-| Mode | Evaluation | Context budget | Turn budget |
-| --- | --- | --- | --- |
-| `single_all_riu` | One actor with all PIUs | 40,000 tokens | Single answer |
-| `multi_riu` | Team with PIUs only | 40,000 per participant | 16 |
-| `multi_full` | Team with full participant source packets | 40,000 per participant | 16 |
-| `single_full` | One actor with the union of participant source packets | 200,000 tokens | Single answer |
-| `judge` | Semantic scoring of written answers | Uses the frozen reference rubric | Per saved answer |
+| Mode | Public input file | Evaluation | Context budget | Turn budget |
+| --- | --- | --- | --- | --- |
+| `single_all_riu` | `single_all_piu.jsonl` | One actor with all PIUs | 40,000 tokens | Single answer |
+| `multi_riu` | `multi_piu_only.jsonl` | Team with PIUs only | 40,000 per participant | 16 |
+| `multi_full` | `multi_full_context.jsonl` | Team with full participant source packets | 40,000 per participant | 16 |
+| `single_full` | `multi_full_context.jsonl` | One actor with the union of participant source packets | 200,000 tokens | Single answer |
+| `judge` | The input used for the actor run | Semantic scoring of written answers | Uses the frozen reference rubric | Per saved answer |
 
 The three evidence conditions retain their model-matrix settings: temperature
 0, four request attempts, a 3,600-token completion cap, 600-token public
@@ -58,14 +57,16 @@ override the preset values. `TEAMGYM_PYTHON` selects the Python executable.
 
 ### Run one task
 
-From the repository root, place `paper_tasks_163.jsonl` in the current directory
-using the [release inventory](../README.md#data-flow-and-release-inventory).
-Set `OPENAI_API_KEY` in your environment and replace `YOUR_MODEL` with a model
+From the repository root, download the pinned 152-task Legal full-context
+subset. Set `OPENAI_API_KEY` in your environment and replace `YOUR_MODEL` with a model
 available to your account on the OpenAI Responses API.
 
 ```bash
+curl --fail --location --output multi_full_context_subset.jsonl \
+  https://huggingface.co/datasets/TeamGym/teamgym-datasets/resolve/ea0b5210dd9509131bd8f771ed278c74acce2258/legal/multi_full_context_subset.jsonl
+
 bash evaluation/run.sh multi_full \
-  --input-root paper_tasks_163.jsonl \
+  --input-root multi_full_context_subset.jsonl \
   --output-dir outputs/quickstart \
   --communication-structure coordinator_select_one__coordinator_decision \
   --model YOUR_MODEL \
@@ -89,7 +90,6 @@ the reference runs:
 
 ```bash
 actor_args=(
-  --input-root /path/to/paper_tasks_163.jsonl
   --model gpt-5.4
   --provider bedrock_openai
   --base-url https://bedrock-mantle.us-east-2.api.aws/openai/v1
@@ -98,18 +98,25 @@ actor_args=(
 )
 
 bash evaluation/run.sh multi_full "${actor_args[@]}" \
+  --input-root /path/to/multi_full_context.jsonl \
   --output-dir outputs/legal/multi_full \
   --communication-structure coordinator_select_one__coordinator_decision \
   --limit 1
 ```
 
-Remove `--limit 1` to evaluate the complete input. Use `multi_riu` with the same
-arguments for the evidence-only team. Run the single-agent baselines with:
+Remove `--limit 1` to evaluate the complete input. Choose the corresponding
+public input file for each baseline:
 
 ```bash
+bash evaluation/run.sh multi_riu "${actor_args[@]}" \
+  --input-root /path/to/multi_piu_only.jsonl \
+  --communication-structure coordinator_select_one__coordinator_decision \
+  --output-dir outputs/legal/multi_piu_only
 bash evaluation/run.sh single_all_riu "${actor_args[@]}" \
+  --input-root /path/to/single_all_piu.jsonl \
   --output-dir outputs/legal/single_all_riu
 bash evaluation/run.sh single_full "${actor_args[@]}" \
+  --input-root /path/to/multi_full_context.jsonl \
   --output-dir outputs/legal/single_full
 ```
 
@@ -143,7 +150,7 @@ Judge short-answer trajectories in a separate step:
 
 ```bash
 bash evaluation/run.sh judge \
-  --input-root /path/to/paper_tasks_163.jsonl \
+  --input-root /path/to/multi_full_context.jsonl \
   --trajectories-root outputs/legal/multi_full \
   --output-root outputs/legal/multi_full_judge \
   --model gpt-5.5 \
@@ -181,14 +188,17 @@ and `teamgym_single_agent_eval_run` in the existing `schema_version` field.
 The report tool reads saved trajectories with either the TeamGym IDs or the
 historical IDs.
 
-The direct single-agent baselines default to
-`outputs/teamgym/evaluation/<baseline>`. Pass `--output-dir` to select a different
-location.
+For direct team evaluation, use `teamgym-evaluate` with
+`--context-variant full_context` or `--context-variant piu_only`.
+The single-agent module, `teamgym.interaction.run_single_agent_rui_evaluation`,
+accepts `--context-variant all_rius` or `--context-variant full_source`.
+Its default output directory is `outputs/teamgym/evaluation/<baseline>`.
+Run `python -m teamgym.interaction.run_single_participant_evaluation` for
+single-participant evaluation.
 
 - `run.sh`: portable presets for actors and judging;
 - `configs/`: reference model configurations and communication schedules;
-- `runners/`: direct Python commands, including single-participant evaluation;
-- `reporting/`: numeric rescoring and dataset visualization utilities;
+- `reporting/`: numeric rescoring for saved answers;
 - `tools/`: model endpoint inspection utilities.
 
 Evaluation algorithms remain in `teamgym.interaction`;
@@ -206,11 +216,10 @@ python -m teamgym.visualization.interaction_trajectory_report \
 ```
 
 For saved judgments, `rescore_numeric_short_answers.py` applies the current
-deterministic numeric checks. `render_long_context_rui_visualization.py`
-visualizes dataset context and information-unit allocations. Inspect their
-input and output options with:
+deterministic numeric checks. The `visualize` module shows dataset context and PIU
+allocations. Both commands provide input and output options in `--help`.
 
 ```bash
 python evaluation/reporting/rescore_numeric_short_answers.py --help
-python evaluation/reporting/render_long_context_rui_visualization.py --help
+python -m teamgym.data.long_context_reasoning.visualize --help
 ```

@@ -26,8 +26,8 @@ and exact packets are used in the three exported conditions. Source file and
 record hashes, model settings and code/prompt hashes are recorded in
 `run_manifest.json`; accepted summaries and common exports retain source lineage.
 
-`evaluation.write_evaluation_jsonl([run_dir], output_path)` exports accepted
-instances. Model-visible PIU evidence contains exact source text; contribution
+An accepted run writes `common_datapoints.jsonl` in the Hugging Face schema.
+Model-visible PIU evidence contains exact source text. Contribution
 labels, rubric links and constructor summaries remain hidden. Independent
 solver/judge checks are finite evidence rather than proofs of necessity or
 nonreconstructability. Use a new output directory for a fresh construction;

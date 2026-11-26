@@ -11,6 +11,8 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
+from teamgym.data.finance.finlongdocqa.evaluation import evaluator_datapoint
 from teamgym.data.finance.finlongdocqa.partition import (
     build_partitioned_datapoint,
 )
@@ -241,6 +243,8 @@ def generate_dataset(args: argparse.Namespace) -> dict[str, Any]:
             )
         )
 
+    evaluation_path = output / "evaluation" / "common_datapoints.jsonl"
+    write_release_datapoints(evaluation_path, (evaluator_datapoint(row) for row in common_rows))
     report = {
         "schema": "finlongdocqa_generation_report_v1",
         "answer_format": "free_response",
@@ -256,6 +260,7 @@ def generate_dataset(args: argparse.Namespace) -> dict[str, Any]:
         "attempts_path": str(attempts_path),
         "accepted_path": str(accepted_path),
         "common_path": str(common_path),
+        "evaluation_path": str(evaluation_path),
     }
     write_json(output / "generation_report.json", report)
     return report

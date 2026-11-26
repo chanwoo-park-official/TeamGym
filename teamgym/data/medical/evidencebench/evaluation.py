@@ -11,6 +11,7 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.schema import build_common_datapoint
 
 
@@ -256,10 +257,7 @@ def write_evaluation_jsonl(
     destination = Path(output_path).expanduser().resolve()
     destination.parent.mkdir(parents=True, exist_ok=True)
     rows = [build_evaluation_datapoint(path) for path in instance_dirs]
-    destination.write_text(
-        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
-        encoding="utf-8",
-    )
+    write_release_datapoints(destination, rows)
     return destination
 
 

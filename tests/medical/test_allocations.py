@@ -140,18 +140,19 @@ def test_all_five_modes_run_distribution_specific_audits_and_export(tmp_path, da
     assert len(rows) == len({r["instance_id"] for r in rows}) == len(PAPER_ALLOCATION_MODES)
     assert all(r["format_validation"]["valid"] for r in rows)
     assert len({json.dumps(r["task_description"], sort_keys=True) for r in rows}) == 1
-    assert len({json.dumps(r["reference_information_units"], sort_keys=True) for r in rows}) == 1
+    assert all(r["schema_version"] == "teamgym_release_datapoint_v1" for r in rows)
+    assert len({json.dumps(r["pivotal_information_units"], sort_keys=True) for r in rows}) == 1
     for mode in PAPER_ALLOCATION_MODES:
         loaded = allocations.build_evaluation_datapoint(out / mode / "report.json")
         assert loaded["dataset_specific"]["allocation_mode"] == mode
     redundant = rows[PAPER_ALLOCATION_MODES.index("redundant_player")]
-    assert any(not p["owned_rui_ids"] for p in redundant["participants"])
+    assert any(not p["owned_piu_ids"] for p in redundant["participants"])
     overlap = rows[PAPER_ALLOCATION_MODES.index("overlap")]
-    assert sum(len(p["owned_rui_ids"]) for p in overlap["participants"]) > 4
+    assert sum(len(p["owned_piu_ids"]) for p in overlap["participants"]) > 4
     common = rows[PAPER_ALLOCATION_MODES.index("common_anchor")]
-    assert len(common["initial_common_information"]["common_reference_units"]) == 1
-    common_id = common["initial_common_information"]["common_reference_units"][0]["rui_id"]
-    assert all(common_id not in p["owned_rui_ids"] for p in common["participants"])
+    assert len(common["initial_common_information"]["common_pius"]) == 1
+    common_id = common["initial_common_information"]["common_pius"][0]["piu_id"]
+    assert all(common_id not in p["owned_piu_ids"] for p in common["participants"])
     assert all(common_id not in [u["unit_id"] for u in req["foreign_units"]]
                for req in client.requests if "foreign_units" in req and common_id in req["allowed_unit_ids"])
 

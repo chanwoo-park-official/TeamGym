@@ -12,7 +12,9 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.io import read_jsonl, write_json, write_jsonl
+from teamgym.core.schema import normalize_release_datapoint
 from teamgym.data.long_context_reasoning.judge import strict_all_step_passed
 
 
@@ -26,7 +28,7 @@ def main() -> None:
     args = parser.parse_args()
 
     root = Path(args.run_root).expanduser().resolve()
-    source_rows = read_jsonl(root / args.all_riu_dir / "common_datapoints.jsonl")
+    source_rows = [normalize_release_datapoint(row) for row in read_jsonl(root / args.all_riu_dir / "common_datapoints.jsonl")]
     manifest = read_manifest(root / args.variants_dir / "necessity_manifest.tsv")
     necessity_root = root / args.necessity_dir
     output_root = root / args.output_dir
@@ -107,7 +109,7 @@ def main() -> None:
     write_jsonl(output_root / "necessity_results.jsonl", result_rows)
     if missing:
         raise RuntimeError(f"Necessity qualification is incomplete: {len(missing)} judgments are missing")
-    write_jsonl(output_root / "common_datapoints.jsonl", kept_rows)
+    write_release_datapoints(output_root / "common_datapoints.jsonl", kept_rows)
     write_jsonl(output_root / "failed_common_datapoints.jsonl", rejected_rows)
     print(f"Leave-one-RIU-out necessity pass: {len(kept_rows)} / {len(source_rows)}")
 

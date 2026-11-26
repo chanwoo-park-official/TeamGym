@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from teamgym.data.long_context_reasoning.judge import (
+from teamgym.scoring.short_answers import (
     deterministic_numeric_evaluation,
     judge_one_answer,
 )

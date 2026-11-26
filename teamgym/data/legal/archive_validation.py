@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from teamgym.core.io import read_jsonl, write_json
-from teamgym.core.schema import validate_common_datapoint
+from teamgym.core.schema import normalize_release_datapoint, validate_common_datapoint
 
 
 DATASETS = ("cuad", "maud", "casebook", "mslr", "multilexsum", "sara")
@@ -37,6 +37,7 @@ def selection_source_identity(row: dict[str, Any]) -> str:
 
 def validate_task(row: dict[str, Any]) -> list[dict[str, Any]]:
     """Check integrity and return any extra PIU visibility from shared chunks."""
+    row = normalize_release_datapoint(row)
     identity = str(row.get("instance_id") or "<missing>")
     schema = validate_common_datapoint(row)
     require(schema["valid"], f"{identity}: failed schema checks: {[c['name'] for c in schema['checks'] if not c['passed']]}")
@@ -201,3 +202,7 @@ def main() -> None:
     print(json.dumps(report, indent=2))
     if not report["valid"]:
         raise SystemExit(1)
+
+
+if __name__ == "__main__":
+    main()

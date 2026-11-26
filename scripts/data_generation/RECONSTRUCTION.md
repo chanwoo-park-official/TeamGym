@@ -32,18 +32,30 @@ For common-datapoint evaluation, pass the specific accepted file as
 
 | Dataset | Construction stages | Check before evaluation | Evaluation input |
 | --- | --- | --- | --- |
-| CUAD | Generate a finite-choice task from measured contract spans, then `partition` the full contract | Generation funnel report and `partition_report.json` | `cuad_full_document_partitions.jsonl` |
-| MAUD | Match PIUs to the agreement, generate a finite-choice task, then `partition` in full or budgeted context mode | Generation funnel report and `partition_report.json` | `maud_full_document_partitions.jsonl` |
+| CUAD | Generate a finite-choice task from measured contract spans, then `partition` the full contract | Generation funnel report and `partition_report.json` | `common_datapoints.jsonl` in the partition output |
+| MAUD | Match PIUs to the agreement, generate a finite-choice task, then `partition` in full or budgeted context mode | Generation funnel report and `partition_report.json` | `common_datapoints.jsonl` in the partition output |
 | Casebook | Build authored seeds, allocate evidence across participants, check structure, remove leakage, then qualify with an all-PIU solve and written judge | `seed_build_report.json`, then `all_riu_qualified/summary.json` | `all_riu_qualified/common_datapoints.jsonl` |
 | MSLR | Extract grounded case excerpts into seeds, then run the shared allocation, leakage, and written qualification stages | `seed/seed_report.json`, then `all_riu_qualified/summary.json` | `all_riu_qualified/common_datapoints.jsonl` |
 | SARA | `prepare`, `generate`, `refresh`, `merge`, `qualify`, `finalize`, then allocate the qualified seeds | `metadata/selection_report.json`, `final/final_report.json`, and the shared structural checks for the allocated records | `03_option_exclusion/solo_oracle_kept_common_datapoints.jsonl` from the shared construction run |
 | Multi-LexSum | Optional `prepare-sources`, then `prepare-packets`, `generate`, `short-answer`, `expand-packets`, `audit-grounding`, `select-grounded`, leakage checks, all-PIU solving, and written-answer filtering | `grounding_audits.jsonl` and the final `filter_report.json` | `common_datapoints.jsonl` from the final filter output |
-| FinDVer | Group QA by filing, map report evidence, construct the task and rubric, qualify the evidence and participant packets, and optionally redistribute the accepted task | `manifest.json`, `funnel_report.json`, and `candidate_results.jsonl` | `scenarios.jsonl`, or `MODE/scenarios.jsonl` after redistribution. The loader unwraps each row's `common_datapoint` |
-| FinLongDocQA | `--stage index` parses report blocks. `--stage generate` constructs and qualifies tasks using that index. `--stage all` runs both. Export evaluator metadata from the producer bundle | Producer `run_manifest.json` and exporter `release_receipt.json` | `common_datapoints.jsonl` from the evaluator export |
-| EvidenceBench | Load annotated paper sentences, generate a task, qualify PIU boundaries with all, no, and leave-one-out evidence, audit participant packets, then export accepted runs. Optional allocation modes audit and export each distribution | `run_manifest.json` and `summary.json`, or `allocations/allocation_results.json` | `common_datapoints.jsonl` written by the exporter, or `allocations/common_datapoints.jsonl` |
+| FinDVer | Group QA by filing, map report evidence, construct the task and rubric, qualify the evidence and participant packets, and optionally redistribute the accepted task | `manifest.json`, `funnel_report.json`, and `candidate_results.jsonl` | `common_datapoints.jsonl`, or `MODE/common_datapoints.jsonl` after redistribution |
+| FinLongDocQA | `--stage index` parses report blocks. `--stage generate` constructs and qualifies tasks using that index. `--stage all` runs both. The completed run adds the evaluator rubric | Producer `run_manifest.json` and `generation_report.json` | `evaluation/common_datapoints.jsonl` |
+| EvidenceBench | Load annotated paper sentences, generate a task, qualify PIU boundaries with all, no, and leave-one-out evidence, audit participant packets, then write accepted tasks. Optional allocation modes audit each distribution | `run_manifest.json` and `summary.json`, or `allocations/allocation_results.json` | `common_datapoints.jsonl` or `allocations/common_datapoints.jsonl` |
 | MLCR | Load clinical summaries and source questions, map exact evidence, generate a task, check evidence boundaries and leakage, test participant packets for solo shortcuts, then export | `run_manifest.json` and `run_report.json`, or `allocations/allocation_results.json` | `common_datapoints.jsonl`, or `allocations/common_datapoints.jsonl` for accepted distribution variants |
-| SWE Atlas | Load the upstream QA task, collect verified source and runtime evidence, form and qualify PIUs, run controls, allocate and audit participant packets, then export | `pipeline_report.json` and the ready receipt checked by the exporter | `full/accepted.jsonl` or `riu_only/accepted.jsonl` from the export directory |
+| SWE Atlas | Load the upstream QA task, collect verified source and runtime evidence, form and qualify PIUs, run controls, allocate and audit participant packets, then write both evidence views | `pipeline_report.json` and the ready receipt checked by the exporter | `evaluation/full/accepted.jsonl` or `evaluation/riu_only/accepted.jsonl` |
 | DeepSWE | Resolve the task and images, prepare public checks, screen instruction-only repair, collect repository evidence, qualify repairs with all PIUs, audit participant packets, run leave-one-out and participant diagnostics, then freeze the export | `TASK_ID/report.json` with an accepted decision and the bound validation receipt | `TASK_ID/export/instance.json` for the DeepSWE verifier |
+
+### Accepted task format
+
+The final standard-evaluation JSONL files in the table use
+`teamgym_release_datapoint_v1`, the same per-task schema as the
+[TeamGym dataset on Hugging Face](https://huggingface.co/datasets/TeamGym/teamgym-datasets).
+Rows include participant IDs and roles, private context units, pivotal
+information units (PIUs), the task and oracle, evidence condition, allocation
+metadata, and construction provenance. Pass the listed file directly to the
+[standard evaluator](../../evaluation/README.md). The evaluator derives PIU-only
+and single-agent observations from a full-context task when requested. Use the
+separately qualified PIU-only file when the recipe produces one, as SWE Atlas does.
 
 ### Legal recipes and source pins
 
@@ -88,7 +100,7 @@ For the written-answer corpora, use these recipes:
   model generation. Run the remaining stages through the
   [target-sliced launcher](slurm/sara_target_sliced/README.md#production-construction).
   Pass its `final/qualified_seed.jsonl` as `--seed-spec` to
-  `scripts/data_generation/common/run_pipeline.py`, as in the
+  `python -m teamgym.data.long_context_reasoning.pipeline`, as in the
   [structural example](#a-structural-example-with-embedded-sources).
 - **Multi-LexSum.** Use the pinned `releases/v20230518` split and source JSON
   files. Follow the [packet and generation commands](README.md#original-document-packets)
@@ -121,15 +133,14 @@ artifacts for this record.
 - **FinLongDocQA.** Run
   `teamgym-generate finance/finlongdocqa --stage all --qa-path FILE --reports-zip ZIP --output-root RUN`.
   For separate stages, reuse the same output root or give `--block-index-jsonl`
-  to `--stage generate`. For standard grading, follow the
-  [producer-bundle and export commands](../../teamgym/data/finance/finlongdocqa/README.md#export-a-completed-producer-run-for-evaluation).
-  This export path takes a completed single-report run, verifies its source
-  and code snapshots, and produces a checksum receipt for the evaluation file.
+  to `--stage generate`. The run writes accepted tasks with the standard grader
+  rubric to `RUN/evaluation/common_datapoints.jsonl`. The
+  [producer-bundle recipe](../../teamgym/data/finance/finlongdocqa/README.md#export-a-completed-producer-run-for-evaluation)
+  can verify the source, code, and model inputs of a completed single-report
+  run and save a checksum receipt.
 - **EvidenceBench.** Run
   `teamgym-generate medical/evidencebench --source-path DIRECTORY --source-revision REV --instance-id ID --output-root RUN`.
-  For an accepted default run, call
-  `teamgym.data.medical.evidencebench.evaluation.write_evaluation_jsonl([run_dir], output_path)`
-  with an explicit output file such as `RUN/common_datapoints.jsonl`.
+  An accepted default run writes `RUN/common_datapoints.jsonl`.
   The [EvidenceBench recipe](../../teamgym/data/medical/evidencebench/README.md)
   gives the model and audit options.
 - **MLCR.** Run
@@ -143,11 +154,10 @@ artifacts for this record.
 - **SWE Atlas.** Run
   `teamgym-generate swe/swe-atlas --task-dir TASK --output-root RUN` with the
   selected task's Docker image available. `RUN` is the task's own build
-  directory. Run
-  `python -m teamgym.data.software.swe_atlas.export_common --build-dir RUN --task-root TASKS --output-root EXPORT`
-  with `TASKS` set to the upstream `data/qa` directory.
-  The [SWE Atlas recipe](../../teamgym/data/software/swe_atlas/README.md#inputs-and-execution)
-  describes the task files and export checks.
+  directory. A benchmark-ready run writes both evidence views under
+  `RUN/evaluation/`. The
+  [SWE Atlas recipe](../../teamgym/data/software/swe_atlas/README.md#inputs-and-execution)
+  describes the task files, readiness checks, and how to gather several runs.
 - **DeepSWE.** Run
   `teamgym-generate swe/deep-swe --tasks-root TASKS --task-id ID --verifier-image IMAGE --output-root RUN`.
   The [DeepSWE recipe](../../teamgym/data/software/deep_swe/README.md)
@@ -215,7 +225,7 @@ PY
 Build participant packets and run the existing structural funnels:
 
 ```bash
-python scripts/data_generation/common/run_pipeline.py \
+python -m teamgym.data.long_context_reasoning.pipeline \
   --seed-spec generated/rebuild_example/seeds.jsonl \
   --output-root generated/rebuild_example/constructed \
   --allocation-mode one_each --min-participants 3 \

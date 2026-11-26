@@ -6,6 +6,7 @@ from collections import Counter
 from statistics import mean
 from typing import Any
 
+from teamgym.core.dataset import datapoint_variant
 from teamgym.scoring.written_answers import is_written_answer_task
 
 from .rui_matching import match_public_rius
@@ -83,6 +84,7 @@ def evaluate_episode(episode: dict[str, Any], datapoint: dict[str, Any]) -> dict
         "schema_version": EPISODE_EVALUATION_SCHEMA,
         "instance_id": datapoint.get("instance_id"),
         "dataset": datapoint.get("dataset"),
+        **datapoint_variant(datapoint),
         "communication_structure": episode.get("communication_structure", {}).get("name"),
         "primary_eval": build_primary_evaluation(
             datapoint, final_answer, sufficient_set_covered=sufficient_set_covered
@@ -138,6 +140,7 @@ def build_failed_evaluation(
         "schema_version": EPISODE_EVALUATION_SCHEMA,
         "instance_id": datapoint.get("instance_id"),
         "dataset": datapoint.get("dataset"),
+        **datapoint_variant(datapoint),
         "communication_structure": communication_structure,
         "primary_eval": build_primary_evaluation(datapoint),
         "information_flow_eval": {

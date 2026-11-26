@@ -10,6 +10,7 @@ from pathlib import Path
 import re
 from typing import Any
 
+from teamgym.core.dataset import datapoint_variant
 from teamgym.llm.openai_client import OpenAIJsonClient
 
 
@@ -161,6 +162,7 @@ def judge_one_answer(
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "instance_id": datapoint.get("instance_id"),
         "dataset": datapoint.get("dataset"),
+        **datapoint_variant(datapoint),
         "answer_source": answer_row.get("answer_source") or answer_row.get("source") or "candidate",
         "communication_structure": answer_row.get("communication_structure"),
         "candidate_answer": payload["candidate_answer"],

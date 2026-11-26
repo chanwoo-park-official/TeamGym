@@ -11,6 +11,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.information_allocation import (
     DEFAULT_ALLOCATION_MODE_WEIGHTS,
     assign_reference_units,
@@ -172,6 +173,7 @@ def partition_accepted_trials(
 
     output_root_path = Path(output_root).expanduser().resolve()
     write_jsonl(output_root_path / "cuad_full_document_partitions.jsonl", partitions)
+    write_release_datapoints(output_root_path / "common_datapoints.jsonl", partitions)
     write_json(output_root_path / "cuad_full_document_partitions.pretty.json", partitions)
     report = {
         "schema": "cuad_full_document_partition_report_v1",

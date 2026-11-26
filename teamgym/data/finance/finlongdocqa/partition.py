@@ -18,33 +18,6 @@ from teamgym.core.information_allocation import (
 )
 
 
-def build_one_each_datapoint(
-    *,
-    report_id: str,
-    company: str,
-    year: str,
-    report_source: dict[str, Any],
-    report_index: dict[str, Any],
-    task: dict[str, Any],
-    qa_mappings: list[dict[str, Any]],
-    solver_audit: dict[str, Any],
-) -> dict[str, Any]:
-    """Compatibility wrapper for the original deterministic partition."""
-    return build_partitioned_datapoint(
-        report_id=report_id,
-        company=company,
-        year=year,
-        report_source=report_source,
-        report_index=report_index,
-        task=task,
-        qa_mappings=qa_mappings,
-        solver_audit=solver_audit,
-        allocation_mode="one_each",
-        allocation_seed=0,
-        preserve_rui_order=True,
-    )
-
-
 def build_partitioned_datapoint(
     *,
     report_id: str,

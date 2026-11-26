@@ -19,6 +19,7 @@ from .free_response_funnel import (_run_packet_audits, _run_answerability_panel,
     _participant_answerability_cases, _visible_common_information)
 from .integrity import sha256, code_files, runtime_identity, client_identity, write_json
 from teamgym.core.information_allocation import PAPER_ALLOCATION_MODES
+from teamgym.core.release import write_release_datapoints
 from .partition import (
     build_full_context_partition,
     remove_surrounding_contexts,
@@ -103,6 +104,8 @@ def main() -> None:
                 instance_id,
                 status=result["status"],
             )
+        scenarios = _read_jsonl(mode_dir / "scenarios.jsonl")
+        write_release_datapoints(mode_dir / "common_datapoints.jsonl", scenarios)
         _write_summary(mode_dir)
     _write_overall_summary(output_root, args.mode)
     manifest_path = output_root / "run_manifest.json"

@@ -106,14 +106,6 @@ from pathlib import Path
 import sys
 assert util.find_spec('collabgym_fully_collaborative') is None
 from teamgym.core.io import prompt_text
-from teamgym.data.legal.io import prompt_text as legacy_prompt_text
-assert legacy_prompt_text is prompt_text
-from teamgym.core.information_allocation import ReferenceUnitAllocation
-from teamgym.data.legal.information_allocation import ReferenceUnitAllocation as LegacyAllocation
-assert LegacyAllocation is ReferenceUnitAllocation
-from teamgym.core.participant_roles import role_name_preview
-from teamgym.data.legal.participant_role_augmentation import role_name_preview as legacy_role_preview
-assert legacy_role_preview is role_name_preview
 for name in ('teamgym.core.schema',
              'teamgym.core.dataset',
              'teamgym.core.io',

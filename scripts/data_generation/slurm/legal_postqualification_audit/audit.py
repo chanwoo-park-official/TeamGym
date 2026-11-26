@@ -15,6 +15,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
 from teamgym.core.io import read_jsonl, write_json, write_jsonl
+from teamgym.core.schema import normalize_release_datapoint
 
 
 EXPECTED_MODES = {
@@ -54,7 +55,7 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
 
     leakage_rows = read_jsonl(root / "leakage_survivors" / "common_datapoints.jsonl")
-    qualified_rows = read_jsonl(root / "all_riu_qualified" / "common_datapoints.jsonl")
+    qualified_rows = [normalize_release_datapoint(row) for row in read_jsonl(root / "all_riu_qualified" / "common_datapoints.jsonl")]
     necessity_rows = read_jsonl(root / "final_qualified" / "necessity_results.jsonl")
 
     leakage_by_key: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)

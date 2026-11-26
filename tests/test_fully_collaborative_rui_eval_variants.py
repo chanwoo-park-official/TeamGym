@@ -13,11 +13,11 @@ from teamgym.interaction import run_single_participant_evaluation as single_part
 from teamgym.interaction.evaluation import evaluate_episode
 from teamgym.interaction.llm_actors import PromptTraceRecorder
 from teamgym.interaction.rui_context import rui_only_datapoint
-from teamgym.interaction.run_single_agent_rui_evaluation import run_single_agent_rui_episode
-from teamgym.interaction.run_single_agent_full_context_evaluation import (
+from teamgym.interaction.run_single_agent_rui_evaluation import (
     full_source_context_text,
     full_source_context_units,
     run_single_agent_full_context_episode,
+    run_single_agent_rui_episode,
 )
 
 
@@ -124,6 +124,29 @@ def test_rui_only_datapoint_replaces_full_context_with_owned_rius() -> None:
     assert transformed["participants"][2]["private_context_unit_ids"] == []
 
 
+def test_single_actor_runners_request_written_answers_for_release_style_records() -> None:
+    datapoint = _datapoint()
+    datapoint["dataset"] = "finlongdocqa"
+    datapoint["decision_set"] = ["free_response"]
+    datapoint["decision_option_definitions"] = {"free_response": "Provide a written answer."}
+    args = Namespace(
+        context_token_budget=20000,
+        final_rationale_token_budget=120,
+        final_reasoning_token_budget=256,
+        participant_role_name_mode="hidden",
+    )
+    single_trace = PromptTraceRecorder(None)
+    run_single_agent_rui_episode(datapoint, client=FakeClient(), recorder=single_trace, args=args)
+    participant_trace = PromptTraceRecorder(None)
+    single_participant.run_single_participant_episode(
+        datapoint, participant_id="participant_a", participant_index=0,
+        client=FakeClient(), recorder=participant_trace, args=args,
+    )
+    for trace in (single_trace, participant_trace):
+        prompt = json.loads(trace.prompt_records[0]["user_prompt"])
+        assert "written_answer" in prompt["response_format"]
+
+
 def test_single_agent_rui_episode_evaluates_with_all_rius_disclosed() -> None:
     datapoint = _datapoint()
     args = Namespace(
@@ -148,15 +171,17 @@ def test_single_agent_rui_episode_evaluates_with_all_rius_disclosed() -> None:
 
 
 @pytest.mark.parametrize(
-    ("runner", "schema"),
+    ("runner", "schema", "variant", "manifest_variant"),
     (
-        (team, "teamgym_interaction_eval_run"),
-        (single_agent, "teamgym_single_agent_eval_run"),
-        (single_participant, "teamgym_single_participant_eval_run"),
+        (team, "teamgym_interaction_eval_run", None, None),
+        (team, "teamgym_interaction_eval_run", "piu_only", "rui_only"),
+        (single_agent, "teamgym_single_agent_eval_run", None, "all_reference_information_units_only"),
+        (single_agent, "teamgym_single_agent_eval_run", "full_source", "all_participant_source_units_centralized"),
+        (single_participant, "teamgym_single_participant_eval_run", None, None),
     ),
 )
 def test_evaluation_cli_reports_skipped_rows_and_uses_teamgym_ids(
-    tmp_path, monkeypatch, capsys, runner, schema
+    tmp_path, monkeypatch, capsys, runner, schema, variant, manifest_variant
 ) -> None:
     inputs = tmp_path / "inputs.jsonl"
     inputs.write_text(
@@ -169,6 +194,8 @@ def test_evaluation_cli_reports_skipped_rows_and_uses_teamgym_ids(
         "evaluate", "--input-root", str(inputs), "--output-dir", str(output),
         "--no-trace-prompts", "--limit", "1",
     ]
+    if variant is not None:
+        argv.extend(["--context-variant", variant])
     if runner is not single_participant:
         argv.append("--no-render-html")
     if runner is team:
@@ -190,6 +217,8 @@ def test_evaluation_cli_reports_skipped_rows_and_uses_teamgym_ids(
         "skipped_rows_by_file": [{"path": str(inputs), "row_count": 2, "line_numbers": [3, 4]}],
     }
     assert manifest["schema_version"] == schema
+    if manifest_variant is not None:
+        assert manifest["context_variant"] == manifest_variant
     assert manifest["input_diagnostics"] == summary["input_diagnostics"] == diagnostics
     assert json.loads(capsys.readouterr().out)["input_diagnostics"] == diagnostics
     assert ("participant_response_mode" in manifest["llm"]) is (runner is team)

@@ -4,20 +4,11 @@ from pathlib import Path
 import subprocess
 import sys
 
-import pytest
-
 from teamgym.core import schema as shared_schema
 from teamgym.core.schema import (
     COMMON_DATAPOINT_SCHEMA_VERSION,
     build_common_datapoint,
 )
-from teamgym.data.legal import schema as legacy_schema
-
-
-def test_legacy_schema_imports_reexport_the_shared_implementation() -> None:
-    assert legacy_schema.COMMON_DATAPOINT_SCHEMA_VERSION == COMMON_DATAPOINT_SCHEMA_VERSION
-    assert legacy_schema.build_common_datapoint is shared_schema.build_common_datapoint
-    assert legacy_schema.validate_common_datapoint is shared_schema.validate_common_datapoint
 
 
 def test_shared_schema_imports_without_construction_or_training_dependencies() -> None:
@@ -36,8 +27,7 @@ def test_shared_schema_imports_without_construction_or_training_dependencies() -
     )
 
 
-@pytest.mark.parametrize("stored_version", shared_schema.SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS)
-def test_build_common_datapoint_has_shared_context_unit_format(stored_version) -> None:
+def test_build_common_datapoint_has_shared_context_unit_format() -> None:
     datapoint = build_common_datapoint(
         instance_id="common_001",
         dataset="cuad",
@@ -101,6 +91,4 @@ def test_build_common_datapoint_has_shared_context_unit_format(stored_version) -
         {"participant_id": "participant_a", "role_name": "limit reviewer"},
         {"participant_id": "participant_b", "role_name": "notice reviewer"},
     ]
-    datapoint["schema_version"] = stored_version
     assert shared_schema.validate_common_datapoint(datapoint)["valid"]
-    assert datapoint["schema_version"] == stored_version

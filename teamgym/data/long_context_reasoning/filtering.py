@@ -9,7 +9,9 @@ import json
 from pathlib import Path
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.io import read_jsonl, write_json, write_jsonl
+from teamgym.core.schema import normalize_release_datapoint
 from teamgym.scoring.short_answers import strict_judgment_passed as strict_all_step_passed
 from teamgym.data.long_context_reasoning.pipeline import (
     run_structural_leakage_funnel,
@@ -37,7 +39,7 @@ def main() -> None:
     output_root = Path(args.output_root).expanduser().resolve()
     output_root.mkdir(parents=True, exist_ok=True)
 
-    rows = read_jsonl(input_jsonl)
+    rows = [normalize_release_datapoint(row) for row in read_jsonl(input_jsonl)]
     row_by_id = {str(row.get("instance_id")): row for row in rows}
     judgments = read_jsonl(judgments_jsonl)
 
@@ -71,7 +73,7 @@ def main() -> None:
         )
 
     common_path = output_root / "common_datapoints.jsonl"
-    write_jsonl(common_path, kept_rows)
+    write_release_datapoints(common_path, kept_rows)
     write_jsonl(output_root / "single_rui_passed_judgments.jsonl", kept_judgments)
     write_jsonl(output_root / "single_rui_dropped_judgments.jsonl", dropped_judgments)
 

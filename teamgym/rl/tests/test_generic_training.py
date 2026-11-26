@@ -10,14 +10,14 @@ import pytest
 from teamgym.rl import launch
 from teamgym.rl.preparation.check_training_data import check_prepared_splits
 from teamgym.rl.data import prepare_data, stable_json_hash
-from teamgym.core.schema import LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION
+from teamgym.core.release import write_release_datapoints
 
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures/tiny_normalized.jsonl"
 
 
 def _prepared(
-    tmp_path: Path, *, written: bool = False, legacy: bool = False, by_source: bool = True
+    tmp_path: Path, *, written: bool = False, public_schema: bool = False, by_source: bool = True
 ) -> Path:
     with FIXTURE.open(encoding="utf-8") as handle:
         rows = [json.loads(line) for line in handle if line.strip()]
@@ -25,8 +25,6 @@ def _prepared(
         row["private_context_units"][0]["text"] += "\u2028source text"
         if by_source:
             row["source"]["source_group_id"] = row["source"]["source_id"]
-        if legacy:
-            row["schema_version"] = LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION
         if written:
             original = row["oracle"]["answer"]
             row["task_description"]["answer_type"] = "short_answer_judged"
@@ -35,7 +33,10 @@ def _prepared(
             row["oracle"]["answer"] = "free_response"
             row["oracle"]["canonical_response"] = f"The correct decision is {original}."
     source = tmp_path / "input.jsonl"
-    source.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows), encoding="utf-8")
+    if public_schema:
+        write_release_datapoints(source, rows)
+    else:
+        source.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows), encoding="utf-8")
     output = tmp_path / "prepared"
     prepare_data(input_paths=source, output_dir=output, seed=17, validation_fraction=0.25, test_fraction=0.25,
                  split_group="source_group" if by_source else "canonical_task")
@@ -61,9 +62,9 @@ def _check(root: Path, reward: str = "task_success") -> dict:
                                  test_split="heldout", reward_config=reward)
 
 
-@pytest.mark.parametrize("legacy", [False, True])
-def test_custom_split_names_and_historical_schemas_are_supported(tmp_path, legacy):
-    root = _prepared(tmp_path, legacy=legacy)
+@pytest.mark.parametrize("public_schema", [False, True])
+def test_prepare_custom_splits_from_common_and_public_schemas(tmp_path, public_schema):
+    root = _prepared(tmp_path, public_schema=public_schema)
     report = _check(root)
     assert {name: entry["rows"] for name, entry in report["splits"].items()} == {
         "learn": 2, "selection": 1, "heldout": 1,

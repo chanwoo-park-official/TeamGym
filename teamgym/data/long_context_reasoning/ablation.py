@@ -12,6 +12,7 @@ import re
 from typing import Any
 
 from teamgym.core.io import read_jsonl, write_json, write_jsonl
+from teamgym.core.schema import normalize_release_datapoint
 
 
 def main() -> None:
@@ -25,7 +26,7 @@ def main() -> None:
     output_root = Path(args.output_root).expanduser().resolve()
     output_root.mkdir(parents=True, exist_ok=True)
 
-    rows = read_jsonl(input_jsonl)
+    rows = [normalize_release_datapoint(row) for row in read_jsonl(input_jsonl)]
     ablated_rows: list[dict[str, Any]] = []
     manifest_rows: list[dict[str, Any]] = []
     for source_row_index, row in enumerate(rows):

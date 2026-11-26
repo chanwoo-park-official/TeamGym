@@ -31,4 +31,7 @@ jobs:
           tests/cli
           tests/test_core_dataset.py
           tests/test_fully_collaborative_interaction.py
+          tests/test_fully_collaborative_rui_eval_variants.py
+          tests/test_legal_archive_validation.py
+          tests/test_shared_short_answer_engine.py
           tests/test_shared_written_answers.py

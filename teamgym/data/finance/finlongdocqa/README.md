@@ -40,7 +40,9 @@ invocation.
 Atomic `_commits/<report>/<attempt>.json` files are the source of truth.
 `attempts.jsonl`, `accepted.jsonl` and `common_datapoints.jsonl` are rebuilt from
 those commits, including after an interruption. Uncommitted, damaged or
-incompatible checkpoints cannot establish acceptance.
+incompatible checkpoints cannot establish acceptance. The completed run writes
+`evaluation/common_datapoints.jsonl` in the Hugging Face schema, with the generic
+grader rubric populated for standard evaluation.
 
 Each final PIU uses one mapped block. The table exception permits retaining exact
 original rows while keeping one table as one PIU. Headers, source row numbers,

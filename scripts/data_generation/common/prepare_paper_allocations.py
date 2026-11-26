@@ -15,7 +15,7 @@ from typing import Any, Iterable
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 
-from teamgym.core.schema import validate_common_datapoint
+from teamgym.core.schema import normalize_release_datapoint, validate_common_datapoint
 
 
 DATASETS = ("cuad", "maud", "casebook", "mslr", "multilexsum", "sara")
@@ -261,7 +261,8 @@ def build_non_sara_variants(
                 variants.append(finalize_variant(row, dataset, task_id, mode))
 
     qualified_by_dataset: dict[str, list[dict[str, Any]]] = defaultdict(list)
-    for row in read_jsonl(qualified_path):
+    for public in read_jsonl(qualified_path):
+        row = normalize_release_datapoint(public)
         dataset = dataset_name(row)
         if dataset in {"casebook", "mslr", "multilexsum"}:
             qualified_by_dataset[dataset].append(row)
@@ -281,7 +282,8 @@ def build_non_sara_variants(
                     variants.append(finalize_variant(deepcopy(candidates[0]), dataset, task_id, mode))
 
     full_multilexsum = {
-        canonical_task_id(row, "multilexsum"): row for row in read_jsonl(multilexsum_full_path)
+        canonical_task_id(row, "multilexsum"): normalize_release_datapoint(row)
+        for row in read_jsonl(multilexsum_full_path)
     }
     grouped_multi: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in qualified_by_dataset["multilexsum"]:

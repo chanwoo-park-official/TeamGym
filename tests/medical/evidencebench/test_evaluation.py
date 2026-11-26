@@ -3,11 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from teamgym.data.medical.evidencebench.evaluation import (
-    build_evaluation_datapoint,
-)
-from teamgym.data.medical.export_schema import validate_common_datapoint
-from teamgym.core.schema import LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION
+from teamgym.core.schema import to_release_datapoint, validate_common_datapoint
+from teamgym.data.medical.evidencebench.evaluation import build_evaluation_datapoint
 from teamgym.scoring.written_answers import is_written_answer_task
 
 
@@ -58,8 +55,7 @@ def test_build_evaluation_datapoint_preserves_disjoint_packets(tmp_path: Path) -
     row = build_evaluation_datapoint(root)
     assert row["format_validation"]["valid"]
     assert is_written_answer_task(row)
-    row["schema_version"] = LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION
-    assert validate_common_datapoint(row)["valid"]
+    assert validate_common_datapoint(to_release_datapoint(row))["valid"]
     assert [p["private_context_unit_ids"] for p in row["participants"]] == [
         ["x1", "pad"],
         ["x2", "x3"],

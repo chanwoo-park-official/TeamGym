@@ -5,7 +5,7 @@ import pytest
 from teamgym.interaction.rui_context import all_rui_context_text, model_common_information, rui_context_units, rui_only_datapoint
 
 
-@pytest.mark.parametrize('dataset', ['findver', 'finlongdocqa', 'evidencebench', 'mlcr_aa', 'swe_atlas'])
+@pytest.mark.parametrize('dataset', ['findver', 'finlongdocqa', 'evidencebench', 'mlcr_aa', 'swe_atlas', 'swe_atlas_rubric_grounded'])
 def test_all_shared_piu_renderers_exclude_constructor_annotations(dataset):
     row = {'dataset': dataset, 'reference_information_units': [{
         'rui_id': 'PRIVATE_ID_SENTINEL', 'information_feature': 'PRIVATE_FEATURE_SENTINEL',

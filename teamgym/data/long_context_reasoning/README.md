@@ -33,7 +33,7 @@ All 20 authored cases remain necessary to reproduce candidate construction.
 ## Allocation and Structural Checks
 
 ```bash
-python scripts/data_generation/common/run_pipeline.py \
+python -m teamgym.data.long_context_reasoning.pipeline \
   --seed-spec generated/casebook/seed/ecfr_casebook20_short_answer_seed.jsonl \
   --output-root generated/casebook/partitions/one_each \
   --allocation-mode one_each \
@@ -58,7 +58,7 @@ These stages check exact PIU visibility and whether a single participant owns a
 complete oracle sufficient set. They are deterministic structural checks.
 The `03_option_exclusion` directory name also applies to short-answer tasks;
 its structural coverage check does not call a finite-choice LLM auditor.
-`scripts/data_generation/common/build_seed.py` exposes the allocation stage
+`python -m teamgym.data.long_context_reasoning.seed_builder` exposes the allocation stage
 alone when structural funnels are not required.
 
 ## Model-Based Qualification
@@ -86,5 +86,5 @@ Each JSONL row supplies an `instance_id`, source identity, `source_text`,
 `schema.py` preserves these fields in the common datapoint and oracle.
 `seed_builder.py` constructs private contexts and information allocations.
 `pipeline.py` implements the structural checks above. The semantic judge is
-exposed through `scripts/data_generation/common/judge.py` for generated
+exposed through `python -m teamgym.data.long_context_reasoning.judge` for generated
 trajectories and through the retained batch for construction qualification.

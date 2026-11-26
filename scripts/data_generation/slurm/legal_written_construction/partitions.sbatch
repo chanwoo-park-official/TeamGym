@@ -35,7 +35,7 @@ case "$dataset" in
     ;;
 esac
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/common/run_pipeline.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.long_context_reasoning.pipeline \
   --seed-spec "$seed_spec" \
   --output-root "$root/build/$dataset/$mode" \
   --allocation-mode "$mode" \

@@ -20,6 +20,8 @@ uv run --no-sync teamgym-generate finance/findver \
 `--subset` selects QA categories; `--source-split` selects the split. The default split is `testmini`. The default participant context budget is 20,000 tokens and is recorded in the manifest. Models perform finite audits and solver attempts; these do not constitute a proof for all possible readers or algorithms. Numeric values still require the model grounding gate and case-specific independent review; a generic formal arithmetic verifier is not claimed.
 
 Each run yields at most one accepted task per filing. The source evidence determines the PIU count.
+Use `common_datapoints.jsonl` for evaluation, or `MODE/common_datapoints.jsonl` after
+redistribution. Both use the Hugging Face schema.
 
 The objective-disclosure gate distinguishes legitimate scope years/dates and item numbering from requested source values, conclusions and answer cardinalities. Explicit answer-with-unit/cardinality disclosures are also rejected deterministically, including word-form counts.
 

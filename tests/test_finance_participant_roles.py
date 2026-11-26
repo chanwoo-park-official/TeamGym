@@ -5,9 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from teamgym.data.legal.participant_role_augmentation import (
-    riu_text_sha256,
-)
+from teamgym.core.participant_roles import riu_text_sha256
 from teamgym.data.long_context_reasoning.finance_participant_roles import (
     PROMPT_VERSION,
     apply_public_roles,

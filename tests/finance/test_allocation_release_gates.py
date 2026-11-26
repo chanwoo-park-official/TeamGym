@@ -6,6 +6,7 @@ from types import SimpleNamespace
 import pytest
 
 from teamgym.core.information_allocation import PAPER_ALLOCATION_MODES
+from teamgym.core.schema import normalize_release_datapoint
 
 
 @pytest.mark.parametrize('mode', PAPER_ALLOCATION_MODES)
@@ -68,7 +69,8 @@ def test_finlongdocqa_frozen_repartition_runs_final_gates_and_grader_export(tmp_
         assert row['format_validation']['valid']
         assert row['oracle']['required_decision_steps']
         assert row['task_description']==original['task_description']
-        assert row['reference_information_units']==original['reference_information_units']
+        assert row['schema_version'] == 'teamgym_release_datapoint_v1'
+        assert normalize_release_datapoint(row)['reference_information_units'] == original['reference_information_units']
     assert base==original
 
 

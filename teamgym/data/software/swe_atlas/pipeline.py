@@ -17,6 +17,7 @@ import tarfile
 from typing import Any, Iterable
 
 from teamgym.tokenization import count_tokens as estimate_tokens
+from .export_common import build_evaluation_rows, write_evaluation_rows
 from teamgym.llm.construction_client import (
     DEFAULT_LLM_API_KEY_ENV,
     DEFAULT_LLM_BASE_URL,
@@ -612,6 +613,8 @@ def build_task(
         raise PipelineError('Construction inputs changed during execution')
     _write_json(output / "pipeline_report.json", report)
     write_ready_receipt(output, task)
+    full, piu_only = build_evaluation_rows(output, task)
+    write_evaluation_rows(output / "evaluation", [full], [piu_only])
     write_checkpoint(output, identity)
     return report
 

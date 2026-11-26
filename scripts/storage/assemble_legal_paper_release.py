@@ -230,11 +230,10 @@ def include_code_file(path: Path, repo: Path) -> bool:
         return False
     if relative.parts == ("tests", "test_legal_communication_process.py"):
         return False
-    if relative.parts[:2] == ("evaluation", "reporting"):
-        if len(relative.parts) != 3 or path.name not in {
-            "rescore_numeric_short_answers.py", "render_long_context_rui_visualization.py",
-        }:
-            return False
+    if relative.parts[:2] == ("evaluation", "reporting") and relative.parts != (
+        "evaluation", "reporting", "rescore_numeric_short_answers.py",
+    ):
+        return False
     if relative.parts[:2] == ("teamgym", "rl"):
         if relative.parts[2:3] == ("analysis",):
             return False

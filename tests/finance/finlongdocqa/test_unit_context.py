@@ -2,7 +2,7 @@
 import hashlib
 
 from teamgym.data.finance.finlongdocqa.source import extract_unit_conventions, index_report
-from teamgym.data.finance.finlongdocqa.partition import build_one_each_datapoint
+from teamgym.data.finance.finlongdocqa.partition import build_partitioned_datapoint
 from teamgym.data.finance.finlongdocqa.validation import hydrate_task
 from teamgym.interaction.llm_actors import _public_task_payload
 from teamgym.interaction.rui_context import rui_only_datapoint
@@ -38,7 +38,7 @@ def test_remote_unit_convention_is_visible_in_both_runtime_conditions():
                     'supporting_unit_ids':['riu_1','riu_2'],'grading_rule':'Use correct currency scale.'}]},
           'oracle':{'reference_answer':'496.547 million divided by 28.1 billion is about 1.77%.'}}
     task=hydrate_task(task,[table,assets])
-    row=build_one_each_datapoint(report_id='X_2022',company='X',year='2022',report_source={},
+    row=build_partitioned_datapoint(preserve_rui_order=True, report_id='X_2022',company='X',year='2022',report_source={},
         report_index=indexed,task=task,qa_mappings=[],solver_audit={})
     for view in [row,rui_only_datapoint(row)]:
         visible=_public_task_payload(view)['initial_common_information']

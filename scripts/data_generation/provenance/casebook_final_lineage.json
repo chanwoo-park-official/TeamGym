@@ -23,7 +23,7 @@
     "submission_directory": "scripts/data_generation/submissions/legal_written_construction",
     "seed_input_environment_variable": "CASEBOOK_BASE_SOURCE",
     "seed_output_relative_to_batch_root": "seeds/casebook20/seed/ecfr_casebook20_short_answer_seed.jsonl",
-    "partition_entrypoint": "scripts/data_generation/common/run_pipeline.py",
+    "partition_entrypoint": "python -m teamgym.data.long_context_reasoning.pipeline",
     "partition_modules": [
       "teamgym/data/long_context_reasoning/seed_builder.py",
       "teamgym/data/long_context_reasoning/schema.py",

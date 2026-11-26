@@ -618,6 +618,11 @@ def test_build_repairs_overlap_and_exports_the_final_evidence(
     assert report["status"] == "benchmark_ready"
     assert report["final_riu_count"] == 2
     assert len(consolidation_calls) == 2
+    for name, condition in (("full", "multi_agent_full_context"), ("riu_only", "multi_agent_piu_only")):
+        accepted = json.loads((build / "evaluation" / name / "accepted.jsonl").read_text())
+        assert accepted["schema_version"] == "teamgym_release_datapoint_v1"
+        assert accepted["evidence_condition"] == condition
+        assert len(accepted["pivotal_information_units"]) == 2
 
     evaluation = json.loads((build / "09_benchmark" / "evaluation.hidden.json").read_text())
     checkpoint = json.loads((build / "05_final_rius" / "final_rius.hidden.json").read_text())

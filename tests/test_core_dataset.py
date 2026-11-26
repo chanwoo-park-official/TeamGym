@@ -8,8 +8,6 @@ import sys
 import pytest
 
 from teamgym.core import dataset
-from teamgym.core.schema import SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS
-from teamgym.interaction import dataset as legacy_dataset
 
 
 def _row(identity: str, **metadata) -> dict:
@@ -36,19 +34,6 @@ def _mixed_files(root: Path) -> tuple[Path, Path]:
     second.write_text(json.dumps(_row("last")) + "\n", encoding="utf-8")
     (root / "notes.txt").write_text(json.dumps(_row("ignore-non-jsonl")), encoding="utf-8")
     return first, second
-
-
-def test_legacy_dataset_exports_the_shared_loader() -> None:
-    for name in (
-        "COMMON_DATAPOINT_SCHEMA_VERSION", "DEFAULT_LEGAL_DATASET_PATH",
-        "discover_common_datapoint_files", "extract_common_datapoint",
-        "iter_common_datapoints", "load_common_datapoints",
-    ):
-        assert getattr(legacy_dataset, name) is getattr(dataset, name)
-    from teamgym import interaction
-
-    assert interaction.iter_common_datapoints is dataset.iter_common_datapoints
-    assert interaction.load_common_datapoints is dataset.load_common_datapoints
 
 
 def test_core_loader_imports_without_interaction_or_training_dependencies() -> None:
@@ -101,9 +86,8 @@ def test_extract_accepts_native_or_wrapped_records_without_copying() -> None:
         assert dataset.extract_common_datapoint(unsupported) is None
 
 
-@pytest.mark.parametrize("schema_version", SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS)
-def test_current_and_historical_schema_labels_load_without_rewriting(tmp_path, schema_version) -> None:
-    row = _row("saved", schema_version=schema_version, text="source\u2028text")
+def test_common_datapoint_loads_without_rewriting(tmp_path) -> None:
+    row = _row("saved", text="source\u2028text")
     serialized = json.dumps(row, ensure_ascii=False)
     assert dataset.extract_common_datapoint(row) is row
     assert dataset.extract_common_datapoint({"common_datapoint": row}) is row
@@ -115,7 +99,7 @@ def test_current_and_historical_schema_labels_load_without_rewriting(tmp_path, s
     assert len(loaded) == 2
     for value in loaded:
         value = {key: item for key, item in value.items() if key not in {"_input_path", "_input_line_number"}}
-        assert value["schema_version"] == schema_version
+        assert value["schema_version"] == dataset.COMMON_DATAPOINT_SCHEMA_VERSION
         assert json.dumps(value, ensure_ascii=False) == serialized
     assert path.read_bytes() == before
 

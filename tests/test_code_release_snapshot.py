@@ -62,7 +62,7 @@ def test_code_release_preserves_installation_files_and_excludes_private_workspac
         "scripts/storage/migrate_pool_artifacts_to_scratch_0714.sh": "# Historical storage migration\n",
         "scripts/data_generation/slurm/legal_written_construction/generate.sbatch": "# Public construction submission\n",
         "evaluation/reporting/rescore_numeric_short_answers.py": "# Public numeric rescoring utility\n",
-        "evaluation/reporting/render_long_context_rui_visualization.py": "# Public dataset visualization utility\n",
+        "teamgym/data/long_context_reasoning/visualize.py": "# Public dataset visualization utility\n",
         "evaluation/reporting/analyze_legal_communication_process.py": "# Retired experiment analysis\n",
         "evaluation/reporting/render_legal_dataset_statistics.py": "# Retired appendix wrapper\n",
         "evaluation/reporting/legal_problem_instance_piu_distribution_statistics.json": "{}\n",

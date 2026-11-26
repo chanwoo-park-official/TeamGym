@@ -22,17 +22,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import _bootstrap  # noqa: E402,F401
 
 from teamgym.core.io import write_json, write_jsonl
+from teamgym.core.participant_roles import (
+    duplicate_role_names,
+    reference_information_units,
+    riu_text_sha256,
+    role_name_preview,
+    validate_feature,
+)
 from teamgym.data.legal.participant_role_augmentation import (
     EXCLUDED_SOURCE_CORPORA,
     PROMPT_VERSION,
     ExcludedSourceCorpusError,
     canonical_problem_instance_id,
-    duplicate_role_names,
-    reference_information_units,
-    riu_text_sha256,
-    role_name_preview,
     source_corpus,
-    validate_feature,
 )
 from teamgym.core.schema import validate_common_datapoint
 

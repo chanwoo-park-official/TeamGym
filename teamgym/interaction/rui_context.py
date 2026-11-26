@@ -10,7 +10,7 @@ from teamgym.core.schema import validate_common_datapoint
 
 
 _RAW_SOURCE_DATASETS = {'findver', 'finlongdocqa', 'evidencebench', 'mlcr', 'mlcr_aa',
-                        'swe_atlas', 'deep_swe', 'deepswe'}
+                        'swe_atlas', 'swe_atlas_rubric_grounded', 'deep_swe', 'deepswe'}
 
 
 def _raw_source_only(datapoint: dict[str, Any]) -> bool:
@@ -35,6 +35,8 @@ def rui_only_datapoint(datapoint: dict[str, Any]) -> dict[str, Any]:
     """Return a copy whose participant private context contains only owned RIUs."""
 
     out = deepcopy(datapoint)
+    if out.get("evidence_condition") == "multi_agent_piu_only":
+        return out
     rui_by_id = {
         str(row.get("rui_id")): row
         for row in out.get("reference_information_units", [])

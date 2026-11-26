@@ -31,7 +31,14 @@ Source acquisition is currently a separate step; see
 uv run --no-sync teamgym-generate swe/swe-atlas \
   --task-dir SOURCE_CHECKOUT/data/qa/TASK_ID \
   --output-root artifacts/swe-atlas/TASK_ID
+```
 
+A benchmark-ready run writes `evaluation/full/accepted.jsonl` and
+`evaluation/riu_only/accepted.jsonl` in the Hugging Face schema. To gather
+multiple verified builds into a single package, pass each build with
+`--build-dir`.
+
+```bash
 uv run --no-sync python -m teamgym.data.software.swe_atlas.export_common \
   --build-dir artifacts/swe-atlas/TASK_ID \
   --task-root SOURCE_CHECKOUT/data/qa \
@@ -91,8 +98,8 @@ Inputs are checked again before either successful construction return.
    overlap trigger evidence regrouping, with merging as a fallback. Regrouped
    evidence must pass ALL/NONE/LOO again; fewer than two PIUs is a rejection.
 8. Audit visible formatting for construction cues and write three benchmark
-   variants under `09_benchmark/`. `export_common.py` separately produces the
-   shared-schema full-context and evidence-only JSONL exports.
+   variants under `09_benchmark/`. The constructor checks the ready receipt
+   and writes the full-context and PIU-only task files under `evaluation/`.
 
 The runtime command validator rejects network/install commands, and evidence
 collector Docker invocations use `--network none`. Execution pins the resolved

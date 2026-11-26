@@ -13,6 +13,7 @@ import random
 import threading
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.io import write_json, write_jsonl
 from teamgym.data.legal.leakage_deletion_funnel import (
     as_float,
@@ -182,7 +183,7 @@ def main() -> None:
         reports.append(report)
 
     kept_rows, dropped_rows, misleading_rows = filtered_datapoints(datapoints, reports)
-    write_jsonl(output_root / "solo_oracle_kept_common_datapoints.jsonl", kept_rows)
+    write_release_datapoints(output_root / "solo_oracle_kept_common_datapoints.jsonl", kept_rows)
     write_jsonl(output_root / "solo_oracle_dropped_datapoints.jsonl", dropped_rows)
     write_jsonl(output_root / "misleading_single_option_common_datapoints.jsonl", misleading_rows)
     write_jsonl(output_root / "participant_option_exclusion_audits.jsonl", all_audits)

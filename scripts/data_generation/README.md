@@ -40,22 +40,17 @@ datasets and generated datasets remain external inputs.
 |---|---|---|
 | CUAD | `teamgym-generate legal/cuad` | `data.legal.cuad.pipeline` |
 | MAUD | `teamgym-generate legal/maud` | `data.legal.maud.pipeline` |
-| Casebook20 | `teamgym-generate legal/casebook --base-source FILE` | `data.legal.casebook.pipeline` |
-| MSLR | `teamgym-generate legal/mslr --input-root DIRECTORY` | `data.legal.mslr.pipeline` |
+| Casebook20 | `teamgym-generate legal/casebook --base-source FILE` | `data.legal.casebook.generation` |
+| MSLR | `teamgym-generate legal/mslr --input-root DIRECTORY` | `data.legal.mslr.generation` |
 | SARA | `teamgym-generate legal/sara STAGE` | `data.legal.sara.pipeline` |
 | MultiLexSum | `teamgym-generate legal/multilexsum STAGE` | `data.legal.multilexsum.pipeline` |
 
 MultiLexSum stages are `prepare-sources`, `prepare-packets`, `generate`,
 `short-answer`, `expand-packets`, `audit-grounding`, and `select-grounded`.
-Shared commands for construction, repartitioning, support auditing, and judging
-are under `common/`. That directory also contains tools for filtering by
-single-agent answers with all PIUs, building leave-one-PIU-out variants, and
-selecting rows.
-
-`common/judge.py` retains batch execution and reporting through
-`data.long_context_reasoning.judge`. Its reusable grading prompts, rubric
-normalization, and numeric checks live in `scoring.short_answers` and are also
-used by evaluation and RL training.
+The shared long-context modules cover allocation, support audits, task filtering,
+and judging. The batch judge runs through `teamgym-judge`. Its grading prompts,
+rubric normalization, and numeric checks live in `teamgym.scoring.short_answers`
+and are also used by evaluation and RL training.
 
 SARA retains the paper's final v10 target-sliced construction. Its stages are
 `prepare`, `generate`, `refresh`, `merge`, `qualify`, and `finalize`. Preparation
@@ -304,15 +299,15 @@ OUTPUT_ROOT=generated/multilexsum/leakage \
 
 survivors=generated/multilexsum/leakage/01_leakage_deletion/leakage_deleted_common_datapoints.jsonl
 
-python evaluation/runners/run_legal_single_agent_rui_eval.py \
+python -m teamgym.interaction.run_single_agent_rui_evaluation \
   --input-root "$survivors" --output-dir generated/multilexsum/all_riu_eval \
   --limit 30 --context-token-budget 40000 "${model_args[@]}"
 
-python scripts/data_generation/common/judge.py \
+python -m teamgym.data.long_context_reasoning.judge \
   --input-root "$survivors" --trajectories-root generated/multilexsum/all_riu_eval \
   --output-root generated/multilexsum/all_riu_judge "${model_args[@]}"
 
-python scripts/data_generation/common/filter_single_all_riu.py \
+python -m teamgym.data.long_context_reasoning.filtering \
   --input-jsonl "$survivors" \
   --judgments-jsonl generated/multilexsum/all_riu_judge/judgments.jsonl \
   --output-root generated/multilexsum/qualified \
@@ -334,31 +329,27 @@ Sensitivity campaigns are outside the public construction/evaluation/RL scope.
 
 ## Shared Construction and Validation
 
-Shared tools remain because the six retained pipelines use different answer
-formats and construction stages:
+Run the following modules directly with `python -m`. The short module names in
+the table are under `teamgym.data.long_context_reasoning`.
 
-| Commands under `common/` | Retained purpose |
+| Module or command | Purpose |
 |---|---|
-| `build_seed.py`, `run_pipeline.py` | Casebook/MSLR allocation and deterministic structural checks |
-| `repartition.py` | MultiLexSum/SARA allocation variants |
-| `audit_support.py` | Model-based support checks for authored short-answer seeds |
-| `run_leakage_filter.sh` | Participant-context leakage detection, deletion, and convergence |
-| `run_option_exclusion.sh` | Finite-choice local-answer checks; do not use on singleton `free_response` tasks |
-| `judge.py`, `filter_single_all_riu.py` | Written-answer judging and strict all-PIU retention |
-| `leave_one_rui_out.py` | Optional necessity diagnostic, separate from default retention |
-| `generate_legal_riu_information_features.py`, `apply_legal_participant_roles.py` | Descriptions for Casebook/MSLR/MultiLexSum/SARA participants |
-| `select_jsonl_row.py` | Deterministic per-row batch inputs |
-| `validate_frozen.py` | Offline frozen-release integrity, references, and selections |
+| `seed_builder`, `pipeline` | Casebook/MSLR allocation and deterministic structural checks |
+| `repartition` | MultiLexSum/SARA allocation variants |
+| `support_audit` | Model-based support checks for authored short-answer seeds |
+| `filtering`, `teamgym-judge` | Written-answer judging and strict all-PIU retention |
+| `ablation` | Optional leave-one-PIU-out necessity checks |
+| `selection` | Select a row for a batch job |
+| `teamgym-validate-frozen` | Offline frozen-release integrity, references, and selections |
 
-The superseded combined LLM-funnel wrapper is removed. Run leakage filtering
-and the answer-format-appropriate qualification explicitly. The shared planner
-helper and prompt I/O remain required by both CUAD and MAUD. Finance tools
-remain separate from this legal dataset cleanup.
+The scripts in `common/` run Legal participant-role augmentation, leakage
+filtering, and finite-choice option exclusion. Written-answer tasks use the
+all-PIU qualification and judging commands.
 
-Validate an unpacked `legal_allocated_v1` bundle without model calls:
+Validate an unpacked Legal allocation bundle offline:
 
 ```bash
-python scripts/data_generation/common/validate_frozen.py \
+python -m teamgym.data.legal.archive_validation \
   --archive-root /path/to/legal_allocated_v1 \
   --report analysis_outputs/legal_frozen_validation.json
 

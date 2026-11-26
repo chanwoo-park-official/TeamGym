@@ -77,15 +77,6 @@ def test_rubric_policy_honors_json_boolean(flag):
     ) is flag
 
 
-def test_legacy_judge_reexports_the_shared_grading_engine() -> None:
-    for name in (
-        "JUDGE_SCHEMA", "SYSTEM_PROMPT", "judge_one_answer", "normalize_judgment",
-        "judge_reference_information_units", "deterministic_numeric_evaluation",
-        "pass_policy_for_datapoint", "strict_judgment_passed",
-    ):
-        assert getattr(batch, name) is getattr(engine, name), name
-
-
 def test_grading_engine_imports_without_batch_construction_or_training() -> None:
     subprocess.run(
         [
@@ -119,6 +110,40 @@ def test_batch_oracle_self_check_still_writes_judgments_and_reports(tmp_path) ->
     assert json.loads((output / "judge_report.json").read_text()) == report
     assert (output / "judge_report.md").is_file()
     assert (output / "judge_report.html").is_file()
+
+
+def test_trajectory_judging_selects_the_recorded_distribution(tmp_path):
+    source = tmp_path / "input.jsonl"
+    row = _input(source)
+    row.update(evidence_condition="multi_agent_full_context", distribution_key="one_each")
+    other = {**row, "distribution_key": "overlap", "oracle": {**row["oracle"], "canonical_response": "Other variant."}}
+    source.write_text(json.dumps(row) + "\n" + json.dumps(other) + "\n", encoding="utf-8")
+    trajectories = tmp_path / "trajectories"
+    trajectories.mkdir()
+    decision = {"written_answer": "The agreement permits the action."}
+    (trajectories / "1.json").write_text(json.dumps({
+        "episode": {"datapoint": {"instance_id": row["instance_id"]}, "final_decision": decision},
+        "evaluation": {
+            "dataset": row["dataset"],
+            "evidence_condition": row["evidence_condition"],
+            "distribution_key": row["distribution_key"],
+        },
+    }), encoding="utf-8")
+    (trajectories / "2.json").write_text(json.dumps({
+        "datapoint": {"instance_id": row["instance_id"]},
+        "final_decision": decision,
+    }), encoding="utf-8")
+
+    output = tmp_path / "results"
+    client = MockJudgeClient()
+    report = batch.judge_short_answers(
+        input_root=source, output_root=output, trajectories_root=trajectories, client=client,
+    )
+    assert report["aggregate"]["judged_count"] == 1
+    assert report["aggregate"]["error_count"] == 1
+    assert json.loads(client.calls[0]["user_prompt"])["canonical_response"] == row["oracle"]["canonical_response"]
+    assert json.loads((output / "judgments.jsonl").read_text())["distribution_key"] == "one_each"
+    assert json.loads((output / "judge_errors.jsonl").read_text())["error_type"] == "ambiguous_datapoint"
 
 
 @pytest.mark.parametrize("require_all_steps", [False, True])

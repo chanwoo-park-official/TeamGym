@@ -3,17 +3,16 @@
 from __future__ import annotations
 
 import argparse
-from decimal import Decimal, InvalidOperation
+from collections import defaultdict
 from datetime import datetime, timezone
 import html
 import json
 from pathlib import Path
-import re
 from statistics import mean
 from typing import Any
 
 from teamgym.core.io import read_jsonl, write_json
-from teamgym.core.dataset import iter_common_datapoints
+from teamgym.core.dataset import datapoint_variant, iter_common_datapoints
 from teamgym.llm.openai_client import (
     DEFAULT_LLM_API_KEY_ENV,
     DEFAULT_LLM_BASE_URL,
@@ -25,32 +24,7 @@ from teamgym.llm.openai_client import (
 )
 
 
-from teamgym.scoring.short_answers import (
-    JUDGE_SCHEMA as JUDGE_SCHEMA,
-    SYSTEM_PROMPT as SYSTEM_PROMPT,
-    MAX_JUDGE_RUI_CHARS as MAX_JUDGE_RUI_CHARS,
-    NUMERIC_ORACLE_TOLERANCE as NUMERIC_ORACLE_TOLERANCE,
-    _CURRENCY_AMOUNT_RE as _CURRENCY_AMOUNT_RE,
-    _NUMERIC_ORACLE_RE as _NUMERIC_ORACLE_RE,
-    _FINAL_AMOUNT_PREFIX_RE as _FINAL_AMOUNT_PREFIX_RE,
-    _FINAL_AMOUNT_CUE_RE as _FINAL_AMOUNT_CUE_RE,
-    judge_one_answer as judge_one_answer,
-    judge_reference_information_units as judge_reference_information_units,
-    required_rui_ids_for_judge as required_rui_ids_for_judge,
-    pass_policy_for_datapoint as pass_policy_for_datapoint,
-    requires_all_steps_for_pass as requires_all_steps_for_pass,
-    deterministic_numeric_evaluation as deterministic_numeric_evaluation,
-    _extract_final_currency_amount as _extract_final_currency_amount,
-    numeric_final_step_ids as numeric_final_step_ids,
-    normalize_judgment as normalize_judgment,
-    strict_judgment_passed as strict_judgment_passed,
-    _parse_single_numeric_oracle as _parse_single_numeric_oracle,
-    _decimal_from_match as _decimal_from_match,
-    _decimal_text as _decimal_text,
-    _is_numeric_amount_only_issue as _is_numeric_amount_only_issue,
-    _is_numeric_final_step as _is_numeric_final_step,
-    _string_list as _string_list,
-)
+from teamgym.scoring.short_answers import judge_one_answer, strict_judgment_passed
 
 
 def judge_short_answers(
@@ -71,7 +45,10 @@ def judge_short_answers(
     output = Path(output_root).expanduser().resolve()
     output.mkdir(parents=True, exist_ok=True)
     datapoints = list(iter_common_datapoints(input_root))
-    datapoint_by_id = {str(row.get("instance_id")): row for row in datapoints if row.get("instance_id")}
+    datapoints_by_id = defaultdict(list)
+    for row in datapoints:
+        if row.get("instance_id"):
+            datapoints_by_id[str(row["instance_id"])].append(row)
     answer_rows = load_answer_rows(
         datapoints=datapoints,
         answers_jsonl=answers_jsonl,
@@ -88,17 +65,28 @@ def judge_short_answers(
     trace_dir = output / "judge_prompts" if trace_prompts else None
     for index, answer_row in enumerate(answer_rows, start=1):
         instance_id = str(answer_row.get("instance_id") or "")
-        datapoint = datapoint_by_id.get(instance_id)
-        if datapoint is None:
-            errors.append(
-                {
-                    "instance_id": instance_id,
-                    "error_type": "missing_datapoint",
-                    "error_message": "Candidate answer instance_id was not found in input_root.",
-                    "answer_row": answer_row,
-                }
-            )
+        variant = datapoint_variant(answer_row)
+        candidates = [
+            row for row in datapoints_by_id.get(instance_id, [])
+            if all(row.get(key) == value for key, value in variant.items())
+        ]
+        if answer_row.get("dataset") and (variant or len(candidates) > 1):
+            candidates = [row for row in candidates if row.get("dataset") == answer_row["dataset"]]
+        if len(candidates) != 1:
+            error = {
+                "instance_id": instance_id,
+                **variant,
+                "error_type": "ambiguous_datapoint" if candidates else "missing_datapoint",
+                "error_message": (
+                    "Multiple input rows match this answer. Supply its evidence_condition and distribution_key."
+                    if candidates else "No input row matches the candidate answer's task and variant."
+                ),
+                "answer_row": answer_row,
+            }
+            errors.append(error)
+            append_jsonl(output / "judge_errors.jsonl", error)
             continue
+        datapoint = candidates[0]
         try:
             judgment = judge_one_answer(
                 client=client,
@@ -155,6 +143,8 @@ def load_answer_rows(
         rows.append(
             {
                 "instance_id": datapoint.get("instance_id"),
+                "dataset": datapoint.get("dataset"),
+                **datapoint_variant(datapoint),
                 "answer_text": oracle.get("canonical_response") or oracle.get("short_answer") or "",
                 "answer_source": "oracle_self_check",
             }
@@ -216,6 +206,9 @@ def load_answers_from_trajectories(root: str | Path) -> list[dict[str, Any]]:
         rows.append(
             {
                 "instance_id": instance_id,
+                "dataset": evaluation.get("dataset") or public_datapoint.get("dataset"),
+                **datapoint_variant(public_datapoint),
+                **datapoint_variant(evaluation),
                 "answer_text": str(answer_text),
                 "answer_source": "trajectory_final_decision",
                 "communication_structure": structure,

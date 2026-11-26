@@ -26,24 +26,26 @@ from teamgym.core.io import (
     write_json,
     write_jsonl,
 )
+from teamgym.core.participant_roles import (
+    allocation_mode,
+    duplicate_role_names,
+    normalize_information_features,
+    normalize_leakage_audit,
+    reference_information_units,
+    riu_text_sha256,
+    role_name_preview,
+    validate_feature,
+)
 from teamgym.data.legal.participant_role_augmentation import (
     EXCLUDED_SOURCE_CORPORA,
     PROMPT_VERSION,
     TARGET_SOURCE_CORPORA,
     ExcludedSourceCorpusError,
-    allocation_mode,
     canonical_problem_instance_id,
-    duplicate_role_names,
     information_feature_input,
-    normalize_information_features,
-    normalize_leakage_audit,
     public_problem_description,
     reference_decision,
-    reference_information_units,
-    riu_text_sha256,
-    role_name_preview,
     source_corpus,
-    validate_feature,
 )
 from teamgym.llm import (
     DEFAULT_LLM_API_KEY_ENV,

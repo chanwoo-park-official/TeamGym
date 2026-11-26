@@ -6,26 +6,12 @@ import sys
 
 import pytest
 
-from teamgym.core import participant_roles as shared_roles
-from teamgym.data.legal import participant_role_augmentation as legal_roles
-from teamgym.data.legal.participant_role_augmentation import (
-    ExcludedSourceCorpusError,
+from teamgym.core.participant_roles import (
     normalize_information_features,
     private_rui_assignment,
     role_name_from_information_features,
-    source_corpus,
 )
-
-
-def test_legal_role_imports_reexport_shared_helpers() -> None:
-    for name in (
-        "allocation_mode", "duplicate_role_names", "normalize_feature",
-        "normalize_information_features", "normalize_leakage_audit",
-        "private_rui_assignment", "reference_information_units", "riu_text_sha256",
-        "role_name_from_information_features", "role_name_preview", "validate_feature",
-        "Counter", "hashlib", "re", "Any",
-    ):
-        assert getattr(legal_roles, name) is getattr(shared_roles, name)
+from teamgym.data.legal.participant_role_augmentation import ExcludedSourceCorpusError, source_corpus
 
 
 @pytest.mark.parametrize(("module", "blocked_domain"), [

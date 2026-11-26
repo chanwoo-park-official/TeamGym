@@ -1,26 +1,18 @@
-"""Load normalized fully collaborative datapoints from generated legal outputs."""
+"""Read TeamGym task records for construction, evaluation, and training."""
 
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable, Iterator
 import json
 from itertools import islice
-import os
 from pathlib import Path
 from typing import Any
 
 from teamgym.core.schema import (
     COMMON_DATAPOINT_SCHEMA_VERSION,
-    SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS,
+    RELEASE_DATAPOINT_SCHEMA_VERSION,
+    normalize_release_datapoint,
 )
-
-
-_DEFAULT_LEGAL_ROOT = Path(os.environ.get(
-    "TEAMGYM_LEGAL_DATA_ROOT", str(Path(os.environ.get("TEAMGYM_DATA_ROOT", "data")) / "legal"),
-)).expanduser()
-DEFAULT_LEGAL_DATASET_PATH = Path(os.environ.get(
-    "TEAMGYM_LEGAL_DATASET", str(_DEFAULT_LEGAL_ROOT / "collections/all_task_allocations_1607.jsonl"),
-)).expanduser()
 
 
 def discover_common_datapoint_files(input_root: str | Path) -> list[Path]:
@@ -68,9 +60,19 @@ def load_common_datapoints(paths: str | Path | Iterable[str | Path], *, limit: i
 def extract_common_datapoint(row: dict[str, Any]) -> dict[str, Any] | None:
     if not isinstance(row, dict):
         return None
-    if row.get("schema_version") in SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS:
-        return row
-    common = row.get("common_datapoint")
-    if isinstance(common, dict) and common.get("schema_version") in SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS:
-        return common
+    for datapoint in (row, row.get("common_datapoint")):
+        if not isinstance(datapoint, dict):
+            continue
+        schema = datapoint.get("schema_version")
+        if schema == COMMON_DATAPOINT_SCHEMA_VERSION:
+            return datapoint
+        if schema == RELEASE_DATAPOINT_SCHEMA_VERSION:
+            return normalize_release_datapoint(datapoint)
     return None
+
+
+def datapoint_variant(row: dict[str, Any]) -> dict[str, str]:
+    return {
+        key: value for key in ("evidence_condition", "distribution_key")
+        if isinstance(value := row.get(key), str) and value
+    }

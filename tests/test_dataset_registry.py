@@ -22,7 +22,8 @@ def test_domain_keys_match_the_four_paper_categories():
 def test_legacy_alias_and_qualified_command_use_the_existing_constructor(dataset):
     legacy = PIPELINE_REGISTRY[dataset]
     assert PIPELINE_REGISTRY[f"legal/{dataset}"] is legacy
-    assert legacy.module == f"teamgym.data.legal.{dataset}.pipeline"
+    module = "generation" if dataset in {"casebook", "mslr"} else "pipeline"
+    assert legacy.module == f"teamgym.data.legal.{dataset}.{module}"
 
 
 def test_datasets_in_different_domains_can_share_a_name_without_alias_collisions():

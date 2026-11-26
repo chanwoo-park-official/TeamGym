@@ -26,7 +26,7 @@ root="${TEAMGYM_DATAGEN_ROOT}"
 source_data=$MULTILEXSUM_INPUT_ROOT
 modes=(one_each paired overlap redundant_player common_anchor bottleneck)
 mode=${modes[${SLURM_ARRAY_TASK_ID:?}]}
-"${TEAMGYM_PYTHON}" scripts/data_generation/common/repartition.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.long_context_reasoning.repartition \
   --input "$source_data" \
   --output-root "$root/build/multilexsum/$mode" \
   --allocation-mode "$mode" \

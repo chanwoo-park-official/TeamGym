@@ -11,6 +11,7 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.schema import build_common_datapoint
 
 
@@ -201,5 +202,5 @@ def write_evaluation_jsonl(report_paths: list[str | Path], output_path: str | Pa
     instance_ids = [row["instance_id"] for row in rows]
     if len(instance_ids) != len(set(instance_ids)):
         raise ValueError("evaluation input contains duplicate task IDs")
-    destination.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows), encoding="utf-8")
+    write_release_datapoints(destination, rows)
     return destination

@@ -32,7 +32,7 @@ if [[ -d "$variants_root" ]] && find "$variants_root" -mindepth 1 -print -quit |
   exit 1
 fi
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/common/leave_one_rui_out.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.long_context_reasoning.ablation \
   --input-jsonl "$all_riu_root/common_datapoints.jsonl" \
   --output-root "$variants_root"
 "${TEAMGYM_PYTHON}" "$submission/build_necessity_manifest.py" --variants-root "$variants_root"

@@ -8,7 +8,7 @@ repo="${TEAMGYM_REPO_ROOT}"
 input_jsonl=${INPUT_JSONL:?INPUT_JSONL is required}
 shard_root=${SHARD_ROOT:?SHARD_ROOT is required}
 
-"${TEAMGYM_PYTHON}" evaluation/runners/run_legal_single_agent_rui_eval.py \
+"${TEAMGYM_PYTHON}" -m teamgym.interaction.run_single_agent_rui_evaluation \
   --input-root "$input_jsonl" \
   --output-dir "$shard_root/eval" \
   --limit 1 \
@@ -29,7 +29,7 @@ shard_root=${SHARD_ROOT:?SHARD_ROOT is required}
   --no-trace-prompts \
   --no-render-html
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/common/judge.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.long_context_reasoning.judge \
   --input-root "$input_jsonl" \
   --trajectories-root "$shard_root/eval" \
   --output-root "$shard_root/judge" \

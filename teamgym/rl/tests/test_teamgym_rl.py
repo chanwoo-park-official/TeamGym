@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from teamgym.core.schema import SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS
+from teamgym.core.schema import to_release_datapoint
 from teamgym.interaction.environment import run_episode
 from teamgym.interaction.evaluation import evaluate_episode
 from teamgym.interaction.llm_actors import (
@@ -57,12 +57,11 @@ from teamgym.rl.training.trainer_compat import (
 FIXTURE = Path("teamgym/rl/fixtures/tiny_normalized.jsonl")
 
 
-@pytest.mark.parametrize("schema_version", SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS)
-def test_workflow_accepts_current_and_historical_datapoints(schema_version) -> None:
+def test_workflow_accepts_prepared_and_public_datapoints() -> None:
     with FIXTURE.open(encoding="utf-8") as handle:
         datapoint = json.loads(next(handle))
-    datapoint["schema_version"] = schema_version
     assert _datapoint_from_task(datapoint) is datapoint
+    assert _datapoint_from_task(to_release_datapoint(datapoint)) == datapoint
     assert _datapoint_from_task({"datapoint": datapoint}) is datapoint
     assert _datapoint_from_task({"teamgym_datapoint_json": json.dumps(datapoint)}) == datapoint
 

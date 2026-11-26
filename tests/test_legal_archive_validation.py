@@ -2,12 +2,21 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 from pathlib import Path
 
 import pytest
 
 from teamgym.data.legal.archive_validation import validate_task, verify_checksums
-from teamgym.core.schema import build_common_datapoint
+from teamgym.core.dataset import load_common_datapoints
+from teamgym.core.schema import (
+    RELEASE_DATAPOINT_SCHEMA_VERSION,
+    build_common_datapoint,
+    to_release_datapoint,
+    validate_common_datapoint,
+)
+from teamgym.core.release import FULL_CONTEXT, TEAM_PIU_ONLY, write_release_datapoints
+from teamgym.interaction.rui_context import rui_only_datapoint
 
 
 def task() -> dict:
@@ -33,7 +42,56 @@ def task() -> dict:
 
 
 def test_ownership_can_be_encoded_on_participants_and_source_contexts() -> None:
-    assert validate_task(task()) == []
+    assert validate_task(to_release_datapoint(task())) == []
+
+
+@pytest.mark.parametrize("condition", [FULL_CONTEXT, TEAM_PIU_ONLY])
+def test_accepted_task_writer_round_trips_hugging_face_schema(tmp_path, condition):
+    original = task()
+    original["generation_metadata"]["allocation_mode"] = "one_each"
+    if condition == TEAM_PIU_ONLY:
+        original = rui_only_datapoint(original)
+        original["private_context_units"][0]["text"] = "The separately qualified evidence packet."
+    original["_input_path"] = "/source"
+    before = copy.deepcopy(original)
+
+    path = tmp_path / "common_datapoints.jsonl"
+    write_release_datapoints(path, [{"common_datapoint": original}])
+    assert original == before
+    public = json.loads(path.read_text(encoding="utf-8"))
+    assert public["schema_version"] == RELEASE_DATAPOINT_SCHEMA_VERSION
+    assert public["evidence_condition"] == condition
+    assert public["distribution_key"] == "one_each"
+    assert public["pivotal_information_units"][0]["piu_id"] == "r1"
+    assert public["participants"][0]["owned_piu_ids"] == ["r1"]
+    assert "_input_path" not in public
+    assert validate_common_datapoint(public)["valid"]
+    normalized = load_common_datapoints(path)[0]
+    assert normalized["oracle"] == original["oracle"]
+    assert normalized["generation_metadata"] == original["generation_metadata"]
+    assert normalized["private_context_units"] == original["private_context_units"]
+    if condition == TEAM_PIU_ONLY:
+        assert rui_only_datapoint(normalized) == normalized
+
+
+def test_accepting_a_hosted_row_preserves_its_null_distribution_name(tmp_path):
+    original = task()
+    original["distribution_key"] = "one_each"
+    original["distribution_name"] = None
+    path = tmp_path / "common_datapoints.jsonl"
+    write_release_datapoints(path, [original])
+    public = json.loads(path.read_text())
+    assert public["distribution_key"] == "one_each"
+    assert public["distribution_name"] is None
+
+
+def test_interrupted_task_writer_preserves_previous_output(tmp_path):
+    path = tmp_path / "common_datapoints.jsonl"
+    write_release_datapoints(path, [task()])
+    saved = path.read_bytes()
+    with pytest.raises(ValueError, match="expected a TeamGym task"):
+        write_release_datapoints(path, [task(), {"instance_id": "invalid"}])
+    assert path.read_bytes() == saved
 
 
 @pytest.mark.parametrize("corruption, message", [

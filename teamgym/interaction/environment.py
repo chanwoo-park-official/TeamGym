@@ -5,6 +5,8 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
+from teamgym.core.dataset import datapoint_variant
+
 from .actor_utils import participant_ids
 from .structures import CommunicationStructure
 from .types import BudgetSpec
@@ -361,6 +363,7 @@ def _public_datapoint_view(datapoint: dict[str, Any]) -> dict[str, Any]:
         "schema_version": datapoint.get("schema_version"),
         "instance_id": datapoint.get("instance_id"),
         "dataset": datapoint.get("dataset"),
+        **datapoint_variant(datapoint),
         "scenario_family": datapoint.get("scenario_family"),
         "source": datapoint.get("source"),
         "task_description": datapoint.get("task_description"),

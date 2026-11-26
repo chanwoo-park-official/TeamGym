@@ -7,7 +7,9 @@ import json
 from pathlib import Path
 from typing import Any, Iterable
 
+from teamgym.core.release import TEAM_PIU_ONLY, write_release_datapoints
 from teamgym.core.schema import build_common_datapoint
+from .schema import SWEAtlasQATask
 from teamgym.data.software.swe_atlas.source import load_qa_task
 from teamgym.data.software.swe_atlas.riu_context import rui_only_datapoint
 from .integrity import ConstructionIdentityError, validate_ready_receipt
@@ -24,6 +26,11 @@ def export_build(*, build_dir: str | Path, task_dir: str | Path) -> tuple[dict[s
     """Return full-context and RIU-only common datapoints for one audited build."""
 
     build = Path(build_dir).expanduser().resolve()
+    return build_evaluation_rows(build, load_qa_task(task_dir))
+
+
+def build_evaluation_rows(build: Path, task: SWEAtlasQATask) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Read the frozen construction receipt and materialize both evidence views."""
     report = _read_json(build / "pipeline_report.json")
     if report.get("status") != "benchmark_ready":
         raise ExportError(f"{build.name}: pipeline status is not benchmark_ready")
@@ -34,7 +41,6 @@ def export_build(*, build_dir: str | Path, task_dir: str | Path) -> tuple[dict[s
     if report.get("salience_accept") is not True:
         raise ExportError(f"{build.name}: context salience audit did not pass")
 
-    task = load_qa_task(task_dir)
     if task.task_id != report.get("task_id"):
         raise ExportError(f"{build.name}: task identity mismatch")
     try:
@@ -201,8 +207,7 @@ def export_package(
         )
     if not full_rows:
         raise ExportError("No benchmark-ready builds were supplied")
-    _write_jsonl(output / "full" / "accepted.jsonl", full_rows)
-    _write_jsonl(output / "riu_only" / "accepted.jsonl", riu_rows)
+    write_evaluation_rows(output, full_rows, riu_rows)
     manifest = {
         "schema": "swe_atlas_strict_evaluation_package_v1",
         "task_count": len(manifest_rows),
@@ -357,11 +362,15 @@ def _write_json(path: Path, value: Any) -> None:
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
-def _write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(
-        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
-        encoding="utf-8",
+def write_evaluation_rows(
+    output: Path,
+    full_rows: Iterable[dict[str, Any]],
+    piu_rows: Iterable[dict[str, Any]],
+) -> None:
+    """Write full-context and independently qualified PIU-only packets."""
+    write_release_datapoints(output / "full" / "accepted.jsonl", full_rows)
+    write_release_datapoints(
+        output / "riu_only" / "accepted.jsonl", piu_rows, evidence_condition=TEAM_PIU_ONLY
     )
 
 

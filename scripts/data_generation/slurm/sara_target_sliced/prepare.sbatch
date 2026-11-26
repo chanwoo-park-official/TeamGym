@@ -16,6 +16,6 @@ source "${repo}/scripts/data_generation/slurm/_environment.sh"
 repo="${TEAMGYM_REPO_ROOT}"
 cd "$repo"
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/slurm/sara_target_sliced/prepare.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.legal.sara.preparation \
   --source "$SARA_SUBPROOF_SOURCE" --output-root "$SARA_SUBPROOF_OUTPUT" \
   --swipl-image "$SARA_SWIPL_IMAGE"

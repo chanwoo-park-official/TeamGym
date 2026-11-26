@@ -25,11 +25,12 @@ from teamgym.data.finance.finlongdocqa.runtime import (
     build_client,
     read_jsonl,
     write_json,
-    write_jsonl,
 )
 from teamgym.data.finance.finlongdocqa.schema import (
     validate_common_datapoint,
 )
+from teamgym.core.release import write_release_datapoints
+from teamgym.core.schema import normalize_release_datapoint
 from teamgym.core.information_allocation import (
     PAPER_ALLOCATION_MODES,
 )
@@ -125,7 +126,7 @@ def _run_mode(
     latest = _latest_results(result_path)
     common_by_id = {
         str(row.get("instance_id") or ""): row
-        for row in read_jsonl(common_path)
+        for row in map(normalize_release_datapoint, read_jsonl(common_path))
         if row.get("instance_id")
     }
     eligible_rows = [
@@ -244,7 +245,7 @@ def _run_mode(
         if errors or common is None:
             continue
         common_by_id[instance_id] = common
-        write_jsonl(
+        write_release_datapoints(
             common_path,
             [
                 common_by_id[str(row.get("instance_id") or "")]

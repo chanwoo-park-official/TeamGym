@@ -40,7 +40,7 @@ if [[ -d "$shard_root" ]] && find "$shard_root" -mindepth 1 -print -quit | grep 
   exit 1
 fi
 mkdir -p "$shard_root"
-"${TEAMGYM_PYTHON}" scripts/data_generation/common/select_jsonl_row.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.long_context_reasoning.selection \
   --input "$source_data" --output "$shard_root/input.jsonl" --index "$qualification_index"
 
 INPUT_JSONL="$shard_root/input.jsonl" SHARD_ROOT="$shard_root" \

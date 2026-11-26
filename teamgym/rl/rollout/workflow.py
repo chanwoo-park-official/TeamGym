@@ -41,7 +41,7 @@ from .action_protocol import (
     _compact_action_has_required_field as _compact_action_has_required_field,
 )
 
-from teamgym.core.schema import SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS
+from teamgym.core.dataset import extract_common_datapoint
 from teamgym.interaction.environment import run_episode
 from teamgym.interaction.actor_utils import participant_ids
 from teamgym.interaction.evaluation import (
@@ -810,8 +810,9 @@ def _datapoint_from_task(task: dict[str, Any]) -> dict[str, Any]:
     value = task.get("datapoint")
     if isinstance(value, dict):
         return value
-    if task.get("schema_version") in SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS:
-        return task
+    datapoint = extract_common_datapoint(task)
+    if datapoint is not None:
+        return datapoint
     raise ValueError("TeamGym task does not contain a normalized common datapoint")
 
 

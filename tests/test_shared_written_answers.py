@@ -11,7 +11,6 @@ import pytest
 
 from teamgym.scoring.short_answers import SYSTEM_PROMPT
 from teamgym.scoring import written_answers as scoring
-from teamgym.rl import written_reward as legacy_scoring
 
 
 def test_saved_nonfinite_raw_score_cannot_be_rewarded():
@@ -79,15 +78,6 @@ def clients(monkeypatch):
     return created
 
 
-def test_previous_scorer_path_exports_the_shared_implementation() -> None:
-    for name in (
-        "CACHE_SCHEMA", "JUDGE_SCHEMA", "WrittenJudgeConfig", "_cache_path",
-        "is_written_answer_task", "written_answer_from_episode", "holistic_score",
-        "judge_written_episode",
-    ):
-        assert getattr(legacy_scoring, name) is getattr(scoring, name)
-
-
 def test_shared_scorer_imports_without_the_rl_stack() -> None:
     subprocess.run(
         [
@@ -102,7 +92,7 @@ def test_shared_scorer_imports_without_the_rl_stack() -> None:
     )
 
 
-def test_judge_prompts_and_written_cache_are_shared_across_import_paths(tmp_path, clients) -> None:
+def test_judge_prompts_and_written_cache(tmp_path, clients) -> None:
     row, episode = _datapoint(), _episode()
     config = scoring.WrittenJudgeConfig(cache_dir=str(tmp_path))
     result = scoring.judge_written_episode(datapoint=row, episode=episode, config=config)
@@ -130,7 +120,7 @@ def test_judge_prompts_and_written_cache_are_shared_across_import_paths(tmp_path
     assert json.loads(saved)["cache_schema"] == "teamgym_written_reward_cache_v2"
     assert json.loads(saved)["judge_schema"] == result["schema"]
     assert list(tmp_path.glob("*.tmp")) == []
-    hit = legacy_scoring.judge_written_episode(datapoint=row, episode=episode, config=config)
+    hit = scoring.judge_written_episode(datapoint=row, episode=episode, config=config)
     assert hit == {**result, "cache_hit": True}
     assert len(clients) == 1 and len(clients[0].calls) == 1
     assert path.read_bytes() == saved
@@ -194,7 +184,7 @@ def test_cache_keys_distinguish_answers_rubrics_and_models(tmp_path) -> None:
     row = _datapoint()
     config = scoring.WrittenJudgeConfig(cache_dir=str(tmp_path))
     key = scoring._cache_path(datapoint=row, answer_text="first answer", config=config)
-    assert key == legacy_scoring._cache_path(datapoint=deepcopy(row), answer_text="first answer", config=config)
+    assert key == scoring._cache_path(datapoint=deepcopy(row), answer_text="first answer", config=config)
     assert key != scoring._cache_path(datapoint=row, answer_text="different answer", config=config)
     assert key != scoring._cache_path(datapoint=row, answer_text="first answer", config=replace(config, model="another-model"))
     changed = deepcopy(row)

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 
-from teamgym.data.legal.cuad_document_partition import (
+from teamgym.data.legal.cuad.partition import (
     Chunk,
     RUIRange,
     _balanced_participant_for_neutral_chunk,

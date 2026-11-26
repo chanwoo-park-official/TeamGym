@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.io import read_jsonl, write_json, write_jsonl
 from teamgym.core.schema import validate_common_datapoint
 from teamgym.data.long_context_reasoning.seed_builder import build_from_seed_specs
@@ -243,7 +244,7 @@ def run_structural_option_exclusion_funnel(
         else:
             dropped.append(tagged)
 
-    write_jsonl(output / "solo_oracle_kept_common_datapoints.jsonl", kept)
+    write_release_datapoints(output / "solo_oracle_kept_common_datapoints.jsonl", kept)
     write_jsonl(output / "solo_oracle_dropped_datapoints.jsonl", dropped)
     write_jsonl(output / "misleading_single_option_common_datapoints.jsonl", misleading)
     write_jsonl(output / "participant_option_exclusion_audits.jsonl", audit_rows)

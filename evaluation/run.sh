@@ -39,21 +39,20 @@ case "$mode" in
     defaults=("${common[@]}" "${actor[@]}" --timeout-sec 600 --context-token-budget 40000)
     ;;
   multi_riu|multi_full)
-    if [[ $mode == multi_riu ]]; then
-      module=teamgym.interaction.run_rui_context_evaluation
-    else
-      module=teamgym.interaction.run_evaluation
-    fi
+    module=teamgym.interaction.run_evaluation
     defaults=(
       "${common[@]}" "${actor[@]}" --timeout-sec 600 --turn-budget 16
       --participant-context-token-budget 40000
       --participant-utterance-token-budget 600 --coordinator-utterance-token-budget 600
       --participant-reasoning-token-budget 1200 --coordinator-reasoning-token-budget 1200
     )
+    if [[ $mode == multi_riu ]]; then
+      defaults+=(--context-variant piu_only)
+    fi
     ;;
   single_full)
-    module=teamgym.interaction.run_single_agent_full_context_evaluation
-    defaults=("${common[@]}" "${actor[@]}" --timeout-sec 900 --context-token-budget 200000)
+    module=teamgym.interaction.run_single_agent_rui_evaluation
+    defaults=("${common[@]}" "${actor[@]}" --context-variant full_source --timeout-sec 900 --context-token-budget 200000)
     ;;
   judge)
     module=teamgym.data.long_context_reasoning.judge

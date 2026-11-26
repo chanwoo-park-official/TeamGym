@@ -10,22 +10,6 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from teamgym.core.participant_roles import (
-    Counter as Counter,
-    allocation_mode as allocation_mode,
-    duplicate_role_names as duplicate_role_names,
-    hashlib as hashlib,
-    normalize_feature as normalize_feature,
-    normalize_information_features as normalize_information_features,
-    normalize_leakage_audit as normalize_leakage_audit,
-    private_rui_assignment as private_rui_assignment,
-    reference_information_units as reference_information_units,
-    riu_text_sha256 as riu_text_sha256,
-    role_name_from_information_features as role_name_from_information_features,
-    role_name_preview as role_name_preview,
-    validate_feature as validate_feature,
-)
-
 
 TARGET_SOURCE_CORPORA = ("casebook", "mslr", "multilexsum", "sara")
 EXCLUDED_SOURCE_CORPORA = ("cuad", "maud")

@@ -19,7 +19,6 @@ def dependency_identity():
              *(repository / 'teamgym/interaction').glob('*.py'),
              *(repository / 'teamgym/scoring').glob('*.py'),
              repository / 'teamgym/tokenization.py',
-             repository / 'teamgym/data/medical/export_schema.py',
              repository / 'teamgym/data/medical/certification.py',
              *(repository / 'teamgym/data/medical').glob('allocation*.py'),
              *(repository / 'teamgym/prompts/medical/allocations').glob('*.txt'),

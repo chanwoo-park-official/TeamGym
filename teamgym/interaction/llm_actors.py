@@ -7,6 +7,7 @@ import json
 from typing import Any
 
 from teamgym.llm.openai_client import OpenAIJsonClient
+from teamgym.scoring.written_answers import is_written_answer_task
 
 from .actor_utils import (
     count_tokens,
@@ -695,7 +696,7 @@ def _llm_final_decision(
         prompt_payload["private_source_material"] = _private_context_payload(datapoint, participant, budgets)
         available_information += ", together with your own private source material"
     turn_instruction = f"Choose the final decision using the {available_information}."
-    if _is_short_answer_judged(datapoint):
+    if is_written_answer_task(datapoint):
         if not compact_output:
             # A separate rationale duplicates a potentially long written
             # answer and consumes the small-model completion budget. The
@@ -957,18 +958,6 @@ def _public_task_payload(datapoint: dict[str, Any]) -> dict[str, Any]:
         "decision_option_definitions": datapoint.get("decision_option_definitions"),
         "initial_common_information": _strip_dataset_metadata(model_common_information(datapoint)),
     }
-
-
-def _is_short_answer_judged(datapoint: dict[str, Any]) -> bool:
-    task = datapoint.get("task_description") if isinstance(datapoint.get("task_description"), dict) else {}
-    dataset_specific = datapoint.get("dataset_specific") if isinstance(datapoint.get("dataset_specific"), dict) else {}
-    answer_format = task.get("answer_format") if isinstance(task.get("answer_format"), dict) else {}
-    return (
-        task.get("answer_type") == "short_answer_judged"
-        or dataset_specific.get("answer_type") == "short_answer_judged"
-        or answer_format.get("type") == "free_response"
-        or datapoint.get("decision_set") == ["free_response"]
-    )
 
 
 def _target_ids_schema(valid_ids: list[str], max_targets: int) -> str:

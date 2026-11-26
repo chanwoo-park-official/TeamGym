@@ -12,6 +12,7 @@ from typing import Any, Callable
 from ....llm.construction_client import OpenAIJsonClient, OpenAIJsonClientConfig
 from ....core.information_allocation import PAPER_ALLOCATION_MODES
 from ....core.io import prompt_text, render_template
+from teamgym.core.release import write_release_datapoints
 from .integrity import client_identity, start_run, sha256, verify_inputs, write_json, write_jsonl
 from .free_response_validation import (
     leaked_context_ids,
@@ -180,6 +181,7 @@ def build_dataset(
             scenarios.append(scenario)
         _write_progress(output, results, scenarios, byproducts)
 
+    write_release_datapoints(output / "common_datapoints.jsonl", scenarios)
     report = {
         "schema": SCHEMA,
         "source_qa_path": str(Path(qa_path).expanduser().resolve()),
@@ -208,6 +210,7 @@ def build_dataset(
         "prompt_files": _prompt_manifest(question_generate_stage),
         "outputs": {
             "scenarios": str(output / "scenarios.jsonl"),
+            "common_datapoints": str(output / "common_datapoints.jsonl"),
             "generation_byproducts": str(output / "generation_byproducts.jsonl"),
             "candidate_results": str(output / "candidate_results.jsonl"),
             "traces": str(trace_root),
@@ -217,7 +220,7 @@ def build_dataset(
     manifest.update(status="accepted" if scenarios else "rejected", accepted_count=len(scenarios),
                     outputs={name: sha256(output / name) for name in (
                         "scenarios.jsonl", "candidate_results.jsonl", "generation_byproducts.jsonl",
-                        "funnel_report.json") if (output / name).exists()})
+                        "funnel_report.json", "common_datapoints.jsonl") if (output / name).exists()})
     write_json(output / "manifest.json", manifest)
     return report
 

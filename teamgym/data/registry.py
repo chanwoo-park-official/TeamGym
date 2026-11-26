@@ -56,10 +56,13 @@ PIPELINE_SPECS = tuple(
     PipelineSpec(
         domain="legal",
         dataset=name,
-        module=f"teamgym.data.legal.{name}.pipeline",
+        module=f"teamgym.data.legal.{name}.{module}",
         aliases=(name,),
     )
-    for name in ("cuad", "maud", "casebook", "mslr", "sara", "multilexsum")
+    for name, module in (
+        ("cuad", "pipeline"), ("maud", "pipeline"), ("casebook", "generation"),
+        ("mslr", "generation"), ("sara", "pipeline"), ("multilexsum", "pipeline"),
+    )
 ) + (
     PipelineSpec("finance", "findver", "teamgym.data.finance.findver.free_response_funnel", ("findver",)),
     PipelineSpec("finance", "finlongdocqa", "teamgym.data.finance.finlongdocqa.pipeline", ("finlongdocqa",)),

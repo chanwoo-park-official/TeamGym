@@ -380,7 +380,7 @@ relative to the calling directory.
 * `rollout/` contains the workflow, budgets, rewards, actor clients, policy
   routing, action parsing, and format repair. The rollout client connects
   asynchronous generation to recorded training steps.
-  `written_reward.py` exports the shared cached evaluator. [Written-answer scoring](../scoring/written_answers.py)
+  The [written-answer scorer](../scoring/written_answers.py) caches assessments.
   Grading prompts, rubric normalization, and numeric checks are shared through
   [`scoring/short_answers.py`](../scoring/short_answers.py).
 * `training/` contains RLLM and VERL integration, local format advantages,

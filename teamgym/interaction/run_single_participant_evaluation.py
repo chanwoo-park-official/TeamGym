@@ -18,7 +18,7 @@ from teamgym.interaction.actor_utils import (
     participant_private_context_units,
     truncate_tokens,
 )
-from teamgym.core.dataset import DEFAULT_LEGAL_DATASET_PATH
+from teamgym.core.dataset import datapoint_variant
 from teamgym.interaction.environment import EPISODE_SCHEMA
 from teamgym.interaction.evaluation import (
     EPISODE_EVALUATION_SCHEMA,
@@ -44,6 +44,7 @@ from teamgym.llm.openai_client import (
     DEFAULT_LLM_PROVIDER,
     OpenAIJsonClient,
 )
+from teamgym.scoring.written_answers import is_written_answer_task
 
 
 COMMUNICATION_STRUCTURE = "single_participant_private_context"
@@ -167,7 +168,7 @@ def run_single_participant_episode(
     participant = participants[participant_id]
     role_name = _visible_role_name(participant, participant_id, args.participant_role_name_mode)
     owned_rui_ids = _owned_rui_ids(participant)
-    short_answer_judged = _is_short_answer_judged(datapoint)
+    short_answer_judged = is_written_answer_task(datapoint)
     prompt_id = f"{datapoint.get('instance_id')}.{participant_id}.single_participant_private_context"
     system_lines = [
         "You are one participant answering a legal decision task.",
@@ -261,6 +262,7 @@ def run_single_participant_episode(
         "datapoint": {
             "instance_id": datapoint.get("instance_id"),
             "dataset": datapoint.get("dataset"),
+            **datapoint_variant(datapoint),
             "scenario_family": datapoint.get("scenario_family"),
             "task_description": datapoint.get("task_description"),
             "decision_set": datapoint.get("decision_set"),
@@ -302,9 +304,15 @@ def run_single_participant_episode(
 
 
 def aggregate_single_participant_evaluations(evaluations: list[dict[str, Any]]) -> dict[str, Any]:
-    by_instance: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
+    by_instance: dict[tuple[str, str, str, str], list[dict[str, Any]]] = defaultdict(list)
     for row in evaluations:
-        by_instance[(str(row.get("dataset") or ""), str(row.get("instance_id") or ""))].append(row)
+        key = (
+            str(row.get("dataset") or ""),
+            str(row.get("instance_id") or ""),
+            str(row.get("evidence_condition") or ""),
+            str(row.get("distribution_key") or ""),
+        )
+        by_instance[key].append(row)
 
     oracle_success_count = 0
     finite_choice_instance_count = 0
@@ -367,7 +375,7 @@ def _attach_single_participant_eval(
         "private_sufficient_set_covered": _sufficient_set_covered(datapoint, set(owned_rui_ids)),
         "raw_answer": raw_answer,
         "valid_answer": bool(valid_answer),
-        "oracle_max_note": "Use max over participant rows with the same dataset/instance_id as a post-hoc upper bound.",
+        "oracle_max_note": "Use max over participants for the same task and distribution as a post-hoc upper bound.",
     }
 
 
@@ -384,6 +392,7 @@ def _failed_single_participant_evaluation(
         "schema_version": EPISODE_EVALUATION_SCHEMA,
         "instance_id": datapoint.get("instance_id"),
         "dataset": datapoint.get("dataset"),
+        **datapoint_variant(datapoint),
         "communication_structure": COMMUNICATION_STRUCTURE,
         "primary_eval": build_primary_evaluation(datapoint),
         "information_flow_eval": {
@@ -451,12 +460,6 @@ def _public_task_payload(datapoint: dict[str, Any]) -> dict[str, Any]:
         "decision_option_definitions": datapoint.get("decision_option_definitions"),
         "initial_common_information": _strip_dataset_metadata(datapoint.get("initial_common_information")),
     }
-
-
-def _is_short_answer_judged(datapoint: dict[str, Any]) -> bool:
-    task = datapoint.get("task_description") if isinstance(datapoint.get("task_description"), dict) else {}
-    dataset_specific = datapoint.get("dataset_specific") if isinstance(datapoint.get("dataset_specific"), dict) else {}
-    return task.get("answer_type") == "short_answer_judged" or dataset_specific.get("answer_type") == "short_answer_judged"
 
 
 def _strip_dataset_metadata(value: Any) -> Any:
@@ -580,7 +583,7 @@ def _safe_ratio(numerator: float, denominator: int) -> float | None:
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input-root", default=str(DEFAULT_LEGAL_DATASET_PATH))
+    parser.add_argument("--input-root", required=True, help="TeamGym JSONL file or directory.")
     parser.add_argument("--output-dir", default="generated/single_participant_eval")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--num-shards", type=int, default=1)

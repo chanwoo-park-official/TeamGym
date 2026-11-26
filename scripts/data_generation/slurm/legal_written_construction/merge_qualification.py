@@ -11,6 +11,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.io import read_jsonl, write_json, write_jsonl
 from teamgym.data.long_context_reasoning.judge import strict_all_step_passed
 
@@ -90,7 +91,7 @@ def main() -> None:
     write_jsonl(output_root / "qualification_results.jsonl", result_rows)
     if missing:
         raise RuntimeError(f"Qualification is incomplete: {len(missing)} judgments are missing")
-    write_jsonl(output_root / "common_datapoints.jsonl", passed_rows)
+    write_release_datapoints(output_root / "common_datapoints.jsonl", passed_rows)
     write_jsonl(output_root / "failed_common_datapoints.jsonl", failed_rows)
     print(f"Strict all-step pass: {len(passed_rows)} / {len(manifest)}")
 

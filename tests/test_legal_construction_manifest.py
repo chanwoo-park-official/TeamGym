@@ -141,9 +141,9 @@ def test_qualification_merge_requires_strict_all_step_pass(tmp_path: Path, legac
     survivor_root = tmp_path / "leakage_survivors"
     survivor_root.mkdir()
     survivor_root.joinpath("common_datapoints.jsonl").write_text(
-        '{"dataset":"mslr","instance_id":"pass"}\n'
-        '{"dataset":"mslr","instance_id":"fail"}\n'
-        '{"dataset":"mslr","instance_id":"judge_fail"}\n',
+        '{"schema_version":"teamgym_common_datapoint_v2","dataset":"mslr","instance_id":"pass"}\n'
+        '{"schema_version":"teamgym_common_datapoint_v2","dataset":"mslr","instance_id":"fail"}\n'
+        '{"schema_version":"teamgym_common_datapoint_v2","dataset":"mslr","instance_id":"judge_fail"}\n',
         encoding="utf-8",
     )
     survivor_root.joinpath("qualification_manifest.tsv").write_text(
@@ -192,6 +192,7 @@ def test_qualification_merge_requires_strict_all_step_pass(tmp_path: Path, legac
     assert summary["strict_failed_count"] == 2
     kept = (tmp_path / "all_riu_qualified" / "common_datapoints.jsonl").read_text(encoding="utf-8")
     assert '"instance_id": "pass"' in kept
+    assert json.loads(kept)["schema_version"] == "teamgym_release_datapoint_v1"
     assert '"instance_id": "fail"' not in kept
     assert '"instance_id": "judge_fail"' not in kept
 
@@ -204,6 +205,7 @@ def test_leave_one_out_merge_keeps_only_tasks_requiring_every_rui(tmp_path: Path
     all_riu.mkdir()
     source_rows = [
         {
+            "schema_version": "teamgym_common_datapoint_v2",
             "dataset": "sara",
             "instance_id": instance_id,
             "generation_metadata": {"allocation_mode": "one_each"},
@@ -220,12 +222,13 @@ def test_leave_one_out_merge_keeps_only_tasks_requiring_every_rui(tmp_path: Path
     subprocess.run(
         [
             sys.executable,
-            str(repository_root / "scripts" / "data_generation" / "common" / "leave_one_rui_out.py"),
+            "-m", "teamgym.data.long_context_reasoning.ablation",
             "--input-jsonl",
             str(all_riu / "common_datapoints.jsonl"),
             "--output-root",
             str(variants),
         ],
+        cwd=repository_root,
         check=True,
         capture_output=True,
         text=True,

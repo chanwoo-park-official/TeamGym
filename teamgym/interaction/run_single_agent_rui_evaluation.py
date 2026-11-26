@@ -14,7 +14,7 @@ from teamgym.interaction.actor_utils import (
     distributed_truncate_token_segments,
     truncate_tokens,
 )
-from teamgym.core.dataset import DEFAULT_LEGAL_DATASET_PATH
+from teamgym.core.dataset import datapoint_variant
 from teamgym.interaction.environment import EPISODE_SCHEMA
 from teamgym.interaction.evaluation import (
     aggregate_evaluations,
@@ -39,6 +39,7 @@ from teamgym.llm.openai_client import (
     DEFAULT_LLM_PROVIDER,
     OpenAIJsonClient,
 )
+from teamgym.scoring.written_answers import is_written_answer_task
 from teamgym.visualization.interaction_trajectory_report import build_report
 
 
@@ -47,19 +48,8 @@ CONTEXT_FULL_SOURCE = "full_source"
 
 
 def main() -> None:
-    """Run the backward-compatible Single-Agent All-RIU baseline."""
-
-    _main(CONTEXT_ALL_RIUS)
-
-
-def main_full_context() -> None:
-    """Run the Single-Agent Full-Context baseline."""
-
-    _main(CONTEXT_FULL_SOURCE)
-
-
-def _main(context_variant: str) -> None:
-    args = _parse_args(context_variant)
+    args = _parse_args()
+    context_variant = args.context_variant
     variant = _context_variant_metadata(context_variant)
     datapoints, input_diagnostics = load_evaluation_datapoints(args)
 
@@ -200,7 +190,7 @@ def run_single_agent_episode(
         if isinstance(row, dict) and row.get("rui_id")
     ]
     prompt_id = f"{datapoint.get('instance_id')}.{variant['baseline']}"
-    short_answer_judged = _is_short_answer_judged(datapoint)
+    short_answer_judged = is_written_answer_task(datapoint)
     if context_variant == CONTEXT_ALL_RIUS:
         context_text = _budgeted_all_rui_context(datapoint, args.context_token_budget)
         context_payload = {
@@ -308,6 +298,7 @@ def run_single_agent_episode(
         "datapoint": {
             "instance_id": datapoint.get("instance_id"),
             "dataset": datapoint.get("dataset"),
+            **datapoint_variant(datapoint),
             "scenario_family": datapoint.get("scenario_family"),
             "task_description": datapoint.get("task_description"),
             "decision_set": datapoint.get("decision_set"),
@@ -412,17 +403,11 @@ def full_source_context_text(
     return text, len(units), token_count
 
 
-def _is_short_answer_judged(datapoint: dict[str, Any]) -> bool:
-    task = datapoint.get("task_description") if isinstance(datapoint.get("task_description"), dict) else {}
-    dataset_specific = datapoint.get("dataset_specific") if isinstance(datapoint.get("dataset_specific"), dict) else {}
-    return task.get("answer_type") == "short_answer_judged" or dataset_specific.get("answer_type") == "short_answer_judged"
-
-
-def _parse_args(context_variant: str) -> argparse.Namespace:
-    variant = _context_variant_metadata(context_variant)
+def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--input-root", default=str(DEFAULT_LEGAL_DATASET_PATH))
-    parser.add_argument("--output-dir", default=f"outputs/teamgym/evaluation/{variant['baseline']}")
+    parser.add_argument("--input-root", required=True, help="TeamGym JSONL file or directory.")
+    parser.add_argument("--context-variant", choices=(CONTEXT_ALL_RIUS, CONTEXT_FULL_SOURCE), default=CONTEXT_ALL_RIUS)
+    parser.add_argument("--output-dir")
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--num-shards", type=int, default=1)
     parser.add_argument("--shard-index", type=int, default=0)
@@ -452,6 +437,9 @@ def _parse_args(context_variant: str) -> argparse.Namespace:
     parser.add_argument("--trace-prompts", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--render-html", action=argparse.BooleanOptionalAction, default=True)
     args = parser.parse_args()
+    if args.output_dir is None:
+        variant = _context_variant_metadata(args.context_variant)
+        args.output_dir = f"outputs/teamgym/evaluation/{variant['baseline']}"
     if args.num_shards < 1:
         raise ValueError("--num-shards must be >= 1")
     if args.shard_index < 0 or args.shard_index >= args.num_shards:

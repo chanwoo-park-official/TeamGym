@@ -16,7 +16,7 @@ source "${repo}/scripts/data_generation/slurm/_environment.sh"
 repo="${TEAMGYM_REPO_ROOT}"
 cd "$repo"
 
-"${TEAMGYM_PYTHON}" scripts/data_generation/slurm/sara_target_sliced/run_worker.py \
+"${TEAMGYM_PYTHON}" -m teamgym.data.legal.sara.worker \
   --audited-cases "$SARA_SUBPROOF_OUTPUT/metadata/audited_cases.json" \
   --output-root "$SARA_SUBPROOF_OUTPUT" --index "$SLURM_ARRAY_TASK_ID" --model gpt-5.4 \
   --policy "${SARA_SUBPROOF_POLICY:-target_sliced}"

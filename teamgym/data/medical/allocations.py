@@ -7,6 +7,7 @@ from importlib import import_module
 import json
 from pathlib import Path
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.information_allocation import PAPER_ALLOCATION_MODES
 from teamgym.tokenization import count_tokens
 from .allocation_source import load_allocation_source, content_hash, read_json, file_hash
@@ -300,9 +301,8 @@ def run_allocations(*, dataset, source_run, output_root, client, modes=PAPER_ALL
         if report["status"] == "accepted":
             try:
                 row = build_evaluation_datapoint(directory / "report.json")
-                text = json.dumps(row, ensure_ascii=False) + "\n"
-                (directory / "common_datapoints.jsonl").write_text(text)
-                exported.append(text)
+                write_release_datapoints(directory / "common_datapoints.jsonl", [row])
+                exported.append(row)
             except Exception as exc:
                 report.pop("export_certification", None)
                 report.update(status="export_failed", error=f"{type(exc).__name__}: {exc}")
@@ -310,7 +310,7 @@ def run_allocations(*, dataset, source_run, output_root, client, modes=PAPER_ALL
         results.append({"mode": mode, "status": report["status"], "report": str(directory / "report.json"),
                         **{k: report[k] for k in ("reason", "error") if k in report}})
         _write(root / "allocation_results.json", {"dataset": dataset, "source_sha256": content_hash(source), "results": results})
-    (root / "common_datapoints.jsonl").write_text("".join(exported))
+    write_release_datapoints(root / "common_datapoints.jsonl", exported)
     return {"dataset": dataset, "source_sha256": content_hash(source), "results": results}
 
 

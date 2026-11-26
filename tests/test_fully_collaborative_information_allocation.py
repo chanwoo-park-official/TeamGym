@@ -13,7 +13,6 @@ from teamgym.core.information_allocation import (
     owners_by_reference_unit,
     validate_reference_allocation,
 )
-from teamgym.data.legal import information_allocation as legacy_allocation
 from teamgym.data.long_context_reasoning.seed_builder import build_one_datapoint
 
 
@@ -28,18 +27,6 @@ def test_paper_modes_exclude_paired_without_changing_legacy_allocations() -> Non
         units, allowed_modes=paper_modes, rng=random.Random(1), mode_weights={"paired": 1.0},
     )
     assert restricted.mode in paper_modes
-
-
-def test_legacy_allocation_imports_reexport_shared_implementation() -> None:
-    for name in (
-        "ALLOCATION_MODE_ALIASES", "ALLOCATION_MODES", "DEFAULT_ALLOCATION_MODE_WEIGHTS",
-        "ReferenceUnitAllocation", "normalize_allocation_mode", "assign_reference_units",
-        "validate_reference_allocation", "owners_by_reference_unit",
-        "_build_assignment", "_check", "_dedupe", "_drop_empty", "_eligible_modes",
-        "_pad_empty_participants", "_round_robin_assignment", "_weighted_mode_order",
-        "Any", "Iterable", "dataclass", "random",
-    ):
-        assert getattr(legacy_allocation, name) is getattr(shared_allocation, name)
 
 
 def test_shared_allocation_imports_without_domain_or_training_dependencies() -> None:

@@ -1,7 +1,9 @@
 # TeamGym
 
 This repository provides the dataset construction, evaluation, and training code
-for [TeamGym: A Gym for Team Decision-Making by AI Agents with Distributed Information](https://arxiv.org/abs/2610.37571).
+for *TeamGym: A Gym for Team Decision-Making by AI Agents with Distributed Information*.
+
+[Paper](https://arxiv.org/abs/2610.37571) · [Dataset](https://huggingface.co/datasets/TeamGym/teamgym-datasets) · [Citation](CITATION.cff)
 
 The paper refers to the evidence units needed to solve a task as pivotal
 information units (PIUs).
@@ -19,10 +21,10 @@ teamgym-generate --list
 teamgym-evaluate --help
 ```
 
-With access to [`paper_tasks_163.jsonl`](#data-flow-and-release-inventory),
-follow the [one-task evaluation example](evaluation/README.md#run-one-task).
-Running the example uses model API credentials. [Installation](#installation)
-covers construction, pinned dependencies, and offline tests.
+The [one-task evaluation example](evaluation/README.md#run-one-task) downloads
+the public Legal full-context subset and runs one task with model API
+credentials. The [construction recipes](scripts/data_generation/RECONSTRUCTION.md#accepted-task-format)
+write accepted standard-evaluation tasks in the same format as Hugging Face.
 
 ## Citation
 
@@ -100,10 +102,18 @@ decision labels or judged short answers, with evaluator-only oracle metadata:
 
 ## Data Flow and Release Inventory
 
+The [public TeamGym dataset](https://huggingface.co/datasets/TeamGym/teamgym-datasets)
+contains 289 evaluation tasks across nine corpora in Legal, Finance, Medical, and
+Software Engineering. Its dataset card documents the per-corpus files, source
+terms, and evaluation views. The
+[combined Legal full-context file](https://huggingface.co/datasets/TeamGym/teamgym-datasets/resolve/ea0b5210dd9509131bd8f771ed278c74acce2258/legal/multi_full_context_subset.jsonl)
+contains 152 tasks at the linked revision.
+
 To build a dataset independently of the hosted TeamGym files, follow the
 [reconstruction guide](scripts/data_generation/RECONSTRUCTION.md). It shows the
-source/seed contract, runnable structural construction, and the separate RL data
-preparation step. The inventory below records existing snapshots for exact reuse.
+source and seed formats, a runnable structural construction example, and RL data
+preparation. The benchmark inputs are available in the
+[public TeamGym dataset](https://huggingface.co/datasets/TeamGym/teamgym-datasets).
 
 Construction produces normalized TeamGym tasks. Those records feed two paths:
 
@@ -119,14 +129,11 @@ to train on the same examples; model-assisted reconstruction can produce differe
 records. The [construction guide](scripts/data_generation/README.md) records source
 requirements and remaining historical recovery gaps.
 
-The Legal and prepared-bundle inventory was checked on **2026-11-17**. Counts refer to records;
+The prepared-bundle inventory was checked on **2026-11-17**. Counts refer to records;
 allocation variants can share an underlying task.
 
 | Artifact | Files and records | Availability |
 | --- | --- | --- |
-| Legal standard evaluation | [`paper_tasks_163.jsonl`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/data/paper_tasks_163.jsonl): 163 tasks | Uploaded to the private legal dataset repository. |
-| Full legal allocation bundle | [`legal_allocated_v1_all.zip`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/archives/legal_allocated_v1_all.zip), or [`all_task_allocations_1607.jsonl`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/data/all_task_allocations_1607.jsonl): 1,607 allocations across six datasets | Same private upload; the full archive also contains indexes and provenance. |
-| Historical legal allocation selection | [`paper_task_allocations_618.jsonl`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/data/paper_task_allocations_618.jsonl): 618 allocations | Same private upload; optional for standard evaluation and paper RL. |
 | Legal paper RL, full-context written tasks | `train`: 334 CUAD; `validation_cuad`: 36 CUAD; `validation_maud`: 26 MAUD | Packaged locally as `teamgym_legal_rl_v1.zip`; release download link pending. |
 | Finance paper RL, final deduplicated transfer split | `train`: 538; `validation`: 60; `test`: 40 | Packaged locally as `teamgym_finance_rl_v1.zip`; release download link pending. |
 | RL preparation metadata | Legal: `written_answer_manifest.jsonl`, `preparation_report.json`, `dataset_audit.json`. Finance: `split_manifest.jsonl`, `transfer_audit.json` | Included in the corresponding RL bundles with file checksums. |
@@ -135,9 +142,6 @@ allocation variants can share an underlying task.
 The [release export command](scripts/storage/README.md#export-the-prepared-rl-data-and-example-trajectories)
 recreates these bundles from frozen files using only the standard library. It
 preserves source bytes and records counts, selection rules, and SHA-256 checksums.
-The private [historical results snapshot](https://huggingface.co/datasets/Chanwoo97/collabgym-legal-results/tree/9e9b91ca3b4d9fda006f27589a8cf05698f1de2d)
-contains the original combined trajectory archive, campaign artifacts, and an older
-code snapshot; the selected export is a separate artifact.
 
 Each of the three canonical splits in an RL snapshot has `.jsonl`, `.parquet`,
 and `_verl.parquet` files: nine data files per domain. Legal's combined
@@ -145,17 +149,10 @@ and `_verl.parquet` files: nine data files per domain. Legal's combined
 held-out evaluation separate. Finance also has one optional six-participant
 qualitative test example, separate from its 40-example main test.
 
-The four uploaded legal data files above match the local files in size and SHA-256
-using Hugging Face's LFS metadata. The upload includes
-[`FILES.sha256`](https://huggingface.co/datasets/Chanwoo97/collabgym-legal/resolve/c1a6ec3a6d4279eb4498e2febb099f8b32e5d800/FILES.sha256).
-Both checked repositories remain private; these links require access. This
-inventory checks artifacts and counts, while full dataset reconstruction,
-download/restore, evaluation, and GPU training validation remain separate steps.
-The Finance, Medical, and SWE construction commands are available. Their accepted
-release downloads are pending. The [construction stage map](scripts/data_generation/RECONSTRUCTION.md#stage-map-and-evaluation-inputs)
+The [construction stage map](scripts/data_generation/RECONSTRUCTION.md#stage-map-and-evaluation-inputs)
 specifies the evaluation input produced by each constructor. The
 [archived-row receipts](scripts/data_generation/provenance/nonlegal_reconstruction_examples.json)
-record what has been recovered and checked so far:
+record earlier reconstruction checks:
 
 | Domain | Saved evaluation artifacts |
 | --- | --- |
@@ -237,8 +234,7 @@ Explicit command arguments override the following environment-backed defaults:
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `TEAMGYM_DATA_ROOT` | `data` | Local dataset directory |
-| `TEAMGYM_LEGAL_DATA_ROOT` | `data/legal` | Extracted legal release |
-| `TEAMGYM_LEGAL_DATASET` | `data/legal/collections/all_task_allocations_1607.jsonl` | Default input for the legacy single-agent/participant commands |
+| `TEAMGYM_LEGAL_DATA_ROOT` | `data/legal` | Local base directory for the Legal archive utilities |
 | `TEAMGYM_GENERATED_ROOT` | `generated` | Construction and archived experiment inputs |
 | `TEAMGYM_SECONDARY_GENERATED_ROOT` | Same as `TEAMGYM_GENERATED_ROOT` | Optional second source tree for historical archives |
 | `TEAMGYM_ARCHIVE_ROOT` | `artifacts/archives` | Archive and upload staging directories |
@@ -318,7 +314,7 @@ It uses the repository-local `rllm/` and `verl/` runtimes.
 Run the current fully collaborative evaluator on the generated legal examples:
 
 ```bash
-python evaluation/runners/run_legal_interaction_eval.py \
+python -m teamgym.interaction.run_evaluation \
   --input-root generated/legal_10_each \
   --model gpt-5.4-mini \
   --limit 1 \
@@ -337,7 +333,7 @@ python evaluation/runners/run_legal_interaction_eval.py \
 Run the current all-structure debug rollout with the stronger model:
 
 ```bash
-python evaluation/runners/run_legal_interaction_eval.py \
+python -m teamgym.interaction.run_evaluation \
   --input-root generated/legal_10_each \
   --output-dir generated/legal_10_each_llm_trial_all_structures_gpt55 \
   --model gpt-5.5 \

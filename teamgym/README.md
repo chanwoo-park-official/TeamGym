@@ -16,8 +16,8 @@ exposes all 12 source constructors. See the
 - `data/registry.py`: domain labels, qualified construction names, and legacy aliases.
 - `data/legal/cuad/pipeline.py`: stable CUAD generation API.
 - `data/legal/maud/pipeline.py`: stable MAUD generation API.
-- `data/legal/casebook/pipeline.py`: Casebook20 generation API.
-- `data/legal/mslr/pipeline.py`: source-excerpt MSLR generation API.
+- `data/legal/casebook/generation.py`: Casebook20 generation API.
+- `data/legal/mslr/generation.py`: source-excerpt MSLR generation API.
 - `data/legal/sara/pipeline.py`: final v10 target-sliced SARA construction stages.
 - `data/legal/sara/prolog.py`: Prolog parsing and term unification;
   `proof_slicing.py` reconstructs grounded target proofs and premise requirements.
@@ -72,7 +72,7 @@ python -m teamgym.interaction.run_evaluation \
 Run the current all-structure debug rollout with the stronger model:
 
 ```bash
-python evaluation/runners/run_legal_interaction_eval.py \
+python -m teamgym.interaction.run_evaluation \
   --input-root /path/to/released_dataset.jsonl \
   --output-dir analysis_outputs/legal_debug_all_structures \
   --model gpt-5.5 \

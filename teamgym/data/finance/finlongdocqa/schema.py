@@ -4,10 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from teamgym.core.schema import (
-    COMMON_DATAPOINT_SCHEMA_VERSION as SCHEMA_VERSION,
-    SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS,
-)
+from teamgym.core.schema import COMMON_DATAPOINT_SCHEMA_VERSION as SCHEMA_VERSION
 
 
 def build_common_datapoint(**fields: Any) -> dict[str, Any]:
@@ -88,7 +85,7 @@ def validate_common_datapoint(datapoint: dict[str, Any]) -> dict[str, Any]:
         if isinstance(row, dict) and row.get("rui_id")
     }
     checks = [
-        {"name": "schema_version", "passed": datapoint.get("schema_version") in SUPPORTED_COMMON_DATAPOINT_SCHEMA_VERSIONS},
+        {"name": "schema_version", "passed": datapoint.get("schema_version") == SCHEMA_VERSION},
         {"name": "instance_id_present", "passed": bool(datapoint.get("instance_id"))},
         {"name": "dataset_present", "passed": bool(datapoint.get("dataset"))},
         {"name": "finite_decision_set", "passed": bool(decision_set)},

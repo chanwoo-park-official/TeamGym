@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 
-from teamgym.data.legal.maud_measured_rui_funnel import (
+from teamgym.data.legal.maud.generation import (
     _normalize_decision_set,
     _normalize_plan_against_selection,
     _trim_to_smallest_sufficient_set,
@@ -10,7 +10,7 @@ from teamgym.data.legal.maud_measured_rui_funnel import (
     _validate_plan,
     _validate_selection,
 )
-from teamgym.data.legal.maud_document_partition import (
+from teamgym.data.legal.maud.partition import (
     MAUDRUIRange,
     build_full_document_partition,
     _drop_overlapping_rui_ranges,

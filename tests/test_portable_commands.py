@@ -229,17 +229,14 @@ def test_sara_submission_keeps_recipe_and_uses_optional_local_partition(tmp_path
     assert (expected_output / "metadata/submission_jobs.txt").is_file()
 
 
-@pytest.mark.parametrize("setting,value,expected", [
-    (None, None, "data/legal/collections/all_task_allocations_1607.jsonl"),
-    ("TEAMGYM_LEGAL_DATA_ROOT", "provided data", "provided data/collections/all_task_allocations_1607.jsonl"),
-    ("TEAMGYM_LEGAL_DATASET", "provided.jsonl", "provided.jsonl"),
+@pytest.mark.parametrize("module", [
+    "teamgym.interaction.run_single_agent_rui_evaluation",
+    "teamgym.interaction.run_single_participant_evaluation",
 ])
-def test_shared_loader_default_uses_portable_paths_and_explicit_overrides(setting, value, expected):
-    env = _env(PYTHONPATH=REPO)
-    if setting:
-        env[setting] = value
+def test_single_actor_evaluators_require_explicit_input(module):
     result = subprocess.run(
-        [sys.executable, "-c", "from teamgym.core.dataset import DEFAULT_LEGAL_DATASET_PATH; print(DEFAULT_LEGAL_DATASET_PATH)"],
-        env=env, check=True, capture_output=True, text=True,
+        [sys.executable, "-m", module, "--output-dir", "results"],
+        env=_env(PYTHONPATH=REPO), capture_output=True, text=True,
     )
-    assert result.stdout.strip() == expected
+    assert result.returncode == 2
+    assert "required: --input-root" in result.stderr

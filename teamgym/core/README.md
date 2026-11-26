@@ -16,8 +16,7 @@ convert records, select a scorer, or add an RL training regime.
 paths are relative to the package's `prompts/` directory in both source checkouts
 and installed wheels. Importing these helpers uses only the standard library;
 token estimation tries the optional tokenizer when called and retains its
-character-count fallback. Existing `data.legal.io` imports reexport the same
-functions.
+character-count fallback.
 
 [information_allocation.py](information_allocation.py) provides
 `assign_reference_units`, `validate_reference_allocation`, and
@@ -25,17 +24,15 @@ functions.
 `redundant_player`, `common_anchor`, and `bottleneck`; `auto` uses the existing
 weights and eligibility rules. Pass a seeded `random.Random` for repeatable
 assignments. `ReferenceUnitAllocation.to_metadata()` records private and common
-assignments, ordering, and validation. The legacy `data.legal.information_allocation`
-module reexports the same class, constants, and functions.
+assignments, ordering, and validation.
 
 [participant_roles.py](participant_roles.py) provides reference-evidence hashes,
 feature and audit normalization, private-evidence assignment lookup, role-name
 previews, and duplicate-name detection. It retains the existing feature checks,
 stopwords, and role rendering, including exclusion of common evidence from private
 role assignments. Legal corpus selection, legal prompt versions, and legal
-reference-answer lookup remain in `data.legal.participant_role_augmentation`,
-which also reexports the shared helpers. Finance uses the shared helpers directly
-and keeps its additional feature checks, collision numbering, and private-feature
+reference-answer lookup live in `data.legal.participant_role_augmentation`.
+Finance uses the shared helpers directly and keeps its additional feature checks, collision numbering, and private-feature
 preservation in its own augmentation module. These utilities use only the standard
 library and do not call a model.
 
@@ -43,12 +40,14 @@ library and do not call a model.
 
 [schema.py](schema.py) provides `build_common_datapoint()` and
 `validate_common_datapoint()`. [dataset.py](dataset.py) loads UTF-8 JSONL with one
-JSON object per physical line. It accepts either a native datapoint or an object
-containing that datapoint under `common_datapoint`. New records use
-`teamgym_common_datapoint_v2`. The loader and validator also accept the historical
-`collabgym_fully_collaborative_common_datapoint_v2` label. Loading an existing
-record preserves its label and contents; renaming the Python package does not
-rewrite frozen datasets or their checksums.
+JSON object per physical line. It accepts a task row or a construction record
+with a task under `common_datapoint`. Intermediate construction records use
+`teamgym_common_datapoint_v2`.
+
+Final [standard-evaluation task files](../../scripts/data_generation/RECONSTRUCTION.md#accepted-task-format)
+and the Hugging Face release use `teamgym_release_datapoint_v1` with PIU field
+names. Construction stages write this schema through [release.py](release.py).
+The loader translates those names for evaluation and judging.
 
 The loader skips records with unrecognized versions, annotates accepted records
 with `_input_path` and `_input_line_number`, and performs no structural validation.
@@ -57,7 +56,7 @@ explicit release file to select the intended benchmark tasks and allocations.
 
 | Fields | Meaning and consumer expectations |
 | --- | --- |
-| `schema_version`, `instance_id`, `dataset` | Format version, identity of this task allocation, and existing dataset label. Keep instance IDs unique within combined evaluator/judge inputs; the judge looks up references by `instance_id` alone. |
+| `schema_version`, `instance_id`, `dataset` | Format version, task ID, and dataset label. Keep `evidence_condition` and `distribution_key` when the same task appears in multiple release views. |
 | `source`, `scenario_family`, `generation_metadata`, `dataset_specific` | Source provenance, construction settings, and dataset-specific metadata. Preserve existing task/source identities and allocation metadata for splitting and reproduction. |
 | `task_description` | Actor-visible question or objective, response instructions, and answer type. Use `answer_type: "short_answer_judged"` explicitly for written answers so all current runners recognize them. |
 | `decision_set`, `decision_option_definitions` | Nonempty list of decision IDs and a nonempty text definition for every ID. Written tasks retain the compatibility decision ID described below. |
@@ -120,7 +119,7 @@ determine pass/fail. Finite numeric scores are reported separately. Report judge
 with scores. There is currently no registry that dispatches arbitrary scorer names.
 
 The [judge command](../data/long_context_reasoning/judge.py) matches saved answers
-to the original input by instance ID. For trajectories it reads `written_answer`,
+to the original input by instance ID and available variant fields. For trajectories it reads `written_answer`,
 then `rationale`, then `answer`. Keep the same instance IDs and reference file
 through construction, actor evaluation, and judging. Commands and reference
 settings are in the [evaluation guide](../../evaluation/README.md).

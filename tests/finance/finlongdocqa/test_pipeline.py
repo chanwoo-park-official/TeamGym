@@ -5,7 +5,6 @@ from pathlib import Path
 
 from teamgym.data.finance.finlongdocqa.partition import (
     build_partitioned_datapoint,
-    build_one_each_datapoint,
     repartition_common_datapoint,
 )
 from teamgym.data.finance.finlongdocqa.pipeline import (
@@ -26,7 +25,6 @@ from teamgym.data.finance.finlongdocqa.validation import (
 from teamgym.core.information_allocation import (
     PAPER_ALLOCATION_MODES,
 )
-from teamgym.core.schema import LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION
 from teamgym.data.finance.finlongdocqa.schema import validate_common_datapoint
 from teamgym.scoring.written_answers import is_written_answer_task
 
@@ -217,7 +215,8 @@ def _common() -> dict:
         leave_one_out_results=leave_one_out,
     )
     assert errors == []
-    return build_one_each_datapoint(
+    return build_partitioned_datapoint(
+        preserve_rui_order=True,
         report_id="TEST_2024",
         company="TEST",
         year="2024",
@@ -346,7 +345,6 @@ def test_partition_is_free_response_one_each() -> None:
     common = _common()
     assert common["format_validation"]["valid"] is True
     assert is_written_answer_task(common)
-    common["schema_version"] = LEGACY_COMMON_DATAPOINT_SCHEMA_VERSION
     assert validate_common_datapoint(common)["valid"]
     assert common["decision_set"] == ["free_response"]
     assert common["task_description"]["answer_format"]["type"] == "free_response"
@@ -492,7 +490,8 @@ def test_noncanonical_blocks_are_balanced_before_page_locality() -> None:
         leave_one_out_results=leave_one_out,
     )
     assert errors == []
-    common = build_one_each_datapoint(
+    common = build_partitioned_datapoint(
+        preserve_rui_order=True,
         report_id="TEST_2024",
         company="TEST",
         year="2024",
@@ -949,7 +948,7 @@ def test_canonical_table_overlap_restricts_exact_rows_then_reaudits_whole_packet
     for unit, block in zip(proposed["evidence_units"], blocks):
         unit["source_block_id"] = block["block_id"]
     task = hydrate_task(proposed, blocks)
-    common = build_one_each_datapoint(report_id="TEST_2024", company="TEST", year="2024", report_source={"kind": "test"},
+    common = build_partitioned_datapoint(preserve_rui_order=True, report_id="TEST_2024", company="TEST", year="2024", report_source={"kind": "test"},
         report_index=indexed, task=task, qa_mappings=[], solver_audit={})
     calls = []
     class Client:

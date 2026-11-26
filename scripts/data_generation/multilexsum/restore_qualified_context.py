@@ -13,7 +13,8 @@ from typing import Any
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT))
 
-from teamgym.core.schema import validate_common_datapoint  # noqa: E402
+from teamgym.core.release import FULL_CONTEXT, write_release_datapoints  # noqa: E402
+from teamgym.core.schema import normalize_release_datapoint, validate_common_datapoint  # noqa: E402
 
 
 def main() -> None:
@@ -71,8 +72,10 @@ def main() -> None:
         raise RuntimeError(f"Expected a 142-task matrix with 29 replacements; found {len(combined)} and {replaced}")
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    write_jsonl(args.output_dir / "multilexsum_full_context_qualified29.jsonl", restored)
-    write_jsonl(args.output_dir / "combined_full_context_corrected142.jsonl", combined)
+    write_release_datapoints(
+        args.output_dir / "multilexsum_full_context_qualified29.jsonl", restored, evidence_condition=FULL_CONTEXT
+    )
+    write_release_datapoints(args.output_dir / "combined_full_context_corrected142.jsonl", combined)
     summary = {
         "schema": "multilexsum_full_context_restoration_v1",
         "qualified_tasks": len(restored),
@@ -91,13 +94,8 @@ def assert_equal(left: dict[str, Any], right: dict[str, Any], key: str) -> None:
 
 
 def read_jsonl(path: Path) -> list[dict[str, Any]]:
-    return [json.loads(line) for line in path.open(encoding="utf-8") if line.strip()]
-
-
-def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
-    with path.open("w", encoding="utf-8") as handle:
-        for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+    with path.open(encoding="utf-8") as handle:
+        return [normalize_release_datapoint(json.loads(line)) for line in handle if line.strip()]
 
 
 if __name__ == "__main__":

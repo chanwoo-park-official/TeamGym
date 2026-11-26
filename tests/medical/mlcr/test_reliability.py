@@ -220,7 +220,7 @@ def test_dependency_manifest_includes_actual_shared_clients_tokenizer_schema_and
     from teamgym.data.medical.mlcr.execution import dependency_identity, assert_frozen_dependencies
     identity = dependency_identity()
     for path in ['teamgym/llm/openai_client.py', 'teamgym/llm/construction_client.py',
-                 'teamgym/tokenization.py', 'teamgym/core/schema.py', 'teamgym/data/medical/export_schema.py',
+                 'teamgym/tokenization.py', 'teamgym/core/schema.py', 'teamgym/core/release.py',
                  'teamgym/interaction/llm_actors.py', 'teamgym/interaction/actor_utils.py',
                  'teamgym/interaction/run_single_agent_rui_evaluation.py', 'uv.lock']:
         assert path in identity['files']

@@ -15,6 +15,7 @@ import json
 from pathlib import Path
 import sys
 
+from teamgym.core.release import write_release_datapoints
 from teamgym.core.schema import validate_common_datapoint
 from teamgym.interaction.llm_actors import LLMParticipantActor, PromptTraceRecorder
 from teamgym.interaction.rui_context import rui_only_datapoint
@@ -23,7 +24,7 @@ from teamgym.interaction.types import BudgetSpec
 from teamgym.scoring.short_answers import judge_one_answer
 
 from .provenance import REPO_ROOT, digest, file_digest, read_commits, source_identity
-from .runtime import write_json, write_jsonl
+from .runtime import write_json
 from .source import load_qa_rows, group_qas_by_report
 
 SCHEMA = "finlongdocqa_generic_grader_export_v1"
@@ -235,7 +236,7 @@ def write_release(run: str | Path, output: str | Path) -> dict:
     if _execution_identity() != before_identity or _producer_evidence(run)[2] != producer:
         raise ValueError("producer or export dependencies changed during release")
     output.mkdir(parents=True, exist_ok=True)
-    write_jsonl(output / "common_datapoints.jsonl", [final])
+    write_release_datapoints(output / "common_datapoints.jsonl", [final])
     write_json(output / "consumer_model_inputs.json", after)
     write_json(output / "generic_grader_payload.json", grader)
     receipt = {"schema": SCHEMA, "status": "verified_deterministic_evaluator_export",
