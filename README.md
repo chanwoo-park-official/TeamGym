@@ -9,6 +9,8 @@ Chanwoo Park · Jaywoong Jeong · Zachary Wojtowicz · Yubin Kim · Taekyun Lee 
 <!-- Affiliations: add superscripts after each name and a line such as
 <sup>1</sup>University A &nbsp;&nbsp; <sup>2</sup>University B -->
 
+[![Project page](https://img.shields.io/badge/Project-Page-0a7d5a.svg?logo=googlechrome&logoColor=white)](https://teamgym.vercel.app/)
+[![Playground](https://img.shields.io/badge/Playground-Try%20it-7c3aed.svg?logo=googlechrome&logoColor=white)](https://teamgym.vercel.app/playground.html)
 [![arXiv](https://img.shields.io/badge/arXiv-2610.37571-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2610.37571)
 [![Dataset](https://img.shields.io/badge/Dataset-Hugging%20Face-ffd21e.svg?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/TeamGym/teamgym-datasets)
 [![Cite](https://img.shields.io/badge/Cite-CITATION.cff-4c8bf5.svg)](CITATION.cff)
@@ -29,6 +31,11 @@ for *TeamGym: A Gym for Team Decision-Making by AI Agents with Distributed Infor
 
 The paper refers to the evidence units needed to solve a task as pivotal
 information units (PIUs).
+
+The [project page](https://teamgym.vercel.app/) summarizes the benchmark. In the
+[playground](https://teamgym.vercel.app/playground.html), you can join a team of
+model agents on a short demonstration task, choose the PIU distribution and
+communication structure, and compare your decision with the reference answer.
 
 ## Contents
 
